@@ -78,7 +78,7 @@ test("after the final game: wrap message, everything else hidden", async ({ page
     const ng = page.locator(NG).nth(i);
     await expect(ng.locator("h2")).toHaveText("That's a wrap on the home season");
     await expect(ng.locator(".hkng__meta")).toHaveText("Thanks for every minute of noise, Hawkheads.");
-    for (const sel of ['[role="timer"]', ".hkng__status", ".hkng__times", ".hkng__prev", ".hkng__tix", ".hkng__pk"]) await expect(ng.locator(sel)).toBeHidden();
+    for (const sel of ['[role="timer"]', ".hkng__status", ".hkng__times", ".hkng__pv", ".hkng__tix", ".hkng__pk"]) await expect(ng.locator(sel)).toBeHidden();
   }
   expect(log.errors).toEqual([]);
 });
@@ -111,17 +111,27 @@ test("ticket panels and preview button: exact links, target, rel, labels", async
   await check(ng.locator('[data-k="picker"]'), "https://hawks-membership-picker.lovable.app/");
   await expect(ng.locator(".hkng__pk")).toHaveText("Not sure which option suits you? Try our membership picker");
   await check(ng.locator('[data-k="prev"]'), "https://www.hawks.com.au/news/test-preview");
-  await expect(ng.locator('[data-k="prev"]')).toHaveText("Read the game preview");
+  await expect(ng.locator('[data-k="prev"]')).toHaveText("Read the Hawks v Adelaide 36ers preview");
+  // Sits directly under the date line, above the countdown.
+  const order = await ng.locator(".hkng__inner").evaluate((e) => [...e.children].filter((c) => !c.hidden).map((c) => c.className.split(" ")[0]));
+  expect(order.slice(0, 5)).toEqual(["hkng__over", "hkng__head", "hkng__meta", "hkng__pv", "hkng__timer"]);
 
   // Game 2 (overridden in this test) has a different ticket link and no preview.
   await page.goto("/test/?hk_now=2026-10-03T09:00");
   await ready(page);
   await expect(ng.locator('[data-k="single"]')).toHaveAttribute("href", "https://www.ticketmaster.com.au/test-game-2");
-  await expect(ng.locator('[data-k="prev"]')).toBeHidden();
+  await expect(ng.locator('[data-k="pv"]')).toBeHidden();
 });
 
 test("a game with no ticket link of its own uses the default", async ({ page }) => {
   await useData(page, (d) => { d.games[0].tickets = ""; });
   await open(page, "/test/?hk_now=2026-09-27T12:00");
   await expect(page.locator(NG).first().locator('[data-k="single"]')).toHaveAttribute("href", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493");
+});
+
+test("no preview link (and no news fallback) until a preview is set", async ({ page }) => {
+  await open(page, "/test/?hk_now=2026-09-27T12:00");
+  const ng = page.locator(NG).first();
+  await expect(ng.locator(".hkng__pv")).toBeHidden();
+  await expect(ng.locator('a[href="https://www.hawks.com.au/news"]')).toHaveCount(0);
 });
