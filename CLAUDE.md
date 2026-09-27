@@ -4,7 +4,7 @@
 
 - **Never use em dashes** anywhere: code, comments, copy, docs, commit messages, conversation. No exceptions. Avoid en dashes too.
 - **Australian English** in all copy and docs.
-- **Never fabricate** prices, dates, times, program details, URLs or facts. If an input is missing, stop and ask, or leave a clearly marked placeholder and list it under "Open items" below. Do not guess.
+- **Never fabricate** prices, dates, times, program details, URLs or facts. If an input is missing, stop and ask, or leave a clearly marked placeholder and list it under "Open items" in `CLAUDE.local.md`. Do not guess.
 - **Do not reorder or rename public contracts** (placeholder names, hash links, data field names, file paths in the published URL) once they exist. See "Public contracts".
 
 ## What this project is
@@ -56,7 +56,7 @@ Requirements:
 - All season data lives in **one data file** that a non-developer can edit in GitHub's web editor (pencil icon). It must be obvious, commented, and forgiving.
 - **No build step may be required for a data edit to go live.** Either the script loads the data file at runtime, or the published file is plain hand-maintained JS. If you propose a build step, it must run automatically (for example a GitHub Action) and a data edit on github.com must still go live without the editor running anything locally. Explain the trade-off before choosing.
 - Validate the data at load (boundary validation): bad dates or times should log a clear console warning and skip that game, never crash the whole script or blank every module.
-- The current data (16 games, times, links) is in `reference/hawks-gameday-nbl27.html`, Section 1. Carry it over exactly, including the corrections already made (see Open items). Cross-check against `reference/Homes_Games_with_Key_Timings.xlsx`.
+- The current data (16 games, times, links) is in `reference/hawks-gameday-nbl27.html`, Section 1. Carry it over exactly, including the corrections already made. Cross-check against `reference/Homes_Games_with_Key_Timings.xlsx`.
 
 Current data shape (keep field names unless there's a strong reason, and say so if you change them):
 
@@ -78,7 +78,7 @@ Each module is a render function keyed by its `data-hawks` name, with its own sc
 | `upcoming-games` | `.hksl` | gameday Section 3 | Collapsed bar "Upcoming home games" with live count and plus/minus icon. Lists games **after** the next game. Each row: date block, "v Opponent", "Game N, 7:30pm tip-off", Tickets button, Key times toggle revealing that game's times and optional preview button. Hidden when no games remain after the next one. |
 | `plan-your-night` | `.hkpn` | plan-your-night file | "Before you arrive / Plan your night / Choose what you need." Three disclosure toggles (Getting here, Eat and drink, Upgrade), **all closed on load**, one open at a time, clicking the open one closes it. `aria-expanded` disclosure pattern, not ARIA tabs. |
 | `trivia-mvp` | `.hkpv` | trivia-mvp file | Two-panel slab. Left red (swapped from the reference at the editor's request, 27 September 2026): "Hawks trivia", "Coming soon" label (black on red for contrast) until a trivia URL is set, then a "Test your knowledge" link. Right black: 1:1 MVP graphic (width/height 1080 declared, lazy loaded, alt text) and "Place your vote". |
-| `game-preview` | `.hkgp` | **new** | A button that reads the active game's `preview` link: "Read the Hawks v Opponent preview". If no preview is set, falls back to the News listing URL (**URL is an open item: ask**). Rolls over with the active game. Intended for recaps and other standalone spots; not used on the Game Day Guide page, where `next-game` carries the preview link. |
+| `game-preview` | `.hkgp` | **new** | A button that reads the active game's `preview` link: "Read the Hawks v Opponent preview". If no preview is set, falls back to the News listing (`links.newsListing`) with the text "Read the latest Hawks news"; hidden after the season. Rolls over with the active game. Intended for recaps and other standalone spots; not used on the Game Day Guide page, where `next-game` carries the preview link. |
 
 | `girls-in-the-game` | `.hkscta` (shared) | `reference/girls-in-the-game.html` | Shared CTA block. Overline "Girls in the Game", heading "Get her on the court", then the next camp from `data.js` (`girlsInTheGame.camps`): "Tuesday 6th October, 1:30pm at {venue}." plus the camp's optional `details` sentence, **Register now** (camp `rego`) and **Join the mailing list** (secondary). A camp shows until **6 hours after its start time**, then the next camp. With no camp to show: "Check back later in the term for dates for the next camp." and only the mailing list button, which then becomes the primary (solid red) button. Fallback link: https://www.hawks.com.au/pages/girls-in-the-game |
 | `newsletter` | `.hkscta` (shared) | `reference/newsletter.html` | Shared CTA block with fixed approved copy ("Hawks Newsletter", "Be the first to know") and one **Join the mailing list** button (`links.newsletter`). |
@@ -179,18 +179,9 @@ Build a local test page (`test/index.html`) that includes every placeholder, loa
 
 Also spot-check against the reference embeds side by side: same look, same behaviour.
 
-## Open items (do not invent answers; ask or leave a marked placeholder)
+## Private notes
 
-- Hawks trivia URL (show "Coming soon" until provided)
-- Bus routes near WIN Entertainment Centre (currently omitted; copy says check Transport for NSW)
-- "Around 1,200 parking spaces" and "about a 15 minute walk" from Wollongong Station (unverified, from club copy)
-- Phone link `tel:1300142957` derived from 1300 1HAWKS (needs a test call)
-- Instagram URL `https://www.instagram.com/lowercrownquarter/` (built from the handle)
-- Flexi URL capital L (`/FLeximemberships`): confirm it resolves
-- Games 12 and 15 show start set to 17:00 (spreadsheet said 5:00am)
-- Game 11 function 15:30 with doors 16:30 (one hour gap, others are 30 minutes)
-- Whether the pre-game function is public (if not, remove it from key times via config)
-- League sign-off on hosting code for their site on GitHub/jsDelivr
+Open items, unverified claims and anything else that shouldn't be public live in `CLAUDE.local.md`, which is git-ignored. This repository is public (jsDelivr requires it), so everything committed here, including this file, can be read by anyone. Keep internal notes out of committed files.
 
 ## Standalone embeds still to convert
 
