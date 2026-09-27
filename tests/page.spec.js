@@ -45,7 +45,7 @@ test("script blocked: every fallback link is visible, readable and correct", asy
     ["game-preview", "Hawks news and game previews", "https://www.hawks.com.au/news", true],
     ["girls-in-the-game", "Girls in the Game: dates and registration", "https://www.hawks.com.au/pages/girls-in-the-game", true],
     ["newsletter", "Join the Hawks mailing list", "https://mailchi.mp/hawks/illawarra-hawks-newsletter", true],
-    ["top-10", "Hawks history: all-time top 10 single-game feats", "https://www.hawks.com.au/", true],
+    ["top-10", "Hawks history: all-time top 10 single-game feats", "https://www.hawks.com.au/pages/illawarra-hawks-history", true],
     ["next-game", "Next home game, key times and tickets", "https://www.hawks.com.au/pages/gameday", true],
     ["game-preview", "Hawks news and game previews", "https://www.hawks.com.au/news", true],
     ["upcoming-games", "Tickets to all Hawks home games", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493", true],
@@ -53,7 +53,7 @@ test("script blocked: every fallback link is visible, readable and correct", asy
     ["trivia-mvp", "Vote for your Game MVP", "https://hawks-mvp-vote.lovable.app/", true],
     ["girls-in-the-game", "Girls in the Game: dates and registration", "https://www.hawks.com.au/pages/girls-in-the-game", true],
     ["newsletter", "Join the Hawks mailing list", "https://mailchi.mp/hawks/illawarra-hawks-newsletter", true],
-    ["top-10", "Hawks history: all-time top 10 single-game feats", "https://www.hawks.com.au/", true]
+    ["top-10", "Hawks history: all-time top 10 single-game feats", "https://www.hawks.com.au/pages/illawarra-hawks-history", true]
   ]);
 });
 
