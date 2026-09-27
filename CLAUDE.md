@@ -124,7 +124,7 @@ Add new things; don't rename or remove existing ones.
 
 - Countdown: `role="timer"`, `aria-live="off"` (don't announce every second).
 - Disclosures: real `<button>`s with `aria-expanded` and `aria-controls`; panels labelled by their button.
-- Ticket buttons have descriptive labels where the visible text is generic (for example "Buy single game tickets for Hawks v Adelaide 36ers").
+- Ticket buttons have descriptive labels where the visible text is generic. Labels start with the visible text (WCAG 2.5.3), approved by the editor: "Buy tickets: single game, Hawks v Adelaide 36ers", "Pick your games: 3 and 5 game Flexi pack", "Join now: season membership".
 - Full keyboard operation, visible focus, logical heading levels inside a News article (modules will sit under an article H1, so start at H2).
 - Colour contrast: body text on red must pass; keep the existing pairings.
 - Images: meaningful alt text; declared dimensions.
@@ -147,7 +147,9 @@ First-person club voice ("we", "us", "our"), bold and direct, Australian English
 - Venue map: https://maps.app.goo.gl/s4uVZdA6nZJxCpTA8
 - Hawks shop: https://shop-illawarrahawks.com/
 - Game Day Guide page (fallback link target): https://www.hawks.com.au/pages/gameday (confirmed by the editor, 27 September 2026)
-- Game previews are News articles, URL pattern `https://www.hawks.com.au/news/game-preview-hawks-<opponent>-rd<N>-nbl27`, published about one day before each game. Paste each one into that game's `preview` field; do not derive it.
+- News listing (game-preview fallback): https://www.hawks.com.au/news (confirmed by the editor, 27 September 2026). Fallback button text is "Read the latest Hawks news"; the button is hidden after the season.
+- Per-game Ticketmaster event links are in each game's `tickets` field (supplied by the editor, 27 September 2026; dates in each URL checked against the game dates). The artist page above stays as `defaultTickets` for any game without its own link.
+- Game previews are News articles, URL pattern `https://www.hawks.com.au/news/game-preview-hawks-<opponent>-rd<N>-nbl27`, published anywhere from two days before to the day of the game (away games get previews too, with the same URL pattern). Paste each home game's preview into its `preview` field; do not derive or auto-discover it. Until then the button falls back to the News listing.
 
 Put every link in the data/config file, not inside render code.
 
@@ -172,7 +174,6 @@ Also spot-check against the reference embeds side by side: same look, same behav
 
 ## Open items (do not invent answers; ask or leave a marked placeholder)
 
-- News listing URL for the `game-preview` fallback: using `https://www.hawks.com.au/news` (verified live) until the editor confirms. Fallback button text "Read the latest Hawks news" and hiding the button after the season are proposed defaults awaiting sign-off.
 - Hawks trivia URL (show "Coming soon" until provided)
 - Bus routes near WIN Entertainment Centre (currently omitted; copy says check Transport for NSW)
 - "Around 1,200 parking spaces" and "about a 15 minute walk" from Wollongong Station (unverified, from club copy)

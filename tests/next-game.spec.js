@@ -105,7 +105,7 @@ test("ticket panels and preview button: exact links, target, rel, labels", async
     if (label) await expect(loc).toHaveAttribute("aria-label", label);
   };
   await expect(ng.locator(".hkng__oh")).toHaveText(["Single game ticket", "3 & 5 game Flexi pack", "Season membership"]);
-  await check(ng.locator('[data-k="single"]'), "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493", "Buy tickets: single game, Hawks v Adelaide 36ers");
+  await check(ng.locator('[data-k="single"]'), "https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-02-10-2026/event/130064FDD1FC7914", "Buy tickets: single game, Hawks v Adelaide 36ers");
   await check(ng.locator('[data-k="flexi"]'), "https://am.ticketmaster.com/thehawks/FLeximemberships", "Pick your games: 3 and 5 game Flexi pack");
   await check(ng.locator('[data-k="member"]'), "https://am.ticketmaster.com/thehawks/", "Join now: season membership");
   await check(ng.locator('[data-k="picker"]'), "https://hawks-membership-picker.lovable.app/");
@@ -113,9 +113,15 @@ test("ticket panels and preview button: exact links, target, rel, labels", async
   await check(ng.locator('[data-k="prev"]'), "https://www.hawks.com.au/news/test-preview");
   await expect(ng.locator('[data-k="prev"]')).toHaveText("Read the game preview");
 
-  // Game 2 has its own ticket link and no preview.
+  // Game 2 (overridden in this test) has a different ticket link and no preview.
   await page.goto("/test/?hk_now=2026-10-03T09:00");
   await ready(page);
   await expect(ng.locator('[data-k="single"]')).toHaveAttribute("href", "https://www.ticketmaster.com.au/test-game-2");
   await expect(ng.locator('[data-k="prev"]')).toBeHidden();
+});
+
+test("a game with no ticket link of its own uses the default", async ({ page }) => {
+  await useData(page, (d) => { d.games[0].tickets = ""; });
+  await open(page, "/test/?hk_now=2026-09-27T12:00");
+  await expect(page.locator(NG).first().locator('[data-k="single"]')).toHaveAttribute("href", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493");
 });
