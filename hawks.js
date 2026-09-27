@@ -209,14 +209,19 @@
       var name = el.getAttribute("data-hawks"), mod = H.modules[name];
       el.setAttribute("data-hawks-ready", "");
       if (!mod) { warn("unknown embed \"" + name + "\"; leaving its fallback link in place"); return; }
+      var orig = el.innerHTML;
       try {
         addFonts();
+        addCss("_host", ".hk-host{display:block;container-type:inline-size;margin:0;padding:0;}");
         addCss(name, mod.css);
+        el.classList.add("hk-host");
         var x = mod.render(el, { primary: primaries[name] === el, state: s, data: H.data }) || {};
         x.name = name; x.el = el; x.primary = primaries[name] === el;
         H.instances.push(x);
         added = true;
       } catch (e) {
+        el.innerHTML = orig;
+        el.classList.remove("hk-host");
         fail("could not render \"" + name + "\": " + e.message + ". Leaving its fallback link in place.");
       }
     });
@@ -254,6 +259,137 @@
   var M = H.modules;
 
   /* MODULES:START */
+
+  /* Key times list items for a game, shared by next-game and upcoming-games. */
+  function keyTimes(g, p) {
+    return H.data.times.map(function (t) {
+      return g[t[0]] ? '<li><span class="' + p + '__t">' + esc(U.time(g[t[0]])) + '</span><span class="' + p + '__tl">' + esc(t[1]) + "</span></li>" : "";
+    }).join("");
+  }
+
+  /* ---------------- next-game (.hkng) ----------------
+     Next home game, countdown, key times, preview button, ticket panels. */
+  M["next-game"] = {
+    css: [
+      ".hkng{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--k);color:var(--w);padding:48px 32px;margin:0;border-top:6px solid var(--r);text-align:center;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;scroll-margin-top:120px;}",
+      ".hkng *,.hkng *::before,.hkng *::after{box-sizing:border-box;}",
+      ".hkng[hidden],.hkng [hidden]{display:none !important;}",
+      ".hkng .hkng__inner{max-width:800px;margin:0 auto;}",
+      ".hkng .hkng__over{font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin:0 0 12px;}",
+      ".hkng .hkng__head,.hkng .hkng__num,.hkng .hkng__status,.hkng .hkng__oh{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:0.01em;}",
+      ".hkng .hkng__head{line-height:0.95;font-size:clamp(28px,4.5cqw,40px);color:var(--w);margin:0 0 10px;padding:0;}",
+      ".hkng .hkng__meta{font-size:16px;line-height:1.55;color:#D8D8D8;margin:0 0 28px;}",
+      ".hkng .hkng__timer{display:flex;justify-content:center;gap:12px;margin:0;padding:0;list-style:none;}",
+      ".hkng .hkng__unit{flex:0 1 112px;min-width:0;padding:16px 4px 12px;border:2px solid rgba(255,255,255,0.2);margin:0;line-height:1;list-style:none;}",
+      ".hkng .hkng__num{display:block;font-size:clamp(36px,8cqw,64px);line-height:1;color:var(--w);}",
+      ".hkng .hkng__lbl{display:block;font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin-top:8px;}",
+      ".hkng .hkng__status{font-size:clamp(36px,8cqw,64px);line-height:0.95;color:var(--r);margin:0;}",
+      ".hkng .hkng__times{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));list-style:none;margin:28px 0 0;padding:20px 0 0;border-top:2px solid rgba(255,255,255,0.2);gap:16px 8px;}",
+      ".hkng .hkng__times li{margin:0;padding:0;line-height:1.2;list-style:none;}",
+      ".hkng .hkng__t{display:block;font-weight:700;font-size:20px;line-height:1.2;color:var(--w);}",
+      ".hkng .hkng__tl{display:block;font-size:13px;line-height:1.3;color:#D8D8D8;margin-top:4px;}",
+      ".hkng .hkng__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;padding:16px 28px;margin:0;border:2px solid var(--r);border-radius:0;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkng .hkng__btn:link,.hkng .hkng__btn:visited{color:var(--w);text-decoration:none;}",
+      ".hkng .hkng__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
+      ".hkng .hkng__btn:active{transform:scale(0.98);}",
+      ".hkng .hkng__btn:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
+      ".hkng .hkng__btn--sec,.hkng .hkng__btn--sec:link,.hkng .hkng__btn--sec:visited{background:transparent;border-color:var(--w);color:var(--w);}",
+      ".hkng .hkng__btn--sec:hover{background:var(--w);border-color:var(--w);color:var(--k);}",
+      ".hkng .hkng__btn--inv,.hkng .hkng__btn--inv:link,.hkng .hkng__btn--inv:visited{background:var(--w);border-color:var(--w);color:var(--k);}",
+      ".hkng .hkng__btn--inv:hover{background:var(--k);border-color:var(--k);color:var(--w);}",
+      ".hkng .hkng__prev{margin-top:28px;}",
+      ".hkng .hkng__tix{display:grid;grid-template-columns:repeat(3,1fr);margin-top:32px;}",
+      ".hkng .hkng__opt{display:flex;flex-direction:column;align-items:center;gap:18px;padding:32px 16px;border:2px solid transparent;margin:0;}",
+      ".hkng .hkng__opt--r{background:var(--r);}",
+      ".hkng .hkng__opt--w{background:var(--w);}",
+      ".hkng .hkng__opt--k{background:var(--k);border-color:rgba(255,255,255,0.2);}",
+      ".hkng .hkng__oh{font-size:clamp(20px,2.4cqw,24px);line-height:1;margin:0;padding:0;color:var(--w);}",
+      ".hkng .hkng__opt--w .hkng__oh{color:var(--k);}",
+      ".hkng .hkng__opt--k .hkng__oh{color:var(--r);}",
+      ".hkng .hkng__opt--r .hkng__btn:focus-visible{outline-color:var(--w);}",
+      ".hkng .hkng__opt--w .hkng__btn:focus-visible{outline-color:var(--k);}",
+      ".hkng .hkng__opt--k .hkng__btn--inv:hover{background:var(--r);border-color:var(--r);color:var(--w);}",
+      ".hkng .hkng__pk{font-size:15px;line-height:1.5;color:#D8D8D8;margin:24px 0 0;}",
+      ".hkng .hkng__pick,.hkng .hkng__pick:link,.hkng .hkng__pick:visited{font-weight:700;color:var(--w);text-decoration:underline;text-underline-offset:3px;}",
+      ".hkng .hkng__pick:hover{color:var(--r);text-decoration:underline;}",
+      ".hkng .hkng__pick:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
+      "@container (max-width:700px){",
+      ".hkng{padding:36px 16px;}",
+      ".hkng .hkng__timer{gap:8px;}",
+      ".hkng .hkng__unit{padding:12px 2px 10px;}",
+      ".hkng .hkng__lbl{font-size:11px;}",
+      ".hkng .hkng__tix{grid-template-columns:1fr;}",
+      ".hkng .hkng__opt{padding:24px 16px;gap:14px;}",
+      ".hkng .hkng__btn{display:block;width:100%;padding:16px 20px;}",
+      "}",
+      "@media (prefers-reduced-motion:reduce){.hkng .hkng__btn{transition:none;}.hkng .hkng__btn:active{transform:none;}}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var L = ctx.data.links, hide = function (url) { return url ? "" : " hidden"; };
+      el.innerHTML =
+        '<section class="hkng" aria-label="Next home game">' +
+        '<div class="hkng__inner">' +
+        '<p class="hkng__over">Next home game</p>' +
+        '<h2 class="hkng__head" data-k="head"></h2>' +
+        '<p class="hkng__meta" data-k="meta"></p>' +
+        '<ul class="hkng__timer" data-k="timer" role="timer" aria-live="off" aria-label="Time until tip-off" hidden>' +
+        '<li class="hkng__unit"><span class="hkng__num" data-k="d">00</span><span class="hkng__lbl">Days</span></li>' +
+        '<li class="hkng__unit"><span class="hkng__num" data-k="h">00</span><span class="hkng__lbl">Hours</span></li>' +
+        '<li class="hkng__unit"><span class="hkng__num" data-k="m">00</span><span class="hkng__lbl">Mins</span></li>' +
+        '<li class="hkng__unit"><span class="hkng__num" data-k="s">00</span><span class="hkng__lbl">Secs</span></li>' +
+        "</ul>" +
+        '<p class="hkng__status" data-k="status" hidden></p>' +
+        '<ul class="hkng__times" data-k="times"></ul>' +
+        '<a class="hkng__btn hkng__btn--sec hkng__prev" data-k="prev" href="#" target="_blank" rel="noopener noreferrer" hidden>Read the game preview</a>' +
+        '<div data-k="tix">' +
+        '<div class="hkng__tix">' +
+        '<div class="hkng__opt hkng__opt--r"><h3 class="hkng__oh">Single game ticket</h3>' +
+        '<a class="hkng__btn hkng__btn--inv" data-k="single" href="#" target="_blank" rel="noopener noreferrer">Buy tickets</a></div>' +
+        '<div class="hkng__opt hkng__opt--w"><h3 class="hkng__oh">3 &amp; 5 game Flexi pack</h3>' +
+        '<a class="hkng__btn" data-k="flexi"' + ext(L.flexi) + ' aria-label="Pick your games: 3 and 5 game Flexi pack"' + hide(L.flexi) + '>Pick your games</a></div>' +
+        '<div class="hkng__opt hkng__opt--k"><h3 class="hkng__oh">Season membership</h3>' +
+        '<a class="hkng__btn hkng__btn--inv" data-k="member"' + ext(L.member) + ' aria-label="Join now: season membership"' + hide(L.member) + '>Join now</a></div>' +
+        "</div>" +
+        '<p class="hkng__pk"' + hide(L.picker) + '>Not sure which option suits you? <a class="hkng__pick" data-k="picker"' + ext(L.picker) + ">Try our membership picker</a></p>" +
+        "</div></div></section>";
+
+      var root = el.firstChild, k = {};
+      [].forEach.call(root.querySelectorAll("[data-k]"), function (n) { k[n.getAttribute("data-k")] = n; });
+      function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+      function fill(g) {
+        k.head.textContent = "Hawks v " + g.opp;
+        k.meta.textContent = U.longDate(g.date) + ", " + ctx.data.venue;
+        k.times.innerHTML = keyTimes(g, "hkng");
+        k.times.hidden = false;
+        k.tix.hidden = false;
+        var t = U.tickets(g);
+        if (t) { k.single.href = t; k.single.hidden = false; } else k.single.hidden = true;
+        k.single.setAttribute("aria-label", "Buy tickets: single game, Hawks v " + g.opp);
+        if (g.preview) { k.prev.href = g.preview; k.prev.setAttribute("aria-label", "Read the game preview: Hawks v " + g.opp); k.prev.hidden = false; }
+        else k.prev.hidden = true;
+      }
+      function wrap() {
+        k.head.textContent = "That's a wrap on the home season";
+        k.meta.textContent = "Thanks for every minute of noise, Hawkheads.";
+        k.timer.hidden = k.status.hidden = k.times.hidden = k.tix.hidden = k.prev.hidden = true;
+      }
+
+      return {
+        update: function (s, changed) {
+          if (s.phase === "wrap") { if (changed) wrap(); return; }
+          if (changed) fill(s.game);
+          if (s.phase === "live") { k.timer.hidden = true; k.status.textContent = "Game on"; k.status.hidden = false; return; }
+          var n = Math.floor((s.game._tip - s.now) / 1000);
+          k.d.textContent = pad(Math.floor(n / 86400)); k.h.textContent = pad(Math.floor(n % 86400 / 3600));
+          k.m.textContent = pad(Math.floor(n % 3600 / 60)); k.s.textContent = pad(n % 60);
+          k.timer.hidden = false; k.status.hidden = true;
+        }
+      };
+    }
+  };
+
   /* MODULES:END */
 
   /* ---------------- Load data.js from the same folder ---------------- */
