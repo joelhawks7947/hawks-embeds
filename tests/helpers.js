@@ -23,7 +23,7 @@ function referenceGames() {
 async function useData(page, mutate) {
   const data = JSON.parse(JSON.stringify(loadData()));
   if (mutate) mutate(data);
-  await page.route("**/data.js", (route) =>
+  await page.route("**/data.js*", (route) =>
     route.fulfill({ contentType: "text/javascript", body: "window.HAWKS_DATA = " + JSON.stringify(data) + ";" }));
 }
 

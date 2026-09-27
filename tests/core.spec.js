@@ -88,7 +88,7 @@ test.describe("in the browser", () => {
   for (const [label, body, status] of [["has a syntax error", "window.HAWKS_DATA = { games: [ {n:1,, };", 200], ["is missing", "Not found", 404]]) {
     test(`if data.js ${label}, every placeholder keeps its fallback link`, async ({ page }) => {
       const log = watchConsole(page);
-      await page.route("**/data.js", (r) => r.fulfill({ status, contentType: "text/javascript", body }));
+      await page.route("**/data.js*", (r) => r.fulfill({ status, contentType: "text/javascript", body }));
       await page.goto("/test/");
       await page.waitForTimeout(500);
       const links = await page.$$eval("[data-hawks]", (els) => els.map((e) => e.querySelector("a") && e.querySelector("a").href));
@@ -104,7 +104,7 @@ test.describe("in the browser", () => {
     await page.waitForLoadState("load");
     const r = await page.evaluate(() => ({
       scripts: document.querySelectorAll('script[src$="hawks.js"]').length,
-      dataScripts: document.querySelectorAll('script[src$="data.js"]').length,
+      dataScripts: document.querySelectorAll('script[src*="data.js?v="]').length,
       styles: document.querySelectorAll("#hawks-embeds-css").length,
       fonts: document.querySelectorAll('link[href*="fonts.googleapis.com/css2"]').length
     }));

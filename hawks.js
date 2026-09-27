@@ -739,7 +739,9 @@
   else if (!base) fail("could not work out where hawks.js was loaded from, so data.js was not loaded");
   else {
     var s = D.createElement("script");
-    s.src = base + "data.js";
+    /* jsDelivr tells browsers to keep files for up to 7 days. The ?v= value changes every
+       10 minutes so browsers re-check data.js; jsDelivr ignores it, so its cache and purge still apply. */
+    s.src = base + "data.js?v=" + Math.floor(Date.now() / 600000);
     s.onload = start;
     s.onerror = function () { fail("could not load " + s.src + ". Embeds are showing their fallback links."); };
     (D.head || D.documentElement).appendChild(s);
