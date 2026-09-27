@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hawks trivia and MVP vote slab: preview</title>
+<style>body{margin:0;}</style>
+</head>
+<body>
+
+<!-- ==== COPY FROM HERE ==== -->
+<!-- ============================================================
+     ILLAWARRA HAWKS - HAWKS TRIVIA + GAME MVP VOTE SLAB
+     Standalone Webflow Code Embed. Self-contained.
+     Edit the LINKS block in the script at the bottom only.
+     Hawks trivia shows "Coming soon" until TRIVIA is filled.
+     All classes prefixed .hkpv- and scoped under .hkpv.
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<style>
+.hkpv{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;margin:0;padding:0;font-family:'Poppins',Arial,Helvetica,sans-serif;line-height:1.4;text-align:center;}
+.hkpv *,.hkpv *::before,.hkpv *::after{box-sizing:border-box;}
+.hkpv[hidden],.hkpv [hidden]{display:none !important;}
+.hkpv .hkpv__panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:56px 32px;margin:0;}
+.hkpv .hkpv__panel--k{background:var(--k);color:var(--w);border-top:6px solid var(--r);}
+.hkpv .hkpv__panel--r{background:var(--r);color:var(--w);border-top:6px solid var(--k);}
+.hkpv .hkpv__head{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:0.01em;line-height:0.95;font-size:clamp(36px,5vw,56px);color:var(--w);margin:0;}
+.hkpv .hkpv__img{display:block;width:100%;max-width:320px;height:auto;aspect-ratio:1 / 1;margin:0;border:0;}
+.hkpv .hkpv__btn{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;padding:16px 28px;border:2px solid var(--w);border-radius:0;background:var(--w);color:var(--k);transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}
+.hkpv a.hkpv__btn:link,.hkpv a.hkpv__btn:visited{color:var(--k);text-decoration:none;}
+.hkpv a.hkpv__btn:hover{background:var(--k);border-color:var(--k);color:var(--w);}
+.hkpv .hkpv__panel--k a.hkpv__btn:hover{background:var(--r);border-color:var(--r);color:var(--w);}
+.hkpv a.hkpv__btn:active{transform:scale(0.98);}
+.hkpv a.hkpv__btn:focus-visible{outline:2px solid var(--w);outline-offset:2px;}
+.hkpv .hkpv__soon{background:transparent;color:var(--w);cursor:default;}
+@media (max-width:700px){
+.hkpv{grid-template-columns:1fr;}
+.hkpv .hkpv__panel{padding:40px 16px;gap:20px;}
+.hkpv .hkpv__btn{display:block;width:100%;max-width:320px;}
+}
+@media (prefers-reduced-motion:reduce){.hkpv .hkpv__btn{transition:none;}.hkpv a.hkpv__btn:active{transform:none;}}
+</style>
+<section class="hkpv" id="hkpv" aria-label="Hawks trivia and Game MVP vote">
+  <div class="hkpv__panel hkpv__panel--k">
+    <h2 class="hkpv__head">Hawks trivia</h2>
+    <span class="hkpv__btn hkpv__soon" data-k="soon">Coming soon</span>
+    <a class="hkpv__btn" data-k="trivia" href="#" target="_blank" rel="noopener noreferrer" hidden>Test your knowledge</a>
+  </div>
+  <div class="hkpv__panel hkpv__panel--r">
+    <img class="hkpv__img" data-k="mvpimg" src="https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ab73bbbf4abbf2c6fdda107_MVP%20Vote_1080x1080_.jpg" width="1080" height="1080" loading="lazy" alt="Vote for your Greater Bank Game MVP">
+    <a class="hkpv__btn" data-k="mvp" href="https://hawks-mvp-vote.lovable.app/" target="_blank" rel="noopener noreferrer">Place your vote</a>
+  </div>
+</section>
+<script>
+(function(){
+  /* ================= LINKS: EDIT HERE ONLY ================= */
+  var TRIVIA = "";   /* paste the Hawks trivia link to replace "Coming soon" */
+  var MVP = "https://hawks-mvp-vote.lovable.app/";
+  /* ========================================================= */
+  var root = document.getElementById("hkpv");
+  if (!root) return;
+  function q(k){ return root.querySelector('[data-k="' + k + '"]'); }
+  if (MVP) q("mvp").href = MVP;
+  if (TRIVIA){ q("trivia").href = TRIVIA; q("trivia").hidden = false; q("soon").hidden = true; }
+})();
+</script>
+<!-- ==== COPY TO HERE ==== -->
+
+</body>
+</html>

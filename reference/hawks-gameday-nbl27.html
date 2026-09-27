@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hawks NBL27 gameday page: preview</title>
+<style>body{margin:0;}</style>
+</head>
+<body>
+
+<!-- ==== COPY FROM HERE ==== -->
+<!-- ============================================================
+     ILLAWARRA HAWKS - NBL27 GAMEDAY (ONE EMBED)
+     Paste everything between the COPY markers into one Webflow
+     Code Embed element. Self-contained: fonts, styles, markup, scripts.
+     To update games, ticket links or preview links, edit SECTION 1 only.
+     Test any moment by adding ?hk_now=2026-10-03T00:01 to the page URL.
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+     SECTION 1: GAME DATA (the only part you edit)
+     Times are 24-hour Sydney local time. AEST/AEDT handled in code.
+     tickets: leave "" to use the default single game ticket link.
+     preview: paste the News "Game Preview" link to show the button.
+     ============================================================ -->
+<script>
+window.HKSGD = window.HKSGD || {};
+(function(G){
+  /* ================= EDIT BELOW ================= */
+  G.venue = "WIN Entertainment Centre";
+  G.defaultTickets = "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493";
+  /* Ticket options shown under the next game */
+  G.links = {
+    flexi:  "https://am.ticketmaster.com/thehawks/FLeximemberships",
+    member: "https://am.ticketmaster.com/thehawks/",
+    picker: "https://hawks-membership-picker.lovable.app/"
+  };
+  /* Key times shown for every game, in display order. Delete a line to hide that time everywhere. */
+  G.times = [
+    ["func",  "Pre-game function"],
+    ["doors", "Main doors open"],
+    ["show",  "Show starts"],
+    ["tip",   "Tip-off"]
+  ];
+  G.games = [
+    {n:1,  date:"2026-10-02", opp:"Adelaide 36ers",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:2,  date:"2026-10-09", opp:"Tasmania JackJumpers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:3,  date:"2026-10-11", opp:"Cairns Taipans",               func:"15:30", doors:"16:00", show:"16:30", tip:"17:00", tickets:"", preview:""},
+    {n:4,  date:"2026-10-22", opp:"Sydney Kings",                 func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:5,  date:"2026-10-24", opp:"Brisbane Bullets",             func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"", preview:""},
+    {n:6,  date:"2026-11-19", opp:"Adelaide 36ers",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:7,  date:"2026-12-04", opp:"Sydney Kings",                 func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:8,  date:"2026-12-10", opp:"Tasmania JackJumpers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:9,  date:"2026-12-20", opp:"Melbourne United",             func:"13:30", doors:"14:00", show:"14:30", tip:"15:00", tickets:"", preview:""},
+    {n:10, date:"2026-12-27", opp:"New Zealand Breakers",         func:"13:30", doors:"14:00", show:"14:30", tip:"15:00", tickets:"", preview:""},
+    {n:11, date:"2026-12-31", opp:"South East Melbourne Phoenix", func:"15:30", doors:"16:30", show:"17:00", tip:"17:30", tickets:"", preview:""},
+    {n:12, date:"2027-01-02", opp:"Cairns Taipans",               func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"", preview:""},
+    {n:13, date:"2027-01-06", opp:"Perth Wildcats",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:14, date:"2027-01-20", opp:"New Zealand Breakers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:15, date:"2027-01-30", opp:"Perth Wildcats",               func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"", preview:""},
+    {n:16, date:"2027-02-04", opp:"Brisbane Bullets",             func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""}
+  ];
+  /* ================= DO NOT EDIT BELOW ================= */
+  var TZ = "Australia/Sydney", F = new Intl.DateTimeFormat("en-AU", {timeZone:TZ, hourCycle:"h23", year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"});
+  function parts(ms){ var o = {}; F.formatToParts(new Date(ms)).forEach(function(p){ o[p.type] = +p.value; }); if (o.hour === 24) o.hour = 0; return o; }
+  function toUtc(date, time){
+    var d = date.split("-").map(Number), t = time.split(":").map(Number), wall = Date.UTC(d[0], d[1]-1, d[2], t[0], t[1]||0), u = wall;
+    for (var i = 0; i < 2; i++){ var p = parts(u); u -= Date.UTC(p.year, p.month-1, p.day, p.hour, p.minute) - wall; }
+    return u;
+  }
+  function fmt(date, opts){ var d = date.split("-").map(Number); return new Intl.DateTimeFormat("en-AU", Object.assign({timeZone:"UTC"}, opts)).format(Date.UTC(d[0], d[1]-1, d[2], 12)); }
+  function ord(n){ var s = ["th","st","nd","rd"], v = n % 100; return n + (s[(v-20)%10] || s[v] || s[0]); }
+  var m = /[?&]hk_now=([^&]+)/.exec(location.search), off = 0;
+  if (m){ var v = decodeURIComponent(m[1]).split("T"); if (v.length === 2) off = toUtc(v[0], v[1]) - Date.now(); }
+  G.u = {
+    now: function(){ return Date.now() + off; },
+    time: function(t){ var p = t.split(":").map(Number), h = p[0] % 12 || 12; return h + ":" + ("0"+(p[1]||0)).slice(-2) + (p[0] < 12 ? "am" : "pm"); },
+    longDate: function(date){ return fmt(date, {weekday:"long"}) + " " + ord(+date.slice(8)) + " " + fmt(date, {month:"long"}); },
+    dow: function(date){ return fmt(date, {weekday:"short"}); },
+    dm: function(date){ return +date.slice(8) + " " + fmt(date, {month:"short"}); },
+    tickets: function(g){ return g.tickets || G.defaultTickets; },
+    active: function(){ var n = G.u.now(); for (var i = 0; i < G.games.length; i++){ if (G.games[i]._end > n) return i; } return -1; }
+  };
+  G.games.forEach(function(g){
+    var d = g.date.split("-").map(Number), next = new Date(Date.UTC(d[0], d[1]-1, d[2]+1)).toISOString().slice(0,10);
+    g._tip = toUtc(g.date, g.tip); g._end = toUtc(next, "00:00");
+  });
+  G.ready = true;
+  document.dispatchEvent(new Event("hksgd:ready"));
+})(window.HKSGD);
+</script>
+
+<!-- ============================================================
+     SECTION 2: NEXT HOME GAME, COUNTDOWN AND TICKET OPTIONS (DARK)
+     Nothing to edit here. Rolls to the next game at midnight.
+     Classes scoped under .hkng.
+     ============================================================ -->
+<style>
+.hkng{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;background:var(--k);color:var(--w);padding:48px 32px;margin:0;border-top:6px solid var(--r);text-align:center;font-family:'Poppins',Arial,Helvetica,sans-serif;line-height:1.4;}
+.hkng *,.hkng *::before,.hkng *::after{box-sizing:border-box;}
+.hkng [hidden]{display:none !important;}
+.hkng .hkng__inner{max-width:800px;margin:0 auto;}
+.hkng .hkng__over{font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin:0 0 12px;}
+.hkng .hkng__head,.hkng .hkng__num,.hkng .hkng__status,.hkng .hkng__oh{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:0.01em;}
+.hkng .hkng__head{line-height:0.95;font-size:clamp(28px,4.5vw,40px);color:var(--w);margin:0 0 10px;}
+.hkng .hkng__meta{font-size:16px;line-height:1.55;color:#D8D8D8;margin:0 0 28px;}
+.hkng .hkng__timer{display:flex;justify-content:center;gap:12px;margin:0;padding:0;list-style:none;}
+.hkng .hkng__unit{flex:0 1 112px;min-width:0;padding:16px 4px 12px;border:2px solid rgba(255,255,255,0.2);margin:0;}
+.hkng .hkng__num{display:block;font-size:clamp(36px,8vw,64px);line-height:1;color:var(--w);}
+.hkng .hkng__lbl{display:block;font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin-top:8px;}
+.hkng .hkng__status{font-size:clamp(36px,8vw,64px);line-height:0.95;color:var(--r);margin:0;}
+.hkng .hkng__times{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));list-style:none;margin:28px 0 0;padding:20px 0 0;border-top:2px solid rgba(255,255,255,0.2);gap:16px 8px;}
+.hkng .hkng__times li{margin:0;}
+.hkng .hkng__t{display:block;font-weight:700;font-size:20px;line-height:1.2;color:var(--w);}
+.hkng .hkng__tl{display:block;font-size:13px;line-height:1.3;color:#D8D8D8;margin-top:4px;}
+.hkng .hkng__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;padding:16px 28px;border:2px solid var(--r);border-radius:0;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}
+.hkng .hkng__btn:link,.hkng .hkng__btn:visited{color:var(--w);text-decoration:none;}
+.hkng .hkng__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);}
+.hkng .hkng__btn:active{transform:scale(0.98);}
+.hkng .hkng__btn:focus-visible{outline:2px solid var(--w);outline-offset:2px;}
+.hkng .hkng__btn--sec,.hkng .hkng__btn--sec:link,.hkng .hkng__btn--sec:visited{background:transparent;border-color:var(--w);color:var(--w);}
+.hkng .hkng__btn--sec:hover{background:var(--w);border-color:var(--w);color:var(--k);}
+.hkng .hkng__btn--inv,.hkng .hkng__btn--inv:link,.hkng .hkng__btn--inv:visited{background:var(--w);border-color:var(--w);color:var(--k);}
+.hkng .hkng__btn--inv:hover{background:var(--k);border-color:var(--k);color:var(--w);}
+.hkng .hkng__prev{margin-top:28px;}
+.hkng .hkng__tix{display:grid;grid-template-columns:repeat(3,1fr);margin-top:32px;}
+.hkng .hkng__opt{display:flex;flex-direction:column;align-items:center;gap:18px;padding:32px 16px;border:2px solid transparent;}
+.hkng .hkng__opt--r{background:var(--r);}
+.hkng .hkng__opt--w{background:var(--w);}
+.hkng .hkng__opt--k{background:var(--k);border-color:rgba(255,255,255,0.2);}
+.hkng .hkng__oh{font-size:clamp(20px,2.4vw,24px);line-height:1;margin:0;color:var(--w);}
+.hkng .hkng__opt--w .hkng__oh{color:var(--k);}
+.hkng .hkng__opt--k .hkng__oh{color:var(--r);}
+.hkng .hkng__opt--r .hkng__btn:focus-visible{outline-color:var(--w);}
+.hkng .hkng__opt--w .hkng__btn:focus-visible{outline-color:var(--k);}
+.hkng .hkng__opt--k .hkng__btn--inv:hover{background:var(--r);border-color:var(--r);color:var(--w);}
+.hkng .hkng__pk{font-size:15px;line-height:1.5;color:#D8D8D8;margin:24px 0 0;}
+.hkng .hkng__pick,.hkng .hkng__pick:link,.hkng .hkng__pick:visited{font-weight:700;color:var(--w);text-decoration:underline;text-underline-offset:3px;}
+.hkng .hkng__pick:hover{color:var(--r);}
+.hkng .hkng__pick:focus-visible{outline:2px solid var(--w);outline-offset:2px;}
+@media (max-width:700px){
+.hkng{padding:36px 16px;}
+.hkng .hkng__timer{gap:8px;}
+.hkng .hkng__unit{padding:12px 2px 10px;}
+.hkng .hkng__lbl{font-size:11px;}
+.hkng .hkng__tix{grid-template-columns:1fr;}
+.hkng .hkng__opt{padding:24px 16px;gap:14px;}
+.hkng .hkng__btn{display:block;width:100%;padding:16px 20px;}
+}
+@media (prefers-reduced-motion:reduce){.hkng .hkng__btn{transition:none;}.hkng .hkng__btn:active{transform:none;}}
+</style>
+<section class="hkng" id="hkng">
+  <div class="hkng__inner">
+    <p class="hkng__over">Next home game</p>
+    <h2 class="hkng__head" data-k="head">Hawks v Adelaide 36ers</h2>
+    <p class="hkng__meta" data-k="meta">Friday 2nd October, WIN Entertainment Centre</p>
+    <ul class="hkng__timer" data-k="timer" role="timer" aria-live="off" aria-label="Time until tip-off" hidden>
+      <li class="hkng__unit"><span class="hkng__num" data-k="d">00</span><span class="hkng__lbl">Days</span></li>
+      <li class="hkng__unit"><span class="hkng__num" data-k="h">00</span><span class="hkng__lbl">Hours</span></li>
+      <li class="hkng__unit"><span class="hkng__num" data-k="m">00</span><span class="hkng__lbl">Mins</span></li>
+      <li class="hkng__unit"><span class="hkng__num" data-k="s">00</span><span class="hkng__lbl">Secs</span></li>
+    </ul>
+    <p class="hkng__status" data-k="status" hidden></p>
+    <ul class="hkng__times" data-k="times"></ul>
+    <a class="hkng__btn hkng__btn--sec hkng__prev" data-k="prev" href="#" target="_blank" rel="noopener noreferrer" hidden>Read the game preview</a>
+    <div data-k="tix">
+    <div class="hkng__tix">
+      <div class="hkng__opt hkng__opt--r">
+        <h3 class="hkng__oh">Single game ticket</h3>
+        <a class="hkng__btn hkng__btn--inv" data-k="single" href="https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493" target="_blank" rel="noopener noreferrer">Buy tickets</a>
+      </div>
+      <div class="hkng__opt hkng__opt--w">
+        <h3 class="hkng__oh">3 &amp; 5 game Flexi pack</h3>
+        <a class="hkng__btn" data-k="flexi" href="https://am.ticketmaster.com/thehawks/FLeximemberships" target="_blank" rel="noopener noreferrer">Pick your games</a>
+      </div>
+      <div class="hkng__opt hkng__opt--k">
+        <h3 class="hkng__oh">Season membership</h3>
+        <a class="hkng__btn hkng__btn--inv" data-k="member" href="https://am.ticketmaster.com/thehawks/" target="_blank" rel="noopener noreferrer">Join now</a>
+      </div>
+    </div>
+    <p class="hkng__pk">Not sure which option suits you? <a class="hkng__pick" data-k="picker" href="https://hawks-membership-picker.lovable.app/" target="_blank" rel="noopener noreferrer">Try our membership picker</a></p>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var done = false;
+  function start(){
+    if (done || !window.HKSGD || !HKSGD.ready) return;
+    done = true;
+    var G = HKSGD, U = G.u, L = G.links || {}, root = document.getElementById("hkng");
+    if (!root) return;
+    function q(k){ return root.querySelector('[data-k="' + k + '"]'); }
+    function pad(n){ return (n < 10 ? "0" : "") + n; }
+    var el = {}, cur = null, id;
+    "head meta timer status times tix prev single flexi member picker d h m s".split(" ").forEach(function(k){ el[k] = q(k); });
+    if (L.flexi) el.flexi.href = L.flexi;
+    if (L.member) el.member.href = L.member;
+    if (L.picker) el.picker.href = L.picker;
+    function fill(g){
+      el.head.textContent = "Hawks v " + g.opp;
+      el.meta.textContent = U.longDate(g.date) + ", " + G.venue;
+      el.times.innerHTML = "";
+      G.times.forEach(function(t){
+        if (!g[t[0]]) return;
+        var li = document.createElement("li"), a = document.createElement("span"), b = document.createElement("span");
+        a.className = "hkng__t"; b.className = "hkng__tl";
+        a.textContent = U.time(g[t[0]]); b.textContent = t[1];
+        li.appendChild(a); li.appendChild(b); el.times.appendChild(li);
+      });
+      el.single.href = U.tickets(g);
+      el.single.setAttribute("aria-label", "Buy single game tickets for Hawks v " + g.opp);
+      if (g.preview){ el.prev.href = g.preview; el.prev.hidden = false; } else { el.prev.hidden = true; }
+    }
+    function wrap(){
+      el.head.textContent = "That's a wrap on the home season";
+      el.meta.textContent = "Thanks for every minute of noise, Hawkheads.";
+      el.timer.hidden = el.status.hidden = el.times.hidden = el.tix.hidden = el.prev.hidden = true;
+      clearInterval(id);
+    }
+    function tick(){
+      var i = U.active();
+      if (i < 0){ wrap(); return; }
+      var g = G.games[i];
+      if (g !== cur){ cur = g; fill(g); }
+      var now = U.now();
+      if (now >= g._tip){ el.timer.hidden = true; el.status.textContent = "Game on"; el.status.hidden = false; return; }
+      var s = Math.floor((g._tip - now) / 1000);
+      el.d.textContent = pad(Math.floor(s / 86400)); el.h.textContent = pad(Math.floor(s % 86400 / 3600));
+      el.m.textContent = pad(Math.floor(s % 3600 / 60)); el.s.textContent = pad(s % 60);
+      el.timer.hidden = false; el.status.hidden = true;
+    }
+    tick(); id = setInterval(tick, 1000);
+  }
+  start();
+  document.addEventListener("hksgd:ready", start);
+  document.addEventListener("DOMContentLoaded", start);
+})();
+</script>
+
+<!-- ============================================================
+     SECTION 3: UPCOMING HOME GAMES (COLLAPSED)
+     Nothing to edit here. Played games drop off at midnight.
+     Link to a game with #game-7 (opens the list and its key times).
+     Classes scoped under .hksl.
+     ============================================================ -->
+<style>
+.hksl{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;background:var(--w);color:var(--k);padding:32px;margin:0;font-family:'Poppins',Arial,Helvetica,sans-serif;line-height:1.4;}
+.hksl *,.hksl *::before,.hksl *::after{box-sizing:border-box;}
+.hksl .hksl__inner{max-width:880px;margin:0 auto;}
+.hksl [hidden]{display:none !important;}
+.hksl .hksl__h{margin:0;font-size:inherit;line-height:inherit;}
+.hksl .hksl__bar{display:flex;align-items:center;gap:16px;width:100%;margin:0;padding:18px 20px;background:var(--w);color:var(--k);border:2px solid var(--k);border-radius:0;cursor:pointer;text-align:left;font-family:'Poppins',Arial,sans-serif;transition:background-color 120ms var(--e),color 120ms var(--e);}
+.hksl .hksl__bar:hover,.hksl .hksl__bar[aria-expanded="true"]{background:var(--k);color:var(--w);}
+.hksl .hksl__bar:focus-visible{outline:2px solid var(--k);outline-offset:2px;}
+.hksl .hksl__bt{flex:1 1 auto;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(20px,2.6vw,26px);line-height:1;text-transform:uppercase;letter-spacing:0.01em;}
+.hksl .hksl__bc{flex:0 0 auto;font-weight:700;font-size:13px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);}
+.hksl .hksl__ic{flex:0 0 auto;position:relative;width:16px;height:16px;}
+.hksl .hksl__ic::before,.hksl .hksl__ic::after{content:"";position:absolute;background:currentColor;left:0;top:7px;width:16px;height:2px;transition:transform 120ms var(--e);}
+.hksl .hksl__ic::after{transform:rotate(90deg);}
+.hksl .hksl__bar[aria-expanded="true"] .hksl__ic::after{transform:rotate(0deg);}
+.hksl .hksl__list{list-style:none;margin:0;padding:0;border:2px solid var(--k);border-top:0;}
+.hksl .hksl__row{margin:0;padding:0 20px;border-bottom:1px solid #CFCFCF;scroll-margin-top:120px;}
+.hksl .hksl__row:last-child{border-bottom:0;}
+.hksl .hksl__main{display:grid;grid-template-columns:76px 1fr auto;gap:20px;align-items:center;padding:14px 0;}
+.hksl .hksl__date{border:2px solid var(--k);padding:6px 4px;text-align:center;}
+.hksl .hksl__dow{display:block;font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);}
+.hksl .hksl__dm{display:block;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:20px;line-height:1;text-transform:uppercase;color:var(--k);margin-top:2px;white-space:nowrap;}
+.hksl .hksl__opp{font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(18px,2.2vw,22px);line-height:1;text-transform:uppercase;color:var(--k);margin:0;}
+.hksl .hksl__info .hksl__meta{font-size:14px;line-height:1.4;color:#373737;margin:4px 0 0;}
+.hksl .hksl__acts{display:flex;gap:8px;}
+.hksl .hksl__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:14px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;text-align:center;padding:12px 18px;margin:0;border:2px solid var(--r);border-radius:0;cursor:pointer;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}
+.hksl .hksl__btn:link,.hksl .hksl__btn:visited{color:var(--w);text-decoration:none;}
+.hksl .hksl__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);}
+.hksl .hksl__btn:active{transform:scale(0.98);}
+.hksl .hksl__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}
+.hksl .hksl__btn--sec,.hksl .hksl__btn--sec:link,.hksl .hksl__btn--sec:visited{background:transparent;border-color:var(--k);color:var(--k);}
+.hksl .hksl__btn--sec:hover,.hksl .hksl__btn--sec[aria-expanded="true"]{background:var(--k);border-color:var(--k);color:var(--w);}
+.hksl .hksl__panel{padding:0 0 18px 96px;}
+.hksl .hksl__times{display:flex;flex-wrap:wrap;gap:12px 32px;list-style:none;margin:0;padding:0;}
+.hksl .hksl__times li{margin:0;}
+.hksl .hksl__t{display:block;font-weight:700;font-size:18px;line-height:1.2;color:var(--k);}
+.hksl .hksl__tl{display:block;font-size:13px;line-height:1.3;color:#373737;margin-top:2px;}
+.hksl .hksl__panel .hksl__btn{margin-top:16px;}
+@media (max-width:600px){
+  .hksl{padding:24px 16px;}
+  .hksl .hksl__bar{padding:16px;gap:12px;}
+  .hksl .hksl__row{padding:0 14px;}
+  .hksl .hksl__main{grid-template-columns:72px 1fr;gap:12px 14px;}
+  .hksl .hksl__dm{font-size:18px;}
+  .hksl .hksl__acts{grid-column:1 / -1;}
+  .hksl .hksl__acts .hksl__btn{flex:1 1 0;}
+  .hksl .hksl__panel{padding:0 0 18px;}
+  .hksl .hksl__times{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}
+}
+@media (prefers-reduced-motion:reduce){.hksl .hksl__btn,.hksl .hksl__bar,.hksl .hksl__ic::before,.hksl .hksl__ic::after{transition:none;}.hksl .hksl__btn:active{transform:none;}}
+</style>
+<section class="hksl" id="hksl" hidden>
+  <div class="hksl__inner">
+    <h2 class="hksl__h">
+      <button class="hksl__bar" type="button" data-k="bar" aria-expanded="false" aria-controls="hksl-list">
+        <span class="hksl__bt">Upcoming home games</span>
+        <span class="hksl__bc" data-k="count"></span>
+        <span class="hksl__ic" aria-hidden="true"></span>
+      </button>
+    </h2>
+    <ul class="hksl__list" id="hksl-list" data-k="list" hidden></ul>
+  </div>
+</section>
+<script>
+(function(){
+  var done = false;
+  function start(){
+    if (done || !window.HKSGD || !HKSGD.ready) return;
+    done = true;
+    var G = HKSGD, U = G.u, root = document.getElementById("hksl");
+    if (!root) return;
+    var first = U.active();
+    if (first < 0) return;
+    var games = G.games.slice(first + 1);
+    if (!games.length) return;
+    var bar = root.querySelector('[data-k="bar"]'), list = root.querySelector('[data-k="list"]');
+    function mk(tag, cls, txt){ var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+    function toggle(btn, panel, open){ btn.setAttribute("aria-expanded", String(open)); panel.hidden = !open; }
+    root.querySelector('[data-k="count"]').textContent = games.length + (games.length === 1 ? " game" : " games");
+    games.forEach(function(g){
+      var li = mk("li", "hksl__row"), pid = "game-" + g.n + "-times";
+      li.id = "game-" + g.n;
+      var main = mk("div", "hksl__main"), date = mk("div", "hksl__date"), info = mk("div", "hksl__info"), acts = mk("div", "hksl__acts");
+      date.appendChild(mk("span", "hksl__dow", U.dow(g.date)));
+      date.appendChild(mk("span", "hksl__dm", U.dm(g.date)));
+      info.appendChild(mk("p", "hksl__opp", "v " + g.opp));
+      info.appendChild(mk("p", "hksl__meta", "Game " + g.n + ", " + U.time(g.tip) + " tip-off"));
+      var tix = mk("a", "hksl__btn", "Tickets");
+      tix.href = U.tickets(g); tix.target = "_blank"; tix.rel = "noopener noreferrer";
+      tix.setAttribute("aria-label", "Tickets for Hawks v " + g.opp + ", " + U.longDate(g.date));
+      var tog = mk("button", "hksl__btn hksl__btn--sec", "Key times");
+      tog.type = "button"; tog.setAttribute("aria-expanded", "false"); tog.setAttribute("aria-controls", pid);
+      acts.appendChild(tix); acts.appendChild(tog);
+      main.appendChild(date); main.appendChild(info); main.appendChild(acts);
+      var panel = mk("div", "hksl__panel"), times = mk("ul", "hksl__times");
+      panel.id = pid; panel.hidden = true;
+      G.times.forEach(function(t){
+        if (!g[t[0]]) return;
+        var item = mk("li");
+        item.appendChild(mk("span", "hksl__t", U.time(g[t[0]])));
+        item.appendChild(mk("span", "hksl__tl", t[1]));
+        times.appendChild(item);
+      });
+      panel.appendChild(times);
+      if (g.preview){
+        var pv = mk("a", "hksl__btn hksl__btn--sec", "Read the game preview");
+        pv.href = g.preview; pv.target = "_blank"; pv.rel = "noopener noreferrer";
+        panel.appendChild(pv);
+      }
+      tog.addEventListener("click", function(){ toggle(tog, panel, tog.getAttribute("aria-expanded") !== "true"); });
+      li.appendChild(main); li.appendChild(panel); list.appendChild(li);
+    });
+    bar.addEventListener("click", function(){ toggle(bar, list, bar.getAttribute("aria-expanded") !== "true"); });
+    root.hidden = false;
+    function fromHash(){
+      var m = /^#game-(\d+)$/.exec(location.hash);
+      if (!m) return;
+      var row = document.getElementById("game-" + m[1]);
+      if (row && root.contains(row)){
+        toggle(bar, list, true);
+        var b = row.querySelector("button[aria-expanded]");
+        if (b) toggle(b, document.getElementById(b.getAttribute("aria-controls")), true);
+        row.scrollIntoView({block:"start"});
+      } else if (G.games[first] && +m[1] === G.games[first].n){
+        var ng = document.getElementById("hkng");
+        if (ng) ng.scrollIntoView({block:"start"});
+      }
+    }
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
+  }
+  start();
+  document.addEventListener("hksgd:ready", start);
+  document.addEventListener("DOMContentLoaded", start);
+})();
+</script>
+<!-- ==== COPY TO HERE ==== -->
+
+</body>
+</html>
