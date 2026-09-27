@@ -83,6 +83,8 @@ Each module is a render function keyed by its `data-hawks` name, with its own sc
 | `girls-in-the-game` | `.hkscta` (shared) | `reference/girls-in-the-game.html` | Shared CTA block. Overline "Girls in the Game", heading "Get her on the court", then the next camp from `data.js` (`girlsInTheGame.camps`): "Tuesday 6th October, 1:30pm at {venue}." plus the camp's optional `details` sentence, **Register now** (camp `rego`) and **Join the mailing list** (secondary). A camp shows until **6 hours after its start time**, then the next camp. With no camp to show: "Check back later in the term for dates for the next camp." and only the mailing list button, which then becomes the primary (solid red) button. Fallback link: https://www.hawks.com.au/pages/girls-in-the-game |
 | `newsletter` | `.hkscta` (shared) | `reference/newsletter.html` | Shared CTA block with fixed approved copy ("Hawks Newsletter", "Be the first to know") and one **Join the mailing list** button (`links.newsletter`). |
 
+| `top-10` | `.hksfeats` | `reference/top-10.html` | All-time top 10 single-game feats. Data in `top10.js` (`window.HAWKS_TOP10`), loaded only on pages with this embed. Category buttons use `aria-pressed` (not ARIA tabs); hidden table caption per category. Ranks come from row order. Every row equal to the top stat is a record row: red left edge and full-strength text (the original's dark red row background broke the design rules). The original's slogan is removed from the note. Tables fit without sideways scrolling down to a 256px column. |
+
 Keep the season-end, "Game on" and rollover logic shared, not duplicated per module. The shared clock keeps ticking after the last home game, because non-game modules (camps) still change by date.
 
 **Themes:** CTA modules are dark by default; `data-hawks-theme="light"` on the placeholder gives the white version (black top rule). **Time format:** every module shows times with a colon ("1:30pm"), including Girls in the Game (the original embed said "1.30pm"; changed at the editor's request, 27 September 2026).
@@ -97,8 +99,8 @@ Keep the season-end, "Game on" and rollover logic shared, not duplicated per mod
 Once these are in use in EDMs, social posts and recaps, changing them breaks links and embeds silently.
 
 - Script URL path: `hawks-embeds@main/hawks.js` (the loader; never rename it, and avoid changing it)
-- Core and data file names next to it: `hawks-core.js`, `data.js` (the loader and core fetch them by name)
-- Placeholder names: `next-game`, `upcoming-games`, `plan-your-night`, `trivia-mvp`, `game-preview`, `girls-in-the-game`, `newsletter`
+- Core and data file names next to it: `hawks-core.js`, `data.js`, `top10.js` (fetched by name)
+- Placeholder names: `next-game`, `upcoming-games`, `plan-your-night`, `trivia-mvp`, `game-preview`, `girls-in-the-game`, `newsletter`, `top-10`
 - Placeholder attributes: `data-hawks-primary`, `data-hawks-theme="light"`
 - Hash links: `#game-N`, `#plan-getting-here`, `#plan-eat-drink`, `#plan-upgrade`
 - Test clock parameter: `hk_now`
@@ -187,7 +189,7 @@ Open items, unverified claims and anything else that shouldn't be public live in
 
 The editor has other standalone embeds pasted on many pages. Convert them one at a time into modules in `hawks-core.js` (same hawks.js script tag), following the Working style below. Date-driven content goes in `data.js`, never in code (see the 7-day browser cache note). Originals go in `reference/` and get a word-for-word copy test.
 
-- `reference/top-10.html` (`.hksfeats`): not started. The em dash in its intro was replaced with a spaced hyphen ("Hawks history - every game since 1979") at the editor's request, 27 September 2026.
+- Converted so far: `girls-in-the-game`, `newsletter`, `top-10`. Modules that need their own data use `extra` (see `top-10`), so the file only loads on pages that use them.
 
 ## Out of scope for the first release
 

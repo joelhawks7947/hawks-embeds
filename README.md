@@ -82,9 +82,16 @@ Shows the next camp from `data.js`, with a Register button. After the last camp 
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
+### All-time Top 10 single-game feats
+
+```html
+<div data-hawks="top-10"><a href="https://www.hawks.com.au/">Hawks history: all-time top 10 single-game feats</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
 ### White (light) version
 
-Girls in the Game and Newsletter are black by default. For the white version, add `data-hawks-theme="light"` to the placeholder:
+Girls in the Game, Newsletter and Top 10 are black by default. For the white version, add `data-hawks-theme="light"` to the placeholder:
 
 ```html
 <div data-hawks="newsletter" data-hawks-theme="light"><a href="https://mailchi.mp/hawks/illawarra-hawks-newsletter">Join the Hawks mailing list</a></div>
@@ -134,6 +141,16 @@ Each camp is one line in the `girlsInTheGame` section:
 - `venue` appears after "at", so write it to read that way.
 - `details` is the sentence after the date. Use `""` to leave it out.
 
+### Top 10 table
+
+The Top 10 figures are in their own file, **[`top10.js`](top10.js)**. It's only loaded on pages with the Top 10 embed.
+
+- Each row is `["Player", stat, "Date", "Opponent (H or A)", "Result"]`. The stat is a plain number with no quote marks.
+- Rows are numbered 1 to 10 for you, in the order they're listed. For a new feat, copy a row, put it in the right place, change it, then delete the last row.
+- Every row that equals the top number is highlighted as the record.
+- The "Club record" line (`record` and `recordDetail`) and the line under the table (`note`) are edited by hand. Update `note` when the figures change, for example "current to the end of NBL27".
+- After committing, open the `top10.js` purge link (section 3).
+
 ### Formats
 
 - **Dates:** `"2026-10-02"` (year, month, day)
@@ -156,6 +173,8 @@ jsDelivr, the service that hosts the files, keeps a copy for up to 12 hours. Aft
 
 - **After editing `data.js`:**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/data.js
+- **After editing `top10.js`:**
+  https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/top10.js
 - **After a code change (`hawks-core.js`):**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks-core.js
 - **Only if `hawks.js` itself changes (very rare):**
@@ -247,6 +266,7 @@ npm test
 | `hawks.js` | Tiny loader that every embed points at. Loads `hawks-core.js` from the same folder. **Public address: never rename, and avoid changing it.** |
 | `hawks-core.js` | All the embed code. Loads `data.js` from the same folder, checks it, renders every `data-hawks` placeholder. **Don't rename: the loader depends on it.** |
 | `data.js` | Season data and every link |
+| `top10.js` | Top 10 single-game feats (loaded only by the Top 10 embed) |
 | `test/` | Local test pages |
 | `tests/` | Automated browser tests (Playwright) |
 | `scripts/` | Dash check, data check, local server |

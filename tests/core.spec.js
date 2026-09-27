@@ -101,7 +101,7 @@ test.describe("in the browser", () => {
       await page.goto("/test/");
       await page.waitForTimeout(500);
       const links = await page.$$eval("[data-hawks]", (els) => els.map((e) => e.querySelector("a") && e.querySelector("a").href));
-      expect(links).toHaveLength(14);
+      expect(links).toHaveLength(16);
       links.forEach((h) => expect(h).toMatch(/^https:\/\//));
       expect(log.errors.join("\n")).toMatch(/\[hawks\]|SyntaxError/);
     });
@@ -113,12 +113,12 @@ test.describe("in the browser", () => {
     await page.goto("/test/");
     await page.waitForTimeout(500);
     const links = await page.$$eval("[data-hawks]", (els) => els.map((e) => !e.hasAttribute("data-hawks-ready") && e.querySelector("a") && e.querySelector("a").href));
-    expect(links).toHaveLength(14);
+    expect(links).toHaveLength(16);
     links.forEach((h) => expect(h).toMatch(/^https:\/\//));
     expect(log.errors.join("\n")).toContain("[hawks] could not load");
   });
 
-  test("fourteen script tags on one page: initialises once, one style block, one font link", async ({ page }) => {
+  test("sixteen script tags on one page: initialises once, one style block, one font link", async ({ page }) => {
     await page.goto("/test/");
     await page.waitForFunction(() => window.__hawksEmbeds && window.__hawksEmbeds.data);
     await page.waitForLoadState("load");
@@ -129,7 +129,7 @@ test.describe("in the browser", () => {
       styles: document.querySelectorAll("#hawks-embeds-css").length,
       fonts: document.querySelectorAll('link[href*="fonts.googleapis.com/css2"]').length
     }));
-    expect(r.scripts).toBe(14);
+    expect(r.scripts).toBe(16);
     expect(r.dataScripts).toBe(1);
     // The loader fetches the core once, from the same folder, with a 10 minute cache-buster.
     expect(r.coreScripts).toEqual([expect.stringMatching(/^http:\/\/localhost:8123\/hawks-core\.js\?v=\d+$/)]);

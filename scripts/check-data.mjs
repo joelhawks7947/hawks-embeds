@@ -34,4 +34,17 @@ if (problems.length || !d) {
   console.error("data.js problems:\n" + (problems.length ? problems.join("\n") : "data did not load"));
   process.exit(1);
 }
-console.log(`Data check passed: ${d.games.length} games, ${Object.keys(d.links).length} links.`);
+// top10.js, checked with the Top 10 module's own validation.
+const t = {};
+try {
+  vm.runInNewContext(readFileSync(ROOT + "top10.js", "utf8"), { window: t }, { filename: "top10.js" });
+} catch (e) {
+  console.error("top10.js has a syntax error: " + e.message);
+  process.exit(1);
+}
+const top = win.__hawksEmbeds.modules["top-10"].extra.validate(t.HAWKS_TOP10 || {});
+if (problems.length || !top) {
+  console.error("top10.js problems:\n" + (problems.length ? problems.join("\n") : "no valid categories"));
+  process.exit(1);
+}
+console.log(`Data check passed: ${d.games.length} games, ${Object.keys(d.links).length} links, ${top.categories.length} Top 10 categories.`);
