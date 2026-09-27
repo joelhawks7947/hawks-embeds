@@ -59,6 +59,8 @@ In **News recaps and previews** (the fallback goes to the Game Day Guide):
 
 This shows "Read the Hawks v (opponent) preview" once that game's preview link is in `data.js`. Until then it shows "Read the latest Hawks news".
 
+You don't need it on the Game Day Guide page: the Next home game embed already shows a "Read the Hawks v (opponent) preview" link under the date as soon as the preview is set. Use this one in recaps or anywhere you want a standalone button.
+
 ```html
 <div data-hawks="game-preview"><a href="https://www.hawks.com.au/news">Hawks news and game previews</a></div>
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>

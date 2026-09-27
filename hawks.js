@@ -268,7 +268,7 @@
   }
 
   /* ---------------- next-game (.hkng) ----------------
-     Next home game, countdown, key times, preview button, ticket panels. */
+     Next home game, preview link (once set), countdown, key times, ticket panels. */
   M["next-game"] = {
     css: [
       ".hkng{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--k);color:var(--w);padding:48px 32px;margin:0;border-top:6px solid var(--r);text-align:center;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;scroll-margin-top:120px;}",
@@ -279,6 +279,11 @@
       ".hkng .hkng__head,.hkng .hkng__num,.hkng .hkng__status,.hkng .hkng__oh{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:0.01em;}",
       ".hkng .hkng__head{line-height:0.95;font-size:clamp(28px,4.5cqw,40px);color:var(--w);margin:0 0 10px;padding:0;}",
       ".hkng .hkng__meta{font-size:16px;line-height:1.55;color:#D8D8D8;margin:0 0 28px;}",
+      ".hkng .hkng__meta--tight{margin-bottom:8px;}",
+      ".hkng .hkng__pv{font-size:16px;line-height:1.5;margin:0 0 28px;}",
+      ".hkng .hkng__pvl,.hkng .hkng__pvl:link,.hkng .hkng__pvl:visited{font-weight:700;color:var(--w);text-decoration:underline;text-underline-offset:3px;}",
+      ".hkng .hkng__pvl:hover{color:var(--r);text-decoration:underline;}",
+      ".hkng .hkng__pvl:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
       ".hkng .hkng__timer{display:flex;justify-content:center;gap:12px;margin:0;padding:0;list-style:none;}",
       ".hkng .hkng__unit{flex:0 1 112px;min-width:0;padding:16px 4px 12px;border:2px solid rgba(255,255,255,0.2);margin:0;line-height:1;list-style:none;}",
       ".hkng .hkng__num{display:block;font-size:clamp(36px,8cqw,64px);line-height:1;color:var(--w);}",
@@ -293,11 +298,8 @@
       ".hkng .hkng__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
       ".hkng .hkng__btn:active{transform:scale(0.98);}",
       ".hkng .hkng__btn:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
-      ".hkng .hkng__btn--sec,.hkng .hkng__btn--sec:link,.hkng .hkng__btn--sec:visited{background:transparent;border-color:var(--w);color:var(--w);}",
-      ".hkng .hkng__btn--sec:hover{background:var(--w);border-color:var(--w);color:var(--k);}",
       ".hkng .hkng__btn--inv,.hkng .hkng__btn--inv:link,.hkng .hkng__btn--inv:visited{background:var(--w);border-color:var(--w);color:var(--k);}",
       ".hkng .hkng__btn--inv:hover{background:var(--k);border-color:var(--k);color:var(--w);}",
-      ".hkng .hkng__prev{margin-top:28px;}",
       ".hkng .hkng__tix{display:grid;grid-template-columns:repeat(3,1fr);margin-top:32px;}",
       ".hkng .hkng__opt{display:flex;flex-direction:column;align-items:center;gap:18px;padding:32px 16px;border:2px solid transparent;margin:0;}",
       ".hkng .hkng__opt--r{background:var(--r);}",
@@ -333,6 +335,7 @@
         '<p class="hkng__over">Next home game</p>' +
         '<h2 class="hkng__head" data-k="head"></h2>' +
         '<p class="hkng__meta" data-k="meta"></p>' +
+        '<p class="hkng__pv" data-k="pv" hidden><a class="hkng__pvl" data-k="prev" href="#" target="_blank" rel="noopener noreferrer"></a></p>' +
         '<ul class="hkng__timer" data-k="timer" role="timer" aria-live="off" aria-label="Time until tip-off" hidden>' +
         '<li class="hkng__unit"><span class="hkng__num" data-k="d">00</span><span class="hkng__lbl">Days</span></li>' +
         '<li class="hkng__unit"><span class="hkng__num" data-k="h">00</span><span class="hkng__lbl">Hours</span></li>' +
@@ -341,7 +344,6 @@
         "</ul>" +
         '<p class="hkng__status" data-k="status" hidden></p>' +
         '<ul class="hkng__times" data-k="times"></ul>' +
-        '<a class="hkng__btn hkng__btn--sec hkng__prev" data-k="prev" href="#" target="_blank" rel="noopener noreferrer" hidden>Read the game preview</a>' +
         '<div data-k="tix">' +
         '<div class="hkng__tix">' +
         '<div class="hkng__opt hkng__opt--r"><h3 class="hkng__oh">Single game ticket</h3>' +
@@ -367,13 +369,16 @@
         var t = U.tickets(g);
         if (t) { k.single.href = t; k.single.hidden = false; } else k.single.hidden = true;
         k.single.setAttribute("aria-label", "Buy tickets: single game, Hawks v " + g.opp);
-        if (g.preview) { k.prev.href = g.preview; k.prev.setAttribute("aria-label", "Read the game preview: Hawks v " + g.opp); k.prev.hidden = false; }
-        else k.prev.hidden = true;
+        /* Preview link under the date, only once a preview is set in data.js. */
+        if (g.preview) { k.prev.href = g.preview; k.prev.textContent = "Read the Hawks v " + g.opp + " preview"; k.pv.hidden = false; }
+        else k.pv.hidden = true;
+        k.meta.classList.toggle("hkng__meta--tight", !!g.preview);
       }
       function wrap() {
         k.head.textContent = "That's a wrap on the home season";
         k.meta.textContent = "Thanks for every minute of noise, Hawkheads.";
-        k.timer.hidden = k.status.hidden = k.times.hidden = k.tix.hidden = k.prev.hidden = true;
+        k.timer.hidden = k.status.hidden = k.times.hidden = k.tix.hidden = k.pv.hidden = true;
+        k.meta.classList.remove("hkng__meta--tight");
       }
 
       return {
