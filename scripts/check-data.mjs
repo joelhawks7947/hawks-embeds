@@ -15,7 +15,7 @@ try {
   process.exit(1);
 }
 
-// Run hawks.js against a minimal stand-in page so its own validation runs.
+// Run hawks-core.js against a minimal stand-in page so its own validation runs.
 const doc = {
   currentScript: null, readyState: "complete", head: { appendChild() {} },
   querySelectorAll: () => [], querySelector: () => null, getElementById: () => null,
@@ -24,10 +24,10 @@ const doc = {
 win.HAWKS_DATA = win.HAWKS_DATA;
 win.addEventListener = () => {};
 win.console = quietConsole;
-vm.runInNewContext(readFileSync(ROOT + "hawks.js", "utf8"), {
+vm.runInNewContext(readFileSync(ROOT + "hawks-core.js", "utf8"), {
   window: win, document: doc, location: { search: "", hash: "" }, console: quietConsole,
   Intl, Date, setInterval: () => 0, clearInterval() {}
-}, { filename: "hawks.js" });
+}, { filename: "hawks-core.js" });
 
 const d = win.__hawksEmbeds && win.__hawksEmbeds.data;
 if (problems.length || !d) {

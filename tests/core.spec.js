@@ -107,6 +107,17 @@ test.describe("in the browser", () => {
     });
   }
 
+  test("if hawks-core.js cannot load, every placeholder keeps its fallback link", async ({ page }) => {
+    const log = watchConsole(page);
+    await page.route("**/hawks-core.js*", (r) => r.fulfill({ status: 404, body: "Not found" }));
+    await page.goto("/test/");
+    await page.waitForTimeout(500);
+    const links = await page.$$eval("[data-hawks]", (els) => els.map((e) => !e.hasAttribute("data-hawks-ready") && e.querySelector("a") && e.querySelector("a").href));
+    expect(links).toHaveLength(14);
+    links.forEach((h) => expect(h).toMatch(/^https:\/\//));
+    expect(log.errors.join("\n")).toContain("[hawks] could not load");
+  });
+
   test("fourteen script tags on one page: initialises once, one style block, one font link", async ({ page }) => {
     await page.goto("/test/");
     await page.waitForFunction(() => window.__hawksEmbeds && window.__hawksEmbeds.data);
@@ -114,11 +125,14 @@ test.describe("in the browser", () => {
     const r = await page.evaluate(() => ({
       scripts: document.querySelectorAll('script[src$="hawks.js"]').length,
       dataScripts: document.querySelectorAll('script[src*="data.js?v="]').length,
+      coreScripts: [...document.querySelectorAll('script[src*="hawks-core.js"]')].map((x) => x.getAttribute("src")),
       styles: document.querySelectorAll("#hawks-embeds-css").length,
       fonts: document.querySelectorAll('link[href*="fonts.googleapis.com/css2"]').length
     }));
     expect(r.scripts).toBe(14);
     expect(r.dataScripts).toBe(1);
+    // The loader fetches the core once, from the same folder, with a 10 minute cache-buster.
+    expect(r.coreScripts).toEqual([expect.stringMatching(/^http:\/\/localhost:8123\/hawks-core\.js\?v=\d+$/)]);
     expect(r.styles).toBeLessThanOrEqual(1);
     expect(r.fonts).toBeLessThanOrEqual(1);
   });
