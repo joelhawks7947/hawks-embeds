@@ -504,6 +504,145 @@
     }
   };
 
+
+  /* ---------------- plan-your-night (.hkpn) ----------------
+     Three disclosure toggles, all closed on load, one open at a time.
+     Copy is approved club copy from the reference embed. Links come from data.js. */
+  M["plan-your-night"] = {
+    css: [
+      ".hkpn{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--g:#373737;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--w);color:var(--k);padding:48px 32px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;text-align:left;scroll-margin-top:120px;}",
+      ".hkpn *,.hkpn *::before,.hkpn *::after{box-sizing:border-box;}",
+      ".hkpn[hidden],.hkpn [hidden]{display:none !important;}",
+      ".hkpn .hkpn__inner{max-width:880px;margin:0 auto;}",
+      ".hkpn .hkpn__top{text-align:center;margin:0 0 28px;}",
+      ".hkpn .hkpn__hint{font-size:15px;line-height:1.5;color:var(--g);margin:10px 0 0;}",
+      ".hkpn .hkpn__over{font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin:0 0 12px;}",
+      ".hkpn .hkpn__head,.hkpn .hkpn__h3,.hkpn .hkpn__card-h{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:0.01em;color:var(--k);padding:0;}",
+      ".hkpn .hkpn__head{line-height:0.95;font-size:clamp(28px,4.5cqw,40px);margin:0;}",
+      ".hkpn .hkpn__tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0;padding:0;}",
+      ".hkpn .hkpn__tab{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:0;padding:16px 12px;background:var(--w);color:var(--k);border:2px solid var(--k);border-left-width:0;border-radius:0;cursor:pointer;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:14px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-align:center;transition:background-color 120ms var(--e),color 120ms var(--e);}",
+      ".hkpn .hkpn__ic{flex:0 0 auto;position:relative;width:12px;height:12px;}",
+      ".hkpn .hkpn__ic::before,.hkpn .hkpn__ic::after{content:\"\";position:absolute;left:0;top:5px;width:12px;height:2px;background:currentColor;transition:transform 120ms var(--e);}",
+      ".hkpn .hkpn__ic::after{transform:rotate(90deg);}",
+      ".hkpn .hkpn__tab[aria-expanded=\"true\"] .hkpn__ic::after{transform:rotate(0deg);}",
+      ".hkpn .hkpn__tab:first-child{border-left-width:2px;}",
+      ".hkpn .hkpn__tab:hover{background:#EDEDED;}",
+      ".hkpn .hkpn__tab[aria-expanded=\"true\"]{background:var(--k);color:var(--w);}",
+      ".hkpn .hkpn__tab:focus-visible{outline:2px solid var(--r);outline-offset:2px;position:relative;z-index:1;}",
+      ".hkpn .hkpn__panel{border:2px solid var(--k);border-top:0;padding:32px;margin:0;scroll-margin-top:120px;}",
+      ".hkpn .hkpn__lead{font-size:16px;line-height:1.55;color:var(--g);margin:0 0 24px;}",
+      ".hkpn .hkpn__cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;}",
+      ".hkpn .hkpn__h3{font-size:22px;line-height:1;margin:0 0 12px;}",
+      ".hkpn .hkpn__h3--gap{margin-top:28px;}",
+      ".hkpn .hkpn__p{font-size:15px;line-height:1.55;color:var(--g);margin:0 0 12px;}",
+      ".hkpn .hkpn__p--gap{margin-top:12px;}",
+      ".hkpn .hkpn__label{font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin:16px 0 6px;}",
+      ".hkpn .hkpn__list{list-style:none;margin:0;padding:0;}",
+      ".hkpn .hkpn__list li{font-size:15px;line-height:1.45;color:var(--g);margin:0;padding:6px 0;border-bottom:1px solid #E2E2E2;list-style:none;}",
+      ".hkpn .hkpn__list li:last-child{border-bottom:0;}",
+      ".hkpn .hkpn__cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:0 0 24px;}",
+      ".hkpn .hkpn__card{border-top:4px solid var(--r);background:#F4F4F4;padding:20px;margin:0;}",
+      ".hkpn .hkpn__card-h{font-size:20px;line-height:1;margin:0 0 10px;}",
+      ".hkpn .hkpn__card p{font-size:15px;line-height:1.55;color:var(--g);margin:0;}",
+      ".hkpn .hkpn__extra{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:0 0 24px;}",
+      ".hkpn .hkpn__btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;}",
+      ".hkpn .hkpn__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:14px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;text-align:center;padding:14px 22px;margin:0;border:2px solid var(--r);border-radius:0;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkpn .hkpn__btn:link,.hkpn .hkpn__btn:visited{color:var(--w);text-decoration:none;}",
+      ".hkpn .hkpn__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
+      ".hkpn .hkpn__btn:active{transform:scale(0.98);}",
+      ".hkpn .hkpn__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkpn .hkpn__btn--sec,.hkpn .hkpn__btn--sec:link,.hkpn .hkpn__btn--sec:visited{background:transparent;border-color:var(--k);color:var(--k);}",
+      ".hkpn .hkpn__btn--sec:hover{background:var(--k);border-color:var(--k);color:var(--w);}",
+      "@container (max-width:700px){",
+      ".hkpn{padding:36px 16px;}",
+      ".hkpn .hkpn__tab{padding:14px 6px;font-size:12px;letter-spacing:0.02em;}",
+      ".hkpn .hkpn__panel{padding:24px 16px;}",
+      ".hkpn .hkpn__cols,.hkpn .hkpn__cards,.hkpn .hkpn__extra{grid-template-columns:1fr;}",
+      ".hkpn .hkpn__cols{gap:28px;}",
+      ".hkpn .hkpn__btn{display:block;width:100%;}",
+      "}",
+      "@media (prefers-reduced-motion:reduce){.hkpn .hkpn__btn,.hkpn .hkpn__tab,.hkpn .hkpn__ic::before,.hkpn .hkpn__ic::after{transition:none;}.hkpn .hkpn__btn:active{transform:none;}}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var L = ctx.data.links;
+      var names = ["plan-getting-here", "plan-eat-drink", "plan-upgrade"];
+      var pid = names.map(function (n) { return ctx.primary ? n : uid(n); });
+      var tid = names.map(function (n) { return uid(n + "-tab"); });
+      var headId = uid("plan-head");
+      function btn(url, cls, text) { return url ? '<a class="hkpn__btn' + (cls ? " " + cls : "") + '"' + ext(url) + ">" + text + "</a>" : ""; }
+      function tel(url, text) { return url ? '<a class="hkpn__btn hkpn__btn--sec" href="' + esc(url) + '">' + text + "</a>" : ""; }
+      function tab(i, text) {
+        return '<button class="hkpn__tab" type="button" id="' + tid[i] + '" aria-controls="' + pid[i] + '" aria-expanded="false"><span>' + text + '</span><span class="hkpn__ic" aria-hidden="true"></span></button>';
+      }
+      function panel(i, body) { return '<div class="hkpn__panel" id="' + pid[i] + '" aria-labelledby="' + tid[i] + '" role="region" hidden>' + body + "</div>"; }
+
+      el.innerHTML =
+        '<section class="hkpn" aria-labelledby="' + headId + '"><div class="hkpn__inner">' +
+        '<div class="hkpn__top"><p class="hkpn__over">Before you arrive</p><h2 class="hkpn__head" id="' + headId + '">Plan your night</h2><p class="hkpn__hint">Choose what you need.</p></div>' +
+        '<div class="hkpn__tabs">' + tab(0, "Getting here") + tab(1, "Eat and drink") + tab(2, "Upgrade") + "</div>" +
+
+        panel(0,
+          '<p class="hkpn__lead">WIN Entertainment Centre sits in the Lower Crown Quarter, right in the Wollongong CBD. Give yourself extra time on game night.</p>' +
+          '<div class="hkpn__cols"><div>' +
+          '<h3 class="hkpn__h3">Driving and parking</h3>' +
+          '<p class="hkpn__p">Take the M1 Princes Motorway into Wollongong. There are around 1,200 parking spaces within a short walk of the venue, and special event rates apply at some car parks.</p>' +
+          '<p class="hkpn__label">Closest to the venue</p>' +
+          '<ul class="hkpn__list"><li>WIN Stadium Car Park, opposite the Sage Hotel</li><li>Stewart Street car parks, multi-storey and east</li><li>Salvation Army car park</li><li>St Francis Xavier Cathedral, limited spaces</li><li>Woolworths car park, Burelli Street</li></ul>' +
+          '<p class="hkpn__label">In the city centre</p>' +
+          '<ul class="hkpn__list"><li>Market Street</li><li>David Jones car park</li><li>Wollongong Central</li><li>Crown Central, north and south</li><li>Wollongong Station car park</li></ul>' +
+          '<p class="hkpn__p hkpn__p--gap">Parking on the street? Check the signs before you walk away.</p>' +
+          "</div><div>" +
+          '<h3 class="hkpn__h3">Train and bus</h3>' +
+          '<p class="hkpn__p">Wollongong Station is about a 15 minute walk from the venue. Check train times before you head out.</p>' +
+          '<p class="hkpn__p">Several bus routes stop near WIN Entertainment Centre. Check the Transport for NSW timetable for your route.</p>' +
+          '<h3 class="hkpn__h3 hkpn__h3--gap">Taxis and drop-off</h3>' +
+          '<p class="hkpn__p">The venue has taxi ranks and a drop-off zone. Find the details on the venue\'s transport page.</p>' +
+          "</div></div>" +
+          '<div class="hkpn__btns">' + btn(L.map, "", "Open in Google Maps") + btn(L.transport, "hkpn__btn--sec", "Full venue transport info") + "</div>") +
+
+        panel(1,
+          '<p class="hkpn__lead">Game night starts long before tip-off. Everything sits inside the Lower Crown Quarter, with the ocean at the end of the street and food and drinks a few minutes from your seat.</p>' +
+          '<div class="hkpn__cards">' +
+          '<div class="hkpn__card"><h3 class="hkpn__card-h">Families</h3><p>The i98FM Street Fleet is at WIN Entertainment Centre every home game, with games and prizes for kids before doors open. Tomahawk is out too, so bring a phone.</p></div>' +
+          '<div class="hkpn__card"><h3 class="hkpn__card-h">Mates</h3><p>The Sage Hotel Tailgate has live music, food trucks and an outdoor bar, just 200 metres from the doors. Eat, grab a drink, then walk straight in.</p></div>' +
+          '<div class="hkpn__card"><h3 class="hkpn__card-h">Date night</h3><p>The Icon is about a five minute walk away. Cafe, restaurant, bar and live music venue in one. Book ahead on a Friday or Saturday.</p></div>' +
+          "</div>" +
+          '<div class="hkpn__extra">' +
+          '<div><h3 class="hkpn__h3">Inside the venue</h3><p class="hkpn__p">Bars and canteens run throughout WIN Entertainment Centre. Grab food early, because queues build the closer it gets to tip-off.</p></div>' +
+          '<div><h3 class="hkpn__h3">After the final buzzer</h3><p class="hkpn__p">The Quarter stays open after the game. Celebrating a win or arguing about the fourth quarter, the bars are a short walk from the doors.</p></div>' +
+          "</div>" +
+          '<div class="hkpn__btns">' + btn(L.instagram, "", "Explore Lower Crown Quarter") + "</div>") +
+
+        panel(2,
+          '<p class="hkpn__lead">If the night is worth marking, upgrade it. A Corporate Box or a Hollywood seat turns a game into an occasion, and both work as well for a client as they do for a birthday.</p>' +
+          '<p class="hkpn__p">Entertaining people you want to impress? This is the version of game night that does it.</p>' +
+          '<p class="hkpn__p">Want to talk it through? Call the club office on 1300 1HAWKS and we\'ll get you sorted.</p>' +
+          '<div class="hkpn__btns">' + btn(L.hospitality, "", "Explore hospitality") + tel(L.phone, "Call 1300 1HAWKS") + "</div>") +
+
+        "</div></section>";
+
+      var root = el.firstChild;
+      var tabs = [].slice.call(root.querySelectorAll(".hkpn__tab"));
+      var panels = [].slice.call(root.querySelectorAll(".hkpn__panel"));
+      function show(i) {
+        tabs.forEach(function (b, j) { b.setAttribute("aria-expanded", String(j === i)); panels[j].hidden = j !== i; });
+      }
+      tabs.forEach(function (b, i) {
+        b.addEventListener("click", function () { show(b.getAttribute("aria-expanded") === "true" ? -1 : i); });
+      });
+
+      return {
+        onHash: function (h) {
+          var i = pid.indexOf(h.slice(1));
+          if (i < 0) return;
+          show(i);
+          root.scrollIntoView({ block: "start" });
+        }
+      };
+    }
+  };
+
   /* MODULES:END */
 
   /* ---------------- Load data.js from the same folder ---------------- */
