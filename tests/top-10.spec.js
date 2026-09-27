@@ -95,7 +95,7 @@ test("if top10.js is broken, Top 10 keeps its fallback link and everything else 
   await page.route("**/top10.js*", (r) => r.fulfill({ contentType: "text/javascript", body: "window.HAWKS_TOP10 = { categories: [ { tab:'Points',, ] };" }));
   await page.goto("/test/");
   await ready(page);
-  await expect(page.locator(TT).first().locator("a")).toHaveAttribute("href", "https://www.hawks.com.au/");
+  await expect(page.locator(TT).first().locator("a")).toHaveAttribute("href", "https://www.hawks.com.au/pages/illawarra-hawks-history");
   await expect(page.locator(TT).first().locator(".hksfeats")).toHaveCount(0);
   await expect(page.locator('[data-hawks="newsletter"] .hkscta').first()).toBeVisible();
   expect(log.errors.join("\n")).toMatch(/top10\.js did not set window\.HAWKS_TOP10|SyntaxError/);

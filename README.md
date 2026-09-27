@@ -85,7 +85,7 @@ Shows the next camp from `data.js`, with a Register button. After the last camp 
 ### All-time Top 10 single-game feats
 
 ```html
-<div data-hawks="top-10"><a href="https://www.hawks.com.au/">Hawks history: all-time top 10 single-game feats</a></div>
+<div data-hawks="top-10"><a href="https://www.hawks.com.au/pages/illawarra-hawks-history">Hawks history: all-time top 10 single-game feats</a></div>
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
