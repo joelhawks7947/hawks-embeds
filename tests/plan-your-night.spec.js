@@ -87,3 +87,19 @@ test("every link: exact URL, target and rel; phone link has no target", async ({
     ["Call 1300 1HAWKS", "tel:1300142957", null, null]
   ]);
 });
+
+test("rendered copy matches the approved reference embed word for word", async ({ page }) => {
+  const fs = require("fs"), path = require("path");
+  const ref = fs.readFileSync(path.join(__dirname, "../reference/hawks-plan-your-night.html"), "utf8");
+  const body = ref.slice(ref.indexOf('<section class="hkpn"'), ref.indexOf("</section>"));
+  const decode = (t) => t.replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+  const noJsOnly = ["Upgrade your night"];
+  const texts = [...body.matchAll(/>([^<>]+)</g)].map((m) => decode(m[1]).trim()).filter((t) => t && !noJsOnly.includes(t));
+  const refItems = [...body.matchAll(/<li>([^<]+)<\/li>/g)].map((m) => decode(m[1]));
+  await page.goto("/test/");
+  await ready(page);
+  const pn = page.locator(PN).first();
+  const rendered = await pn.evaluate((e) => e.textContent.replace(/\s+/g, " "));
+  expect(texts.filter((t) => !rendered.includes(t.replace(/\s+/g, " ")))).toEqual([]);
+  expect(await pn.locator(".hkpn__list li").allTextContents()).toEqual(refItems);
+});

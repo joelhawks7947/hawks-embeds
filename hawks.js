@@ -593,9 +593,9 @@
           '<h3 class="hkpn__h3">Driving and parking</h3>' +
           '<p class="hkpn__p">Take the M1 Princes Motorway into Wollongong. There are around 1,200 parking spaces within a short walk of the venue, and special event rates apply at some car parks.</p>' +
           '<p class="hkpn__label">Closest to the venue</p>' +
-          '<ul class="hkpn__list"><li>WIN Stadium Car Park, opposite the Sage Hotel</li><li>Stewart Street car parks, multi-storey and east</li><li>Salvation Army car park</li><li>St Francis Xavier Cathedral, limited spaces</li><li>Woolworths car park, Burelli Street</li></ul>' +
+          '<ul class="hkpn__list"><li>Stewart Street car parks</li><li>Salvation Army car park</li><li>St Francis Xavier Cathedral, limited spaces</li><li>Woolworths car park, Burelli Street</li></ul>' +
           '<p class="hkpn__label">In the city centre</p>' +
-          '<ul class="hkpn__list"><li>Market Street</li><li>David Jones car park</li><li>Wollongong Central</li><li>Crown Central, north and south</li><li>Wollongong Station car park</li></ul>' +
+          '<ul class="hkpn__list"><li>Market Street</li><li>Wollongong Central</li><li>Crown Central, north and south</li><li>Wollongong Station car park</li></ul>' +
           '<p class="hkpn__p hkpn__p--gap">Parking on the street? Check the signs before you walk away.</p>' +
           "</div><div>" +
           '<h3 class="hkpn__h3">Train and bus</h3>' +
@@ -609,9 +609,9 @@
         panel(1,
           '<p class="hkpn__lead">Game night starts long before tip-off. Everything sits inside the Lower Crown Quarter, with the ocean at the end of the street and food and drinks a few minutes from your seat.</p>' +
           '<div class="hkpn__cards">' +
-          '<div class="hkpn__card"><h3 class="hkpn__card-h">Families</h3><p>The i98FM Street Fleet is at WIN Entertainment Centre every home game, with games and prizes for kids before doors open. Tomahawk is out too, so bring a phone.</p></div>' +
-          '<div class="hkpn__card"><h3 class="hkpn__card-h">Mates</h3><p>The Sage Hotel Tailgate has live music, food trucks and an outdoor bar, just 200 metres from the doors. Eat, grab a drink, then walk straight in.</p></div>' +
-          '<div class="hkpn__card"><h3 class="hkpn__card-h">Date night</h3><p>The Icon is about a five minute walk away. Cafe, restaurant, bar and live music venue in one. Book ahead on a Friday or Saturday.</p></div>' +
+          '<div class="hkpn__card"><h3 class="hkpn__card-h">Families</h3><p>Family-friendly spots for a quick dinner sit a short walk from the venue. Eat early, get in before tip-off and keep an eye out for Tomahawk.</p></div>' +
+          '<div class="hkpn__card"><h3 class="hkpn__card-h">Mates</h3><p>Plenty of pubs, bars and places to eat sit within walking distance of the doors. Grab a feed and a drink with your crew, then walk straight in.</p></div>' +
+          '<div class="hkpn__card"><h3 class="hkpn__card-h">Date night</h3><p>The Lower Crown Quarter has plenty of spots for dinner and a drink before the game. Pick your place, then walk to the venue together.</p></div>' +
           "</div>" +
           '<div class="hkpn__extra">' +
           '<div><h3 class="hkpn__h3">Inside the venue</h3><p class="hkpn__p">Bars and canteens run throughout WIN Entertainment Centre. Grab food early, because queues build the closer it gets to tip-off.</p></div>' +
