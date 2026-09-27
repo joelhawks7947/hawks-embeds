@@ -80,7 +80,12 @@ Each module is a render function keyed by its `data-hawks` name, with its own sc
 | `trivia-mvp` | `.hkpv` | trivia-mvp file | Two-panel slab. Left red (swapped from the reference at the editor's request, 27 September 2026): "Hawks trivia", "Coming soon" label (black on red for contrast) until a trivia URL is set, then a "Test your knowledge" link. Right black: 1:1 MVP graphic (width/height 1080 declared, lazy loaded, alt text) and "Place your vote". |
 | `game-preview` | `.hkgp` | **new** | A button that reads the active game's `preview` link: "Read the Hawks v Opponent preview". If no preview is set, falls back to the News listing URL (**URL is an open item: ask**). Rolls over with the active game. Intended for recaps and other standalone spots; not used on the Game Day Guide page, where `next-game` carries the preview link. |
 
-Keep the season-end, "Game on" and rollover logic shared, not duplicated per module.
+| `girls-in-the-game` | `.hkscta` (shared) | `reference/girls-in-the-game.html` | Shared CTA block. Overline "Girls in the Game", heading "Get her on the court", then the next camp from `data.js` (`girlsInTheGame.camps`): "Tuesday 6th October, 1:30pm at {venue}." plus the camp's optional `details` sentence, **Register now** (camp `rego`) and **Join the mailing list** (secondary). A camp shows until **6 hours after its start time**, then the next camp. With no camp to show: "Check back later in the term for dates for the next camp." and only the mailing list button. Fallback link: https://www.hawks.com.au/pages/girls-in-the-game |
+| `newsletter` | `.hkscta` (shared) | `reference/newsletter.html` | Shared CTA block with fixed approved copy ("Hawks Newsletter", "Be the first to know") and one **Join the mailing list** button (`links.newsletter`). |
+
+Keep the season-end, "Game on" and rollover logic shared, not duplicated per module. The shared clock keeps ticking after the last home game, because non-game modules (camps) still change by date.
+
+**Themes:** CTA modules are dark by default; `data-hawks-theme="light"` on the placeholder gives the white version (black top rule). **Time format:** every module shows times with a colon ("1:30pm"), including Girls in the Game (the original embed said "1.30pm"; changed at the editor's request, 27 September 2026).
 
 ### Test clock and links
 
@@ -92,7 +97,8 @@ Keep the season-end, "Game on" and rollover logic shared, not duplicated per mod
 Once these are in use in EDMs, social posts and recaps, changing them breaks links and embeds silently.
 
 - Script URL path: `hawks-embeds@main/hawks.js` (confirm the final filename once, then never rename it)
-- Placeholder names: `next-game`, `upcoming-games`, `plan-your-night`, `trivia-mvp`, `game-preview`
+- Placeholder names: `next-game`, `upcoming-games`, `plan-your-night`, `trivia-mvp`, `game-preview`, `girls-in-the-game`, `newsletter`
+- Placeholder attributes: `data-hawks-primary`, `data-hawks-theme="light"`
 - Hash links: `#game-N`, `#plan-getting-here`, `#plan-eat-drink`, `#plan-upgrade`
 - Test clock parameter: `hk_now`
 - Data field names
@@ -184,6 +190,12 @@ Also spot-check against the reference embeds side by side: same look, same behav
 - Game 11 function 15:30 with doors 16:30 (one hour gap, others are 30 minutes)
 - Whether the pre-game function is public (if not, remove it from key times via config)
 - League sign-off on hosting code for their site on GitHub/jsDelivr
+
+## Standalone embeds still to convert
+
+The editor has other standalone embeds pasted on many pages. Convert them one at a time into modules in `hawks.js` (same script tag), following the Working style below. Date-driven content goes in `data.js`, never in code (see the 7-day browser cache note). Originals go in `reference/` and get a word-for-word copy test.
+
+- `reference/top-10.html` (`.hksfeats`): not started. Its copy contains an em dash (line 226), so it fails the dash check and has not been committed; ask the editor for replacement wording before committing it.
 
 ## Out of scope for the first release
 

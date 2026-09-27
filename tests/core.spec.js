@@ -101,13 +101,13 @@ test.describe("in the browser", () => {
       await page.goto("/test/");
       await page.waitForTimeout(500);
       const links = await page.$$eval("[data-hawks]", (els) => els.map((e) => e.querySelector("a") && e.querySelector("a").href));
-      expect(links).toHaveLength(10);
+      expect(links).toHaveLength(14);
       links.forEach((h) => expect(h).toMatch(/^https:\/\//));
       expect(log.errors.join("\n")).toMatch(/\[hawks\]|SyntaxError/);
     });
   }
 
-  test("ten script tags on one page: initialises once, one style block, one font link", async ({ page }) => {
+  test("fourteen script tags on one page: initialises once, one style block, one font link", async ({ page }) => {
     await page.goto("/test/");
     await page.waitForFunction(() => window.__hawksEmbeds && window.__hawksEmbeds.data);
     await page.waitForLoadState("load");
@@ -117,7 +117,7 @@ test.describe("in the browser", () => {
       styles: document.querySelectorAll("#hawks-embeds-css").length,
       fonts: document.querySelectorAll('link[href*="fonts.googleapis.com/css2"]').length
     }));
-    expect(r.scripts).toBe(10);
+    expect(r.scripts).toBe(14);
     expect(r.dataScripts).toBe(1);
     expect(r.styles).toBeLessThanOrEqual(1);
     expect(r.fonts).toBeLessThanOrEqual(1);

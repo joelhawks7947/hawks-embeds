@@ -56,7 +56,26 @@ window.HAWKS_DATA = {
     newsListing: "https://www.hawks.com.au/news",
 
     /* The Game Day Guide page */
-    gameDayGuide: "https://www.hawks.com.au/pages/gameday"
+    gameDayGuide: "https://www.hawks.com.au/pages/gameday",
+
+    /* Hawks mailing list (Newsletter and Girls in the Game embeds) */
+    newsletter: "https://mailchi.mp/hawks/illawarra-hawks-newsletter"
+  },
+
+  /* GIRLS IN THE GAME
+     One line per camp. The embed shows the next camp until 6 hours after it
+     starts, then the next one. With no camp to show, it says to check back
+     later in the term. You can add future camps ahead of time.
+     time:    start time, 24-hour Sydney time
+     venue:   shown after "at", e.g. "... 1:30pm at Illawarra Sports Stadium in Berkeley."
+     rego:    registration link (Eventbrite)
+     details: the sentence after the date line (length, ages); "" to leave it out */
+  girlsInTheGame: {
+    camps: [
+      {date:"2026-10-06", time:"13:30", venue:"Illawarra Sports Stadium in Berkeley",
+       rego:"https://www.eventbrite.com.au/e/illawarra-hawks-girls-in-the-game-tickets-1995414633885",
+       details:"Two hours of basketball and teamwork with our crew, for girls aged 5 to 12."},
+    ]
   },
 
   /* Key times shown for every game, in display order.
