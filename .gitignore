@@ -148,3 +148,7 @@ playwright-report/
 
 # macOS
 .DS_Store
+
+# Private notes and one-off setup docs (this repository is public)
+CLAUDE.local.md
+docs/
