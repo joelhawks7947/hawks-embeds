@@ -687,6 +687,39 @@
     }
   };
 
+
+  /* ---------------- game-preview (.hkgp) ----------------
+     One button for the active game's preview. With no preview yet it links to
+     the News listing instead. Hidden after the season. */
+  M["game-preview"] = {
+    css: [
+      ".hkgp{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;margin:0;padding:0;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:center;}",
+      ".hkgp *,.hkgp *::before,.hkgp *::after{box-sizing:border-box;}",
+      ".hkgp[hidden],.hkgp [hidden]{display:none !important;}",
+      ".hkgp .hkgp__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;text-align:center;padding:16px 28px;margin:0;border:2px solid var(--r);border-radius:0;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkgp .hkgp__btn:link,.hkgp .hkgp__btn:visited{color:var(--w);text-decoration:none;}",
+      ".hkgp .hkgp__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
+      ".hkgp .hkgp__btn:active{transform:scale(0.98);}",
+      ".hkgp .hkgp__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      "@container (max-width:600px){.hkgp .hkgp__btn{display:block;width:100%;padding:16px 20px;}}",
+      "@media (prefers-reduced-motion:reduce){.hkgp .hkgp__btn{transition:none;}.hkgp .hkgp__btn:active{transform:none;}}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      el.innerHTML = '<div class="hkgp" hidden><a class="hkgp__btn" href="#" target="_blank" rel="noopener noreferrer"></a></div>';
+      var root = el.firstChild, a = root.firstChild, news = ctx.data.links.newsListing;
+      return {
+        update: function (s, changed) {
+          if (!changed) return;
+          var g = s.game;
+          if (g && g.preview) { a.href = g.preview; a.textContent = "Read the Hawks v " + g.opp + " preview"; root.hidden = false; }
+          else if (g && news) { a.href = news; a.textContent = "Read the latest Hawks news"; root.hidden = false; }
+          else root.hidden = true;
+        }
+      };
+    }
+  };
+
   /* MODULES:END */
 
   /* ---------------- Load data.js from the same folder ---------------- */
