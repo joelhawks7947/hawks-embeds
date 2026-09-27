@@ -66,6 +66,30 @@ You don't need it on the Game Day Guide page: the Next home game embed already s
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
+### Girls in the Game
+
+Shows the next camp from `data.js`, with a Register button. After the last camp it says to check back later in the term.
+
+```html
+<div data-hawks="girls-in-the-game"><a href="https://www.hawks.com.au/pages/girls-in-the-game">Girls in the Game: dates and registration</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+### Newsletter sign-up
+
+```html
+<div data-hawks="newsletter"><a href="https://mailchi.mp/hawks/illawarra-hawks-newsletter">Join the Hawks mailing list</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+### White (light) version
+
+Girls in the Game and Newsletter are black by default. For the white version, add `data-hawks-theme="light"` to the placeholder:
+
+```html
+<div data-hawks="newsletter" data-hawks-theme="light"><a href="https://mailchi.mp/hawks/illawarra-hawks-newsletter">Join the Hawks mailing list</a></div>
+```
+
 ### Same embed twice on one page
 
 That works. The first one on the page owns the links described in section 5 (`#game-7`, `#plan-upgrade`). To make a different one the owner, add `data-hawks-primary` to its placeholder, for example `<div data-hawks="upcoming-games" data-hawks-primary>`.
@@ -92,6 +116,23 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 | Turn on Hawks trivia | `trivia: ""` becomes `trivia: "https://..."` ("Coming soon" becomes a button) |
 | Hide a key time everywhere (for example the pre-game function) | Delete that whole line from the `times` list |
 | Change a ticket, MVP or venue link | Edit it in the `links` section |
+| Add the next Girls in the Game camp | Add a line to `girlsInTheGame` (see below) |
+
+### Girls in the Game camps
+
+Each camp is one line in the `girlsInTheGame` section:
+
+```js
+{date:"2026-10-06", time:"13:30", venue:"Illawarra Sports Stadium in Berkeley",
+ rego:"https://www.eventbrite.com.au/e/...",
+ details:"Two hours of basketball and teamwork with our crew, for girls aged 5 to 12."},
+```
+
+- The embed shows the next camp until **6 hours after it starts**, then moves to the next one in the list.
+- When there are no more camps, it shows "Check back later in the term for dates for the next camp." and the mailing list button.
+- You can add several camps at once, as soon as you know the dates. Keep them in date order, and copy an existing line so the commas and brackets stay right.
+- `venue` appears after "at", so write it to read that way.
+- `details` is the sentence after the date. Use `""` to leave it out.
 
 ### Formats
 
@@ -120,6 +161,8 @@ jsDelivr, the service that hosts the files, keeps a copy for up to 12 hours. Aft
 
 A page of text that includes `"status": "finished"` means it worked. If you're not sure which file changed, open both.
 
+If the old version is still showing a few minutes after a purge, wait two or three minutes and open the purge link again. jsDelivr sometimes takes a moment to notice that GitHub has changed.
+
 **How quickly people see a change**
 
 - **Data changes** (`data.js`): everyone within about 10 minutes of the purge.
@@ -138,6 +181,7 @@ Add `?hk_now=` to any page address with an embed to see it as it would look at a
 | Just after midnight, rolled to game 2 | `?hk_now=2026-10-03T00:01` |
 | After daylight saving starts | `?hk_now=2026-10-10T12:00` |
 | After the last game (season wrap) | `?hk_now=2027-02-05T00:01` |
+| Girls in the Game after the 6 October camp | `?hk_now=2026-10-07T09:00` |
 
 Seconds work too: `?hk_now=2026-10-02T23:59:50`. If the page address already has a `?`, use `&hk_now=` instead.
 

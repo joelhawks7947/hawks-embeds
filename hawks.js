@@ -144,9 +144,31 @@
     var sorted = out.games.slice().sort(function (a, b) { return a._tip - b._tip; });
     if (sorted.some(function (g, i) { return g !== out.games[i]; })) { warn("games are not in date order in data.js; sorting them by tip-off"); out.games = sorted; }
     if (!out.games.length) warn("no valid games in data.js");
+    out.girlsInTheGame = { camps: camps(raw.girlsInTheGame) };
     return out;
   }
   H.validate = validate;
+
+  /* Girls in the Game camps. A camp stays up until 6 hours after its start time. */
+  var CAMP_HOURS = 6;
+  function camps(raw) {
+    var list = raw && Array.isArray(raw.camps) ? raw.camps : [];
+    if (raw && !Array.isArray(raw.camps)) warn("girlsInTheGame has no camps list");
+    var out = [];
+    list.forEach(function (c, i) {
+      var who = "Girls in the Game camp " + (i + 1), why = [];
+      if (!c || typeof c !== "object") { warn(who + " skipped: not a camp line"); return; }
+      if (!realDate(c.date)) why.push("date \"" + c.date + "\" is not a real YYYY-MM-DD date");
+      if (!TIME.test(c.time)) why.push("time \"" + c.time + "\" is not HH:MM");
+      if (typeof c.venue !== "string" || !c.venue.trim()) why.push("venue is empty");
+      if (c.rego && !okUrl(c.rego)) why.push("rego is not an https:// link");
+      if (why.length) { warn(who + " skipped: " + why.join("; ")); return; }
+      out.push({ date: c.date, time: c.time, venue: c.venue.trim(), rego: c.rego || "",
+        details: typeof c.details === "string" ? c.details.trim() : "",
+        _end: toUtc(c.date, c.time) + CAMP_HOURS * 3600000 });
+    });
+    return out.sort(function (a, b) { return a._end - b._end; });
+  }
 
   /* ---------------- Shared game state ---------------- */
 
@@ -169,7 +191,6 @@
       if (!x.update) return;
       try { x.update(s, changed); } catch (e) { fail("update failed for " + x.name + ": " + e.message); }
     });
-    if (s.phase === "wrap" && timer) { clearInterval(timer); timer = null; }
   }
 
   /* ---------------- Styles and fonts (once per page) ---------------- */
@@ -213,9 +234,9 @@
       try {
         addFonts();
         addCss("_host", ".hk-host{display:block;container-type:inline-size;margin:0;padding:0;}");
-        addCss(name, mod.css);
+        addCss(mod.cssKey || name, mod.css);
         el.classList.add("hk-host");
-        var x = mod.render(el, { primary: primaries[name] === el, state: s, data: H.data }) || {};
+        var x = mod.render(el, { primary: primaries[name] === el, state: s, data: H.data, theme: el.getAttribute("data-hawks-theme") === "light" ? "light" : "dark" }) || {};
         x.name = name; x.el = el; x.primary = primaries[name] === el;
         H.instances.push(x);
         added = true;
@@ -227,7 +248,7 @@
     });
     if (added) {
       last = null; tick();
-      if (!timer && state().phase !== "wrap") timer = setInterval(tick, 1000);
+      if (!timer) timer = setInterval(tick, 1000);
       route();
     }
   }
@@ -723,6 +744,98 @@
           else root.hidden = true;
         }
       };
+    }
+  };
+
+
+  /* ---------------- CTA block (.hkscta), shared by girls-in-the-game and newsletter ----------------
+     Dark by default; data-hawks-theme="light" on the placeholder gives the white version. */
+  var CTA_CSS = [
+    ".hkscta{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--k);color:var(--w);padding:48px 32px;margin:0;border-top:6px solid var(--r);text-align:center;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;}",
+    ".hkscta *,.hkscta *::before,.hkscta *::after{box-sizing:border-box;}",
+    ".hkscta[hidden],.hkscta [hidden]{display:none !important;}",
+    ".hkscta .hkscta__inner{max-width:640px;margin:0 auto;}",
+    ".hkscta .hkscta__overline{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin:0 0 12px;}",
+    ".hkscta .hkscta__heading{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(28px,4.5cqw,40px);color:var(--w);margin:0 0 14px;padding:0;}",
+    ".hkscta .hkscta__body{font-size:16px;line-height:1.55;color:#D8D8D8;margin:0 0 28px;}",
+    ".hkscta .hkscta__buttons{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}",
+    ".hkscta .hkscta__button{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:17px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;padding:18px 32px;margin:0;border:2px solid var(--r);border-radius:0;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+    ".hkscta .hkscta__button:link,.hkscta .hkscta__button:visited{color:var(--w);text-decoration:none;}",
+    ".hkscta .hkscta__button:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
+    ".hkscta .hkscta__button:active{transform:scale(0.98);}",
+    ".hkscta .hkscta__button:focus-visible{outline:2px solid var(--r);outline-offset:2px;}",
+    ".hkscta .hkscta__button--secondary{background:transparent;border-color:var(--w);color:var(--w);}",
+    ".hkscta .hkscta__button--secondary:link,.hkscta .hkscta__button--secondary:visited{color:var(--w);}",
+    ".hkscta .hkscta__button--secondary:hover{background:var(--w);border-color:var(--w);color:var(--k);}",
+    ".hkscta.hkscta--light{background:var(--w);color:var(--k);border-top-color:var(--k);}",
+    ".hkscta.hkscta--light .hkscta__heading{color:var(--k);}",
+    ".hkscta.hkscta--light .hkscta__body{color:#373737;}",
+    ".hkscta.hkscta--light .hkscta__button--secondary,.hkscta.hkscta--light .hkscta__button--secondary:link,.hkscta.hkscta--light .hkscta__button--secondary:visited{border-color:var(--k);color:var(--k);}",
+    ".hkscta.hkscta--light .hkscta__button--secondary:hover{background:var(--k);border-color:var(--k);color:var(--w);}",
+    ".hkscta.hkscta--light .hkscta__button:focus-visible{outline-color:var(--k);}",
+    "@container (max-width:600px){",
+    ".hkscta{padding:36px 20px;}",
+    ".hkscta .hkscta__buttons{gap:12px;}",
+    ".hkscta .hkscta__button{display:block;width:100%;padding:18px 20px;font-size:17px;}",
+    "}",
+    "@media (prefers-reduced-motion:reduce){.hkscta .hkscta__button{transition:none;}.hkscta .hkscta__button:active{transform:none;}}"
+  ].join("\n");
+
+  /* Builds the CTA shell and returns its parts for the module to fill. */
+  function ctaShell(el, ctx, overline, heading) {
+    el.innerHTML =
+      '<section class="hkscta' + (ctx.theme === "light" ? " hkscta--light" : "") + '"><div class="hkscta__inner">' +
+      '<p class="hkscta__overline">' + esc(overline) + '</p><h2 class="hkscta__heading">' + esc(heading) + "</h2>" +
+      '<p class="hkscta__body"></p><div class="hkscta__buttons"></div></div></section>';
+    var root = el.firstChild;
+    return { root: root, body: root.querySelector(".hkscta__body"), buttons: root.querySelector(".hkscta__buttons") };
+  }
+  function ctaButton(url, text, secondary) {
+    return url ? '<a class="hkscta__button' + (secondary ? " hkscta__button--secondary" : "") + '"' + ext(url) + ">" + esc(text) + "</a>" : "";
+  }
+
+  /* ---------------- girls-in-the-game ----------------
+     Next camp from data.js (girlsInTheGame.camps). A camp stays up until 6 hours
+     after its start; with no camp to show, a "check back" line and the mailing list. */
+  M["girls-in-the-game"] = {
+    cssKey: "hkscta",
+    css: CTA_CSS,
+    render: function (el, ctx) {
+      var c = ctaShell(el, ctx, "Girls in the Game", "Get her on the court"), shown;
+      function nextCamp(now) {
+        var list = H.data.girlsInTheGame.camps;
+        for (var i = 0; i < list.length; i++) if (list[i]._end > now) return list[i];
+        return null;
+      }
+      return {
+        update: function (s) {
+          var camp = nextCamp(s.now);
+          if (camp === shown && shown !== undefined) return;
+          shown = camp;
+          if (camp) {
+            c.body.textContent = U.longDate(camp.date) + ", " + U.time(camp.time) + " at " + camp.venue + "." + (camp.details ? " " + camp.details : "");
+            c.buttons.innerHTML = ctaButton(camp.rego, "Register now") + ctaButton(H.data.links.newsletter, "Join the mailing list", true);
+          } else {
+            c.body.textContent = "Check back later in the term for dates for the next camp.";
+            c.buttons.innerHTML = ctaButton(H.data.links.newsletter, "Join the mailing list", true);
+          }
+          var reg = c.buttons.querySelector("a:not(.hkscta__button--secondary)");
+          if (reg && camp) reg.setAttribute("aria-label", "Register now: Girls in the Game, " + U.longDate(camp.date));
+        }
+      };
+    }
+  };
+
+  /* ---------------- newsletter ----------------
+     Fixed copy; the mailing list link comes from data.js (links.newsletter). */
+  M["newsletter"] = {
+    cssKey: "hkscta",
+    css: CTA_CSS,
+    render: function (el, ctx) {
+      var c = ctaShell(el, ctx, "Hawks Newsletter", "Be the first to know");
+      c.body.textContent = "Team news, ticket releases and game day updates, straight from us to your inbox. Sign up in seconds and stay in the loop all season.";
+      c.buttons.innerHTML = ctaButton(H.data.links.newsletter, "Join the mailing list");
+      return {};
     }
   };
 
