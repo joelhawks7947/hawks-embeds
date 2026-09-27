@@ -390,6 +390,120 @@
     }
   };
 
+
+  /* ---------------- upcoming-games (.hksl) ----------------
+     Collapsed list of home games after the next game, each with tickets and key times. */
+  M["upcoming-games"] = {
+    css: [
+      ".hksl{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--w);color:var(--k);padding:32px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:left;}",
+      ".hksl *,.hksl *::before,.hksl *::after{box-sizing:border-box;}",
+      ".hksl .hksl__inner{max-width:880px;margin:0 auto;}",
+      ".hksl[hidden],.hksl [hidden]{display:none !important;}",
+      ".hksl .hksl__h{margin:0;padding:0;font-size:inherit;line-height:inherit;font-weight:400;}",
+      ".hksl .hksl__bar{display:flex;align-items:center;gap:16px;width:100%;margin:0;padding:18px 20px;background:var(--w);color:var(--k);border:2px solid var(--k);border-radius:0;cursor:pointer;text-align:left;font-family:'Poppins',Arial,sans-serif;font-size:16px;line-height:1.2;transition:background-color 120ms var(--e),color 120ms var(--e);}",
+      ".hksl .hksl__bar:hover,.hksl .hksl__bar[aria-expanded=\"true\"]{background:var(--k);color:var(--w);}",
+      ".hksl .hksl__bar:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hksl .hksl__bt{flex:1 1 auto;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(20px,2.6cqw,26px);line-height:1;text-transform:uppercase;letter-spacing:0.01em;}",
+      ".hksl .hksl__bc{flex:0 0 auto;font-weight:700;font-size:13px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);}",
+      ".hksl .hksl__ic{flex:0 0 auto;position:relative;width:16px;height:16px;}",
+      ".hksl .hksl__ic::before,.hksl .hksl__ic::after{content:\"\";position:absolute;background:currentColor;left:0;top:7px;width:16px;height:2px;transition:transform 120ms var(--e);}",
+      ".hksl .hksl__ic::after{transform:rotate(90deg);}",
+      ".hksl .hksl__bar[aria-expanded=\"true\"] .hksl__ic::after{transform:rotate(0deg);}",
+      ".hksl .hksl__list{list-style:none;margin:0;padding:0;border:2px solid var(--k);border-top:0;}",
+      ".hksl .hksl__row{margin:0;padding:0 20px;border-bottom:1px solid #CFCFCF;scroll-margin-top:120px;list-style:none;line-height:1.4;}",
+      ".hksl .hksl__row:last-child{border-bottom:0;}",
+      ".hksl .hksl__main{display:grid;grid-template-columns:76px 1fr auto;gap:20px;align-items:center;padding:14px 0;}",
+      ".hksl .hksl__date{border:2px solid var(--k);padding:6px 4px;text-align:center;}",
+      ".hksl .hksl__dow{display:block;font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);}",
+      ".hksl .hksl__dm{display:block;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:20px;line-height:1;text-transform:uppercase;color:var(--k);margin-top:2px;white-space:nowrap;}",
+      ".hksl .hksl__opp{font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(18px,2.2cqw,22px);line-height:1;text-transform:uppercase;color:var(--k);margin:0;}",
+      ".hksl .hksl__info .hksl__meta{font-size:14px;line-height:1.4;color:#373737;margin:4px 0 0;}",
+      ".hksl .hksl__acts{display:flex;gap:8px;}",
+      ".hksl .hksl__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:14px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;text-align:center;padding:12px 18px;margin:0;border:2px solid var(--r);border-radius:0;cursor:pointer;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hksl .hksl__btn:link,.hksl .hksl__btn:visited{color:var(--w);text-decoration:none;}",
+      ".hksl .hksl__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
+      ".hksl .hksl__btn:active{transform:scale(0.98);}",
+      ".hksl .hksl__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hksl .hksl__btn--sec,.hksl .hksl__btn--sec:link,.hksl .hksl__btn--sec:visited{background:transparent;border-color:var(--k);color:var(--k);}",
+      ".hksl .hksl__btn--sec:hover,.hksl .hksl__btn--sec[aria-expanded=\"true\"]{background:var(--k);border-color:var(--k);color:var(--w);}",
+      ".hksl .hksl__panel{padding:0 0 18px 96px;}",
+      ".hksl .hksl__times{display:flex;flex-wrap:wrap;gap:12px 32px;list-style:none;margin:0;padding:0;}",
+      ".hksl .hksl__times li{margin:0;padding:0;list-style:none;line-height:1.2;}",
+      ".hksl .hksl__t{display:block;font-weight:700;font-size:18px;line-height:1.2;color:var(--k);}",
+      ".hksl .hksl__tl{display:block;font-size:13px;line-height:1.3;color:#373737;margin-top:2px;}",
+      ".hksl .hksl__panel .hksl__btn{margin-top:16px;}",
+      "@container (max-width:600px){",
+      ".hksl{padding:24px 16px;}",
+      ".hksl .hksl__bar{padding:16px;gap:12px;}",
+      ".hksl .hksl__row{padding:0 14px;}",
+      ".hksl .hksl__main{grid-template-columns:72px 1fr;gap:12px 14px;}",
+      ".hksl .hksl__dm{font-size:18px;}",
+      ".hksl .hksl__acts{grid-column:1 / -1;}",
+      ".hksl .hksl__acts .hksl__btn{flex:1 1 0;}",
+      ".hksl .hksl__panel{padding:0 0 18px;}",
+      ".hksl .hksl__times{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}",
+      "}",
+      "@media (prefers-reduced-motion:reduce){.hksl .hksl__btn,.hksl .hksl__bar,.hksl .hksl__ic::before,.hksl .hksl__ic::after{transition:none;}.hksl .hksl__btn:active{transform:none;}}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var listId = uid("upcoming");
+      el.innerHTML =
+        '<section class="hksl" hidden><div class="hksl__inner">' +
+        '<h2 class="hksl__h"><button class="hksl__bar" type="button" aria-expanded="false" aria-controls="' + listId + '">' +
+        '<span class="hksl__bt">Upcoming home games</span><span class="hksl__bc"></span><span class="hksl__ic" aria-hidden="true"></span>' +
+        '</button></h2><ul class="hksl__list" id="' + listId + '" hidden></ul></div></section>';
+      var root = el.firstChild, bar = root.querySelector(".hksl__bar"), list = root.querySelector(".hksl__list");
+
+      function toggle(btn, panel, open) { btn.setAttribute("aria-expanded", String(open)); panel.hidden = !open; }
+      bar.addEventListener("click", function () { toggle(bar, list, bar.getAttribute("aria-expanded") !== "true"); });
+
+      function row(g) {
+        var rowId = ctx.primary ? "game-" + g.n : uid("game-" + g.n), pid = ctx.primary ? "game-" + g.n + "-times" : uid("game-" + g.n + "-times");
+        var t = U.tickets(g);
+        var li = D.createElement("li");
+        li.className = "hksl__row"; li.id = rowId; li.setAttribute("data-n", g.n);
+        li.innerHTML =
+          '<div class="hksl__main">' +
+          '<div class="hksl__date"><span class="hksl__dow">' + esc(U.dow(g.date)) + '</span><span class="hksl__dm">' + esc(U.dm(g.date)) + "</span></div>" +
+          '<div class="hksl__info"><p class="hksl__opp">v ' + esc(g.opp) + '</p><p class="hksl__meta">Game ' + g.n + ", " + esc(U.time(g.tip)) + " tip-off</p></div>" +
+          '<div class="hksl__acts">' +
+          (t ? '<a class="hksl__btn"' + ext(t) + ' aria-label="Tickets for Hawks v ' + esc(g.opp) + ", " + esc(U.longDate(g.date)) + '">Tickets</a>' : "") +
+          '<button class="hksl__btn hksl__btn--sec" type="button" aria-expanded="false" aria-controls="' + pid + '" aria-label="Key times for Hawks v ' + esc(g.opp) + '">Key times</button>' +
+          "</div></div>" +
+          '<div class="hksl__panel" id="' + pid + '" hidden><ul class="hksl__times">' + keyTimes(g, "hksl") + "</ul>" +
+          (g.preview ? '<a class="hksl__btn hksl__btn--sec"' + ext(g.preview) + ' aria-label="Read the game preview: Hawks v ' + esc(g.opp) + '">Read the game preview</a>' : "") +
+          "</div>";
+        var tog = li.querySelector("button"), panel = li.querySelector(".hksl__panel");
+        tog.addEventListener("click", function () { toggle(tog, panel, tog.getAttribute("aria-expanded") !== "true"); });
+        return li;
+      }
+
+      function build(s) {
+        var games = s.i < 0 ? [] : H.data.games.slice(s.i + 1);
+        list.innerHTML = "";
+        toggle(bar, list, false);
+        root.hidden = !games.length;
+        if (!games.length) return;
+        root.querySelector(".hksl__bc").textContent = games.length + (games.length === 1 ? " game" : " games");
+        games.forEach(function (g) { list.appendChild(row(g)); });
+      }
+
+      return {
+        update: function (s, changed) { if (changed) build(s); },
+        openGame: function (n) {
+          var li = list.querySelector('[data-n="' + n + '"]');
+          if (!li || root.hidden) return false;
+          toggle(bar, list, true);
+          var b = li.querySelector("button[aria-expanded]");
+          toggle(b, li.querySelector(".hksl__panel"), true);
+          li.scrollIntoView({ block: "start" });
+          return true;
+        }
+      };
+    }
+  };
+
   /* MODULES:END */
 
   /* ---------------- Load data.js from the same folder ---------------- */
