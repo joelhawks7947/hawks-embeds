@@ -43,6 +43,9 @@ test("camp stays up until 6 hours after it starts, then shows the check back lin
   await expect(gg.locator(".hkscta__body")).toHaveText(CHECK);
   await expect(gg.locator("h2")).toHaveText("Get her on the court");
   expect(await links(gg)).toEqual([["Join the mailing list", MAIL, "_blank", "noopener noreferrer"]]);
+  // On its own it is the primary (solid red) button.
+  await expect(gg.locator("a")).toHaveClass("hkscta__button");
+  expect(await gg.locator("a").evaluate((a) => getComputedStyle(a).backgroundColor)).toBe("rgb(255, 0, 19)");
 });
 
 test("rolls to the next camp in the list, including after the basketball season", async ({ page }) => {

@@ -80,7 +80,7 @@ Each module is a render function keyed by its `data-hawks` name, with its own sc
 | `trivia-mvp` | `.hkpv` | trivia-mvp file | Two-panel slab. Left red (swapped from the reference at the editor's request, 27 September 2026): "Hawks trivia", "Coming soon" label (black on red for contrast) until a trivia URL is set, then a "Test your knowledge" link. Right black: 1:1 MVP graphic (width/height 1080 declared, lazy loaded, alt text) and "Place your vote". |
 | `game-preview` | `.hkgp` | **new** | A button that reads the active game's `preview` link: "Read the Hawks v Opponent preview". If no preview is set, falls back to the News listing URL (**URL is an open item: ask**). Rolls over with the active game. Intended for recaps and other standalone spots; not used on the Game Day Guide page, where `next-game` carries the preview link. |
 
-| `girls-in-the-game` | `.hkscta` (shared) | `reference/girls-in-the-game.html` | Shared CTA block. Overline "Girls in the Game", heading "Get her on the court", then the next camp from `data.js` (`girlsInTheGame.camps`): "Tuesday 6th October, 1:30pm at {venue}." plus the camp's optional `details` sentence, **Register now** (camp `rego`) and **Join the mailing list** (secondary). A camp shows until **6 hours after its start time**, then the next camp. With no camp to show: "Check back later in the term for dates for the next camp." and only the mailing list button. Fallback link: https://www.hawks.com.au/pages/girls-in-the-game |
+| `girls-in-the-game` | `.hkscta` (shared) | `reference/girls-in-the-game.html` | Shared CTA block. Overline "Girls in the Game", heading "Get her on the court", then the next camp from `data.js` (`girlsInTheGame.camps`): "Tuesday 6th October, 1:30pm at {venue}." plus the camp's optional `details` sentence, **Register now** (camp `rego`) and **Join the mailing list** (secondary). A camp shows until **6 hours after its start time**, then the next camp. With no camp to show: "Check back later in the term for dates for the next camp." and only the mailing list button, which then becomes the primary (solid red) button. Fallback link: https://www.hawks.com.au/pages/girls-in-the-game |
 | `newsletter` | `.hkscta` (shared) | `reference/newsletter.html` | Shared CTA block with fixed approved copy ("Hawks Newsletter", "Be the first to know") and one **Join the mailing list** button (`links.newsletter`). |
 
 Keep the season-end, "Game on" and rollover logic shared, not duplicated per module. The shared clock keeps ticking after the last home game, because non-game modules (camps) still change by date.
@@ -196,7 +196,7 @@ Also spot-check against the reference embeds side by side: same look, same behav
 
 The editor has other standalone embeds pasted on many pages. Convert them one at a time into modules in `hawks-core.js` (same hawks.js script tag), following the Working style below. Date-driven content goes in `data.js`, never in code (see the 7-day browser cache note). Originals go in `reference/` and get a word-for-word copy test.
 
-- `reference/top-10.html` (`.hksfeats`): not started. Its copy contains an em dash (line 226), so it fails the dash check and has not been committed; ask the editor for replacement wording before committing it.
+- `reference/top-10.html` (`.hksfeats`): not started. The em dash in its intro was replaced with a spaced hyphen ("Hawks history - every game since 1979") at the editor's request, 27 September 2026.
 
 ## Out of scope for the first release
 
