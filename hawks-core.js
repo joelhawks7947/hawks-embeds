@@ -820,7 +820,8 @@
             c.buttons.innerHTML = ctaButton(camp.rego, "Register now") + ctaButton(H.data.links.newsletter, "Join the mailing list", true);
           } else {
             c.body.textContent = "Check back later in the term for dates for the next camp.";
-            c.buttons.innerHTML = ctaButton(H.data.links.newsletter, "Join the mailing list", true);
+            /* On its own, the mailing list is the main action, so it becomes the solid red button. */
+            c.buttons.innerHTML = ctaButton(H.data.links.newsletter, "Join the mailing list");
           }
           var reg = c.buttons.querySelector("a:not(.hkscta__button--secondary)");
           if (reg && camp) reg.setAttribute("aria-label", "Register now: Girls in the Game, " + U.longDate(camp.date));

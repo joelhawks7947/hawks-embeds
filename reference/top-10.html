@@ -1,0 +1,388 @@
+<!-- ============================================================
+     ILLAWARRA HAWKS - ALL-TIME TOP 10 SINGLE-GAME FEATS
+     Drop into a Webflow Embed element. Self-contained (HTML+CSS+JS).
+     All classes prefixed .hksfeats- to avoid collisions.
+     Colour variant: add class "hksfeats--light" to the <section>
+     for a white background version.
+     Data as of end of NBL26 (source: Hawks all-time game database).
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+.hksfeats{
+  --hksfeats-red:#FF0013;
+  --hksfeats-dark-red:#BF0000;
+  --hksfeats-black:#000000;
+  --hksfeats-white:#FFFFFF;
+  --hksfeats-row:#111111;
+  --hksfeats-row-alt:#0A0A0A;
+  --hksfeats-line:#222222;
+  --hksfeats-muted:#9A9A9A;
+  --hksfeats-body:#D8D8D8;
+  box-sizing:border-box;
+  background:var(--hksfeats-black);
+  color:var(--hksfeats-white);
+  padding:48px 32px;
+  margin:0;
+  border-top:6px solid var(--hksfeats-red);
+  font-family:'Poppins',Arial,Helvetica,sans-serif;
+}
+.hksfeats *,
+.hksfeats *::before,
+.hksfeats *::after{box-sizing:border-box;}
+.hksfeats__inner{
+  max-width:860px;
+  margin:0 auto;
+}
+.hksfeats__overline{
+  font-weight:700;
+  font-size:12px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--hksfeats-red);
+  margin:0 0 12px;
+  text-align:center;
+}
+.hksfeats__heading{
+  font-family:'Anton',Impact,sans-serif;
+  font-weight:400;
+  text-transform:uppercase;
+  line-height:0.95;
+  letter-spacing:0.01em;
+  font-size:clamp(28px,4.5vw,40px);
+  color:var(--hksfeats-white);
+  margin:0 0 14px;
+  text-align:center;
+}
+.hksfeats__intro{
+  font-size:15px;
+  line-height:1.55;
+  color:var(--hksfeats-body);
+  margin:0 auto 28px;
+  max-width:560px;
+  text-align:center;
+}
+/* ---- Category tabs ---- */
+.hksfeats__tabs{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:0 0 24px;
+}
+.hksfeats__tab{
+  font-family:'Poppins',Arial,sans-serif;
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  color:var(--hksfeats-white);
+  background:transparent;
+  border:2px solid var(--hksfeats-line);
+  border-radius:0;
+  padding:10px 16px;
+  cursor:pointer;
+  transition:background-color 120ms cubic-bezier(0.22,1,0.36,1),
+             border-color 120ms cubic-bezier(0.22,1,0.36,1),
+             color 120ms cubic-bezier(0.22,1,0.36,1);
+}
+.hksfeats__tab:hover{border-color:var(--hksfeats-red);}
+.hksfeats__tab:focus-visible{
+  outline:2px solid var(--hksfeats-red);
+  outline-offset:2px;
+}
+.hksfeats__tab[aria-selected="true"]{
+  background:var(--hksfeats-red);
+  border-color:var(--hksfeats-red);
+  color:var(--hksfeats-white);
+}
+/* ---- Club record strip ---- */
+.hksfeats__record{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  border:2px solid var(--hksfeats-red);
+  padding:16px 20px;
+  margin:0 0 20px;
+}
+.hksfeats__record-label{
+  font-weight:700;
+  font-size:11px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--hksfeats-red);
+}
+.hksfeats__record-stat{
+  font-family:'Anton',Impact,sans-serif;
+  font-size:clamp(22px,3.2vw,30px);
+  text-transform:uppercase;
+  line-height:1;
+  color:var(--hksfeats-white);
+}
+.hksfeats__record-detail{
+  font-size:13px;
+  color:var(--hksfeats-muted);
+}
+/* ---- Table ---- */
+.hksfeats__tablewrap{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.hksfeats__table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+  line-height:1.4;
+}
+.hksfeats__table th{
+  font-weight:700;
+  font-size:11px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--hksfeats-muted);
+  text-align:left;
+  padding:10px 12px;
+  border-bottom:2px solid var(--hksfeats-red);
+  white-space:nowrap;
+}
+.hksfeats__table td{
+  padding:12px;
+  border-bottom:1px solid var(--hksfeats-line);
+  color:var(--hksfeats-body);
+  white-space:nowrap;
+}
+.hksfeats__table tbody tr:nth-child(odd){background:var(--hksfeats-row);}
+.hksfeats__table tbody tr:nth-child(even){background:var(--hksfeats-row-alt);}
+.hksfeats__rank{
+  font-family:'Anton',Impact,sans-serif;
+  font-size:18px;
+  color:var(--hksfeats-muted);
+  width:44px;
+  text-align:center;
+}
+.hksfeats__player{
+  font-weight:700;
+  color:var(--hksfeats-white);
+}
+.hksfeats__stat{
+  font-family:'Anton',Impact,sans-serif;
+  font-size:18px;
+  color:var(--hksfeats-white);
+  letter-spacing:0.02em;
+}
+/* #1 row treatment */
+.hksfeats__table tbody tr.hksfeats__row--record{
+  background:var(--hksfeats-dark-red);
+}
+.hksfeats__row--record td{color:var(--hksfeats-white);border-bottom-color:var(--hksfeats-dark-red);}
+.hksfeats__row--record .hksfeats__rank{color:var(--hksfeats-white);}
+.hksfeats__note{
+  font-size:13px;
+  line-height:1.5;
+  color:var(--hksfeats-muted);
+  margin:18px 0 0;
+  text-align:center;
+}
+/* ---- Light variant ---- */
+.hksfeats--light{
+  background:var(--hksfeats-white);
+  color:var(--hksfeats-black);
+  border-top-color:var(--hksfeats-black);
+  --hksfeats-row:#F5F5F5;
+  --hksfeats-row-alt:#FFFFFF;
+  --hksfeats-line:#E2E2E2;
+  --hksfeats-muted:#6B6B6B;
+  --hksfeats-body:#373737;
+}
+.hksfeats--light .hksfeats__heading{color:var(--hksfeats-black);}
+.hksfeats--light .hksfeats__tab{color:var(--hksfeats-black);}
+.hksfeats--light .hksfeats__tab[aria-selected="true"]{color:var(--hksfeats-white);}
+.hksfeats--light .hksfeats__record-stat{color:var(--hksfeats-black);}
+.hksfeats--light .hksfeats__player{color:var(--hksfeats-black);}
+.hksfeats--light .hksfeats__stat{color:var(--hksfeats-black);}
+.hksfeats--light .hksfeats__row--record .hksfeats__player,
+.hksfeats--light .hksfeats__row--record .hksfeats__stat,
+.hksfeats--light .hksfeats__row--record td{color:var(--hksfeats-white);}
+/* ---- Responsive ---- */
+@media (max-width:600px){
+  .hksfeats{padding:36px 16px;}
+  .hksfeats__table th.hksfeats__col--extra,
+  .hksfeats__table td.hksfeats__col--extra{display:none;}
+  .hksfeats__table td,
+  .hksfeats__table th{padding:10px 8px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .hksfeats__tab{transition:none;}
+}
+</style>
+<section class="hksfeats">
+  <div class="hksfeats__inner">
+    <p class="hksfeats__overline">Hawks History</p>
+    <h2 class="hksfeats__heading">All-Time Top 10 Single-Game Feats</h2>
+    <p class="hksfeats__intro">
+      The biggest individual performances in Hawks history - every game since 1979,
+      one table per stat. Pick a category.
+    </p>
+
+    <div class="hksfeats__tabs" role="tablist" aria-label="Stat categories">
+      <button class="hksfeats__tab" role="tab" aria-selected="true" data-hksfeats-cat="points">Points</button>
+      <button class="hksfeats__tab" role="tab" aria-selected="false" data-hksfeats-cat="rebounds">Rebounds</button>
+      <button class="hksfeats__tab" role="tab" aria-selected="false" data-hksfeats-cat="threes">3PM</button>
+      <button class="hksfeats__tab" role="tab" aria-selected="false" data-hksfeats-cat="assists">Assists</button>
+      <button class="hksfeats__tab" role="tab" aria-selected="false" data-hksfeats-cat="blocks">Blocks</button>
+      <button class="hksfeats__tab" role="tab" aria-selected="false" data-hksfeats-cat="steals">Steals</button>
+    </div>
+
+    <div class="hksfeats__record">
+      <span class="hksfeats__record-label">Club record</span>
+      <span class="hksfeats__record-stat" data-hksfeats-record-stat>54 Points</span>
+      <span class="hksfeats__record-detail" data-hksfeats-record-detail>Norman Taylor · 18 May 1990 v Spectres</span>
+    </div>
+
+    <div class="hksfeats__tablewrap">
+      <table class="hksfeats__table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Player</th>
+            <th scope="col" data-hksfeats-statcol>PTS</th>
+            <th scope="col">Date</th>
+            <th scope="col" class="hksfeats__col--extra">Opponent</th>
+            <th scope="col" class="hksfeats__col--extra">Result</th>
+          </tr>
+        </thead>
+        <tbody data-hksfeats-body><!-- rows injected by script --></tbody>
+      </table>
+    </div>
+
+    <p class="hksfeats__note">
+      Single-game performances, all competitions, current to the end of NBL26. STRONGER. LOUDER. TOGETHER.
+    </p>
+  </div>
+
+  <script>
+  (function(){
+    var DATA = {
+      points: { label:'PTS', record:'54 Points', recordDetail:'Norman Taylor · 18 May 1990 v Spectres', rows:[
+        [1,'Norman Taylor',54,'18 May 1990','Spectres (H)','Won by 5'],
+        [2,'Learando Drake',49,'18 Aug 1985','Spectres (A)','Lost by 30'],
+        [3,'Norman Taylor',49,'1 Jul 1989','Falcons (A)','Won by 9'],
+        [4,'Clayton Ritter',46,'28 Feb 1998','Cannons (H)','Won by 10'],
+        [5,'Michael Jones',46,'24 Apr 1983','Giants (A)','Lost by 17'],
+        [6,'Learando Drake',45,'13 Jul 1985','Supersonics (A)','Won by 19'],
+        [7,'Marlon Redmond',45,'30 Mar 1984','Wildcats (H)','Won by 4'],
+        [8,'Patric Fairs',43,'20 Jul 1991','Saints (H)','Lost by 4'],
+        [9,'Michael Jones',43,'7 May 1983','Falcons (H)','Lost by 5'],
+        [10,'CJ Bruton',43,'27 Feb 1999','Bullets (A)','Won by 8']
+      ]},
+      rebounds: { label:'REB', record:'23 Rebounds', recordDetail:'Ray Borner · 9 May 1987 v Westars', rows:[
+        [1,'Ray Borner',23,'9 May 1987','Westars (A)','Won by 5'],
+        [2,'Marcus Timmons',22,'4 May 1996','Falcons (H)','Won by 9'],
+        [3,'Chuck Harmison',22,'3 Jul 1993','Crocodiles (A)','Won by 17'],
+        [4,'Benjamin Knight',21,'9 Jan 2004','Razorbacks (H)','Lost by 4'],
+        [5,'Andrew Ogilvy',21,'12 Oct 2018','United (H)','Lost by 1'],
+        [6,'Melvin Thomas',21,'19 Jun 1992','Supercats (H)','Won by 26'],
+        [7,'Tony Rampton',21,'14 Oct 2005','36ers (A)','Lost by 10'],
+        [8,'Marlon Redmond',20,'16 Jun 1984','36ers (H)','Won by 38'],
+        [9,'Norman Taylor',20,'26 May 1990','Falcons (H)','Won by 21'],
+        [10,'Marcus Timmons',20,'22 Jun 1996','Kings (A)','Lost by 22']
+      ]},
+      threes: { label:'3PM', record:'10 Threes', recordDetail:'Charles Thomas · 29 Dec 2001 v Kings', rows:[
+        [1,'Charles Thomas',10,'29 Dec 2001','Kings (H)','Won by 10'],
+        [2,'Rotnei Clarke',9,'31 Dec 2013','Tigers (H)','Lost by 10'],
+        [3,'Mat Campbell',9,'10 Dec 2005','Crocodiles (A)','Won by 10'],
+        [4,'CJ Bruton',8,'20 Nov 1999','Razorbacks (A)','Won by 12'],
+        [5,'CJ Bruton',8,'7 Jan 2000','Tigers (H)','Lost by 18'],
+        [6,'Patric Fairs',8,'27 Jul 1991','Tigers (H)','Lost by 28'],
+        [7,'Patric Fairs',8,'20 Jul 1991','Saints (H)','Lost by 4'],
+        [8,'Oscar Forman',8,'21 Mar 2014','Kings (H)','Won by 13'],
+        [9,'Harry Froling',8,'24 Jan 2022','36ers (H)','Won by 11'],
+        [10,'Tyler Harvey',8,'29 Mar 2021','Bullets (H)','Won by 24']
+      ]},
+      assists: { label:'AST', record:'18 Assists', recordDetail:'Gordie McLeod · 5 Sep 1987 v Giants & 12 Sep 1987 v Saints', rows:[
+        [1,'Gordie McLeod',18,'5 Sep 1987','Giants (H)','Won by 4'],
+        [2,'Gordie McLeod',18,'12 Sep 1987','Saints (A)','Won by 3'],
+        [3,'Gordie McLeod',17,'2 Aug 1985','Devils (H)','Won by 26'],
+        [4,'Andre La Fleur',16,'6 Sep 1996','36ers (H)','Won by 19'],
+        [5,'Gordie McLeod',16,'11 Mar 1984','Bearcats (H)','Won by 21'],
+        [6,'Gordie McLeod',15,'14 Apr 1985','Supersonics (H)','Lost by 4'],
+        [7,'Greg Hubbard',15,'30 Aug 1991','Supercats (H)','Won by 15'],
+        [8,'Gordie McLeod',15,'17 Aug 1985','Devils (A)','Won by 2'],
+        [9,'Gordie McLeod',14,'22 Jun 1984','Falcons (A)','Lost by 7'],
+        [10,'Gordie McLeod',14,'26 Apr 1985','Wildcats (H)','Lost by 4']
+      ]},
+      blocks: { label:'BLK', record:'7 Blocks', recordDetail:'Don Bickett (1986), equalled by Melvin Thomas (×2, 1992) & Larry Davidson (2010)', rows:[
+        [1,'Don Bickett',7,'12 Jul 1986','Bullets (A)','Won by 6'],
+        [2,'Melvin Thomas',7,'23 May 1992','Supercats (A)','Won by 20'],
+        [3,'Melvin Thomas',7,'14 Aug 1992','Tigers (H)','Lost by 7'],
+        [4,'Larry Davidson',7,'19 Feb 2010','Crocodiles (H)','Won by 19'],
+        [5,'Cortez Groves',6,'4 Feb 2006','Razorbacks (H)','Won by 1'],
+        [6,'David McGuire',6,'23 Mar 1984','Bears (A)','Lost by 6'],
+        [7,'Learando Drake',6,'18 Aug 1985','Spectres (A)','Lost by 30'],
+        [8,'Darnell Mee',6,'4 Dec 2004','Kings (A)','Lost by 10'],
+        [9,'Melvin Thomas',6,'17 Sep 1994','Falcons (H)','Won by 2'],
+        [10,'Ray Borner',6,'27 Sep 1986','Supersonics (H)','Won by 8']
+      ]},
+      steals: { label:'STL', record:'9 Steals', recordDetail:'Elliot Hatcher · 13 Mar 1998 v Tigers', rows:[
+        [1,'Elliot Hatcher',9,'13 Mar 1998','Tigers (H)','Won by 12'],
+        [2,'Gordie McLeod',8,'17 Mar 1984','Tigers (H)','Lost by 1'],
+        [3,'Terry Johnson',7,'18 May 1996','Devils (H)','Lost by 3'],
+        [4,'Alphonse Hammond',7,'9 May 1986','Wildcats (A)','Won by 12'],
+        [5,'Gordie McLeod',7,'31 May 1985','Giants (H)','Won by 3'],
+        [6,'Elliot Hatcher',7,'28 Mar 1998','Cannons (H)','Lost by 5'],
+        [7,'Matt Garrison',7,'17 Mar 2001','Cannons (H)','Won by 35'],
+        [8,'Doug Overton',7,'28 Aug 1992','Giants (H)','Won by 18'],
+        [9,'Alphonse Hammond',7,'31 May 1986','Supercats (H)','Won by 31'],
+        [10,'Butch Hays',7,'18 Jun 1993','Supercats (A)','Won by 5']
+      ]}
+    };
+
+    var root = document.currentScript.closest('.hksfeats');
+    var body = root.querySelector('[data-hksfeats-body]');
+    var statCol = root.querySelector('[data-hksfeats-statcol]');
+    var recStat = root.querySelector('[data-hksfeats-record-stat]');
+    var recDetail = root.querySelector('[data-hksfeats-record-detail]');
+    var tabs = root.querySelectorAll('.hksfeats__tab');
+
+    function esc(s){
+      return String(s).replace(/[&<>"']/g, function(c){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function render(cat){
+      var d = DATA[cat];
+      if(!d){return;}
+      statCol.textContent = d.label;
+      recStat.textContent = d.record;
+      recDetail.textContent = d.recordDetail;
+      var html = '';
+      d.rows.forEach(function(r){
+        var recordRow = r[0] === 1 ? ' class="hksfeats__row--record"' : '';
+        html += '<tr' + recordRow + '>' +
+          '<td class="hksfeats__rank">' + r[0] + '</td>' +
+          '<td class="hksfeats__player">' + esc(r[1]) + '</td>' +
+          '<td class="hksfeats__stat">' + r[2] + '</td>' +
+          '<td>' + esc(r[3]) + '</td>' +
+          '<td class="hksfeats__col--extra">' + esc(r[4]) + '</td>' +
+          '<td class="hksfeats__col--extra">' + esc(r[5]) + '</td>' +
+        '</tr>';
+      });
+      body.innerHTML = html;
+    }
+
+    tabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        tabs.forEach(function(t){ t.setAttribute('aria-selected','false'); });
+        tab.setAttribute('aria-selected','true');
+        render(tab.getAttribute('data-hksfeats-cat'));
+      });
+    });
+
+    render('points');
+  })();
+  </script>
+</section>
