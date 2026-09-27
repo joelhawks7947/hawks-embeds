@@ -1,1 +1,204 @@
-# hawks-embeds
+# Hawks embeds
+
+One hosted script that powers the Illawarra Hawks embeds on hawks.com.au: the next home game countdown, upcoming home games, Plan your night, Hawks trivia and MVP vote, and the game preview button.
+
+Every embed on the site is a short placeholder plus the same script tag. Change something here once and every page and News recap updates.
+
+- **Game data and links:** [`data.js`](data.js). This is the only file you normally edit.
+- **The script:** [`hawks.js`](hawks.js). You shouldn't need to touch it.
+- **Live address:** `https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js`
+
+---
+
+## 1. Embed snippets
+
+Paste a snippet into a Webflow **Code Embed** element, either on a page or inside a News article's rich text. Each snippet is the placeholder (with a plain link inside it) plus the script tag.
+
+- If the script can't load for any reason, readers still see the plain link, so never delete it.
+- It's fine to have the script tag many times on one page. The script only sets itself up once.
+- Never change the script address. Always keep `@main`.
+
+### Next home game (countdown and ticket options)
+
+On the **Game Day Guide page** (the fallback goes to Ticketmaster, since readers are already on the guide):
+
+```html
+<div data-hawks="next-game"><a href="https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493">Buy tickets to Hawks home games</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+In **News recaps and previews** (the fallback goes to the Game Day Guide):
+
+```html
+<div data-hawks="next-game"><a href="https://www.hawks.com.au/pages/gameday">Next home game, key times and tickets</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+### Upcoming home games
+
+```html
+<div data-hawks="upcoming-games"><a href="https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493">Tickets to all Hawks home games</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+### Plan your night
+
+```html
+<div data-hawks="plan-your-night"><a href="https://www.wsec.com.au/transport">Getting to WIN Entertainment Centre</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+### Hawks trivia and Game MVP vote
+
+```html
+<div data-hawks="trivia-mvp"><a href="https://hawks-mvp-vote.lovable.app/">Vote for your Game MVP</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+### Game preview button
+
+This shows "Read the Hawks v (opponent) preview" once that game's preview link is in `data.js`. Until then it shows "Read the latest Hawks news".
+
+```html
+<div data-hawks="game-preview"><a href="https://www.hawks.com.au/news">Hawks news and game previews</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+### Same embed twice on one page
+
+That works. The first one on the page owns the links described in section 5 (`#game-7`, `#plan-upgrade`). To make a different one the owner, add `data-hawks-primary` to its placeholder, for example `<div data-hawks="upcoming-games" data-hawks-primary>`.
+
+---
+
+## 2. Editing game data and links
+
+Everything you'd change lives in **[`data.js`](data.js)**.
+
+1. On GitHub, open `data.js` and click the **pencil icon** (top right of the file).
+2. Change the text **inside the quote marks** only. Keep the quote marks, commas and brackets exactly as they are.
+3. Click **Commit changes**, then **Commit changes** again in the box that pops up.
+4. Open the **data.js purge link** (section 3).
+5. Check the Game Day Guide page.
+
+### Common edits
+
+| To do this | Change this in `data.js` |
+|---|---|
+| Add a game preview | That game's `preview:""` becomes `preview:"https://www.hawks.com.au/news/game-preview-..."` |
+| Give a game its own ticket link | That game's `tickets:""` becomes `tickets:"https://..."`. Leave it `""` to use the default. |
+| Change a time | For example `tip:"19:30"`. Use 24-hour Sydney time; daylight saving is handled for you. |
+| Turn on Hawks trivia | `trivia: ""` becomes `trivia: "https://..."` ("Coming soon" becomes a button) |
+| Hide a key time everywhere (for example the pre-game function) | Delete that whole line from the `times` list |
+| Change a ticket, MVP or venue link | Edit it in the `links` section |
+
+### Formats
+
+- **Dates:** `"2026-10-02"` (year, month, day)
+- **Times:** `"19:30"` (24-hour)
+- **Links:** must start with `https://`
+
+### If you make a mistake
+
+The embeds are built to cope. A game with a bad date or time is skipped and the other games still show. A broken link is ignored. If the whole file breaks (for example a missing comma), every embed falls back to its plain link rather than showing an error.
+
+To see what went wrong: open the page, open the browser console (in Chrome: right-click, **Inspect**, then **Console**), and look for yellow or red messages starting with `[hawks]`. They say which game and which field is the problem.
+
+GitHub also checks every change automatically and emails you if `data.js` has a problem. The check never stops a change going live. It's a warning only.
+
+---
+
+## 3. Purge links (bookmark these)
+
+jsDelivr, the service that hosts the files, keeps a copy for up to 12 hours. After a change, open the matching link below and the new version is served within a few minutes.
+
+- **After editing `data.js`:**
+  https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/data.js
+- **After a change to `hawks.js`:**
+  https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js
+
+A page of text that includes `"status": "finished"` means it worked. If you're not sure which file changed, open both.
+
+**How quickly people see a change**
+
+- **Data changes** (`data.js`): everyone within about 10 minutes of the purge.
+- **Code changes** (`hawks.js`): new visitors straight away. Browsers are told to keep this file for up to 7 days, so some returning visitors may see the old version for a few days. Code changes should be rare. Data changes aren't affected.
+
+---
+
+## 4. Test clock (`hk_now`)
+
+Add `?hk_now=` to any page address with an embed to see it as it would look at another time (Sydney time). Only you see this; it doesn't change the page for anyone else.
+
+| To see | Add to the address |
+|---|---|
+| One minute before game 1 tips off | `?hk_now=2026-10-02T19:29` |
+| Game on (after tip-off) | `?hk_now=2026-10-02T20:00` |
+| Just after midnight, rolled to game 2 | `?hk_now=2026-10-03T00:01` |
+| After daylight saving starts | `?hk_now=2026-10-10T12:00` |
+| After the last game (season wrap) | `?hk_now=2027-02-05T00:01` |
+
+Seconds work too: `?hk_now=2026-10-02T23:59:50`. If the page address already has a `?`, use `&hk_now=` instead.
+
+---
+
+## 5. Links that open a section
+
+Use these in EDMs, social posts and recaps. Add them to the end of the Game Day Guide address, for example `https://www.hawks.com.au/pages/gameday#game-7`.
+
+| Link | What it does |
+|---|---|
+| `#game-7` | Opens Upcoming home games and game 7's key times, then scrolls to it. If game 7 is the next game, scrolls to the countdown instead. |
+| `#plan-getting-here` | Opens Plan your night at Getting here |
+| `#plan-eat-drink` | Opens Plan your night at Eat and drink |
+| `#plan-upgrade` | Opens Plan your night at Upgrade |
+
+---
+
+## 6. Rolling back
+
+If a change breaks something:
+
+1. On GitHub, open the file that changed and click **History** (top right of the file).
+2. Find the last version that worked and click its **`<>`** icon ("Browse repository at this point"). Open the same file there, click **Raw**, and copy everything.
+3. Go back to the current file, click the pencil, select everything, paste the good version over it, and commit.
+4. Open the purge link for that file (section 3).
+
+A developer can do the same with `git revert` on the bad commit, then purge.
+
+---
+
+## 7. Checking the embeds locally (for developers)
+
+Needs Node.js 18 or later.
+
+```bash
+npm install
+```
+
+```bash
+npx playwright install chromium
+```
+
+```bash
+npm run serve
+```
+
+Then open http://localhost:8080/test/. It has every embed at full width (like the Game Day Guide) and again inside a narrow News article column, with CSS that imitates Webflow. `http://localhost:8080/test/blocked.html` shows what readers see if the script can't load.
+
+To run every check (dash check, data check and the browser tests):
+
+```bash
+npm test
+```
+
+### Files
+
+| File | What it is |
+|---|---|
+| `hawks.js` | The script. Loads `data.js` from the same folder, checks it, renders every `data-hawks` placeholder. **Public address: never rename.** |
+| `data.js` | Season data and every link |
+| `test/` | Local test pages |
+| `tests/` | Automated browser tests (Playwright) |
+| `scripts/` | Dash check, data check, local server |
+| `reference/` | The original pasted embeds these modules were built from |
+| `CLAUDE.md` | Project rules and decisions |
