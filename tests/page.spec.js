@@ -19,8 +19,8 @@ test("every placeholder renders exactly once; no duplicate IDs; no console error
       };
     });
     expect(r.dupes, t).toEqual([]);
-    expect(r.hosts, t).toEqual(Array(14).fill("1:true"));
-    expect(r.instances, t).toBe(14);
+    expect(r.hosts, t).toEqual(Array(16).fill("1:true"));
+    expect(r.instances, t).toBe(16);
     expect(log.errors, t).toEqual([]);
   }
 });
@@ -30,7 +30,7 @@ test("works when Webflow drops defer and the script sits above the placeholders"
   await page.goto("/test/nodefer.html?hk_now=2026-09-27T12:00");
   await ready(page);
   await expect(page.locator('[data-hawks="next-game"] h2').first()).toHaveText("Hawks v Adelaide 36ers");
-  expect(await page.locator(".hk-host").count()).toBe(14);
+  expect(await page.locator(".hk-host").count()).toBe(16);
   expect(log.errors).toEqual([]);
 });
 
@@ -45,13 +45,15 @@ test("script blocked: every fallback link is visible, readable and correct", asy
     ["game-preview", "Hawks news and game previews", "https://www.hawks.com.au/news", true],
     ["girls-in-the-game", "Girls in the Game: dates and registration", "https://www.hawks.com.au/pages/girls-in-the-game", true],
     ["newsletter", "Join the Hawks mailing list", "https://mailchi.mp/hawks/illawarra-hawks-newsletter", true],
+    ["top-10", "Hawks history: all-time top 10 single-game feats", "https://www.hawks.com.au/", true],
     ["next-game", "Next home game, key times and tickets", "https://www.hawks.com.au/pages/gameday", true],
     ["game-preview", "Hawks news and game previews", "https://www.hawks.com.au/news", true],
     ["upcoming-games", "Tickets to all Hawks home games", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493", true],
     ["plan-your-night", "Getting to WIN Entertainment Centre", "https://www.wsec.com.au/transport", true],
     ["trivia-mvp", "Vote for your Game MVP", "https://hawks-mvp-vote.lovable.app/", true],
     ["girls-in-the-game", "Girls in the Game: dates and registration", "https://www.hawks.com.au/pages/girls-in-the-game", true],
-    ["newsletter", "Join the Hawks mailing list", "https://mailchi.mp/hawks/illawarra-hawks-newsletter", true]
+    ["newsletter", "Join the Hawks mailing list", "https://mailchi.mp/hawks/illawarra-hawks-newsletter", true],
+    ["top-10", "Hawks history: all-time top 10 single-game feats", "https://www.hawks.com.au/", true]
   ]);
 });
 
@@ -101,7 +103,7 @@ test("heading levels: each module starts at H2 and only uses H2 and H3", async (
 test("[hidden] wins on every module root, even roots that set display", async ({ page }) => {
   await page.goto("/test/?hk_now=2026-09-27T12:00");
   await ready(page);
-  const shown = await page.evaluate(() => [".hkng", ".hksl", ".hkpn", ".hkpv", ".hkgp", ".hkscta"].filter((sel) => {
+  const shown = await page.evaluate(() => [".hkng", ".hksl", ".hkpn", ".hkpv", ".hkgp", ".hkscta", ".hksfeats"].filter((sel) => {
     const el = document.querySelector(sel); el.hidden = true;
     const vis = getComputedStyle(el).display !== "none"; el.hidden = false; return vis;
   }));

@@ -230,16 +230,22 @@
     pickPrimaries();
     var s = state(), added = false;
     [].forEach.call(D.querySelectorAll("[data-hawks]:not([data-hawks-ready])"), function (el) {
-      var name = el.getAttribute("data-hawks"), mod = H.modules[name];
+      var name = el.getAttribute("data-hawks"), mod = H.modules[name], extra;
+      if (mod && mod.extra) {
+        /* This module has its own data file: load it the first time it's needed, render when it arrives. */
+        extra = loadExtra(mod.extra);
+        if (extra === LOADING) return;
+      }
       el.setAttribute("data-hawks-ready", "");
       if (!mod) { warn("unknown embed \"" + name + "\"; leaving its fallback link in place. Check the spelling in the placeholder."); return; }
+      if (mod.extra && !extra) return;
       var orig = el.innerHTML;
       try {
         addFonts();
         addCss("_host", ".hk-host{display:block;container-type:inline-size;margin:0;padding:0;}");
         addCss(mod.cssKey || name, mod.css);
         el.classList.add("hk-host");
-        var x = mod.render(el, { primary: primaries[name] === el, state: s, data: H.data, theme: el.getAttribute("data-hawks-theme") === "light" ? "light" : "dark" }) || {};
+        var x = mod.render(el, { primary: primaries[name] === el, state: s, data: H.data, extra: extra, theme: el.getAttribute("data-hawks-theme") === "light" ? "light" : "dark" }) || {};
         x.name = name; x.el = el; x.primary = primaries[name] === el;
         H.instances.push(x);
         added = true;
@@ -256,6 +262,27 @@
     }
   }
   H.scan = scan;
+
+  /* Module data files (for example top10.js), loaded only on pages that use that module.
+     Returns LOADING while the file is on its way, the checked data once it has arrived,
+     or null if it failed (the placeholder then keeps its fallback link). */
+  var LOADING = {}, extras = {};
+  function loadExtra(spec) {
+    var f = spec.file;
+    if (f in extras) return extras[f];
+    extras[f] = LOADING;
+    var s = D.createElement("script");
+    s.src = base + f + "?v=" + Math.floor(Date.now() / 600000);
+    s.onload = function () {
+      var raw = W[spec.global];
+      if (!raw) fail(f + " did not set window." + spec.global + ". Check " + f + " for a typo (a missing comma or quote mark).");
+      extras[f] = raw ? spec.validate(raw) : null;
+      scan();
+    };
+    s.onerror = function () { fail("could not load " + s.src + ". Those embeds are showing their fallback links."); extras[f] = null; scan(); };
+    (D.head || D.documentElement).appendChild(s);
+    return LOADING;
+  }
 
   /* ---------------- Hash links ---------------- */
 
@@ -839,6 +866,119 @@
       var c = ctaShell(el, ctx, "Hawks Newsletter", "Be the first to know");
       c.body.textContent = "Team news, ticket releases and game day updates, straight from us to your inbox. Sign up in seconds and stay in the loop all season.";
       c.buttons.innerHTML = ctaButton(H.data.links.newsletter, "Join the mailing list");
+      return {};
+    }
+  };
+
+
+  /* ---------------- top-10 (.hksfeats) ----------------
+     All-time top 10 single-game feats, one table per stat. Data in top10.js,
+     loaded only on pages with this embed. Every row that equals the record is highlighted. */
+  function checkTop10(raw) {
+    var out = { note: typeof raw.note === "string" ? raw.note : "", categories: [] };
+    (Array.isArray(raw.categories) ? raw.categories : []).forEach(function (c, i) {
+      var who = "top10.js category " + (c && c.tab ? "\"" + c.tab + "\"" : i + 1);
+      if (!c || typeof c.tab !== "string" || typeof c.label !== "string" || !Array.isArray(c.rows)) { warn(who + " skipped: needs tab, label and rows"); return; }
+      var rows = [];
+      c.rows.forEach(function (r, j) {
+        if (Array.isArray(r) && r.length === 5 && typeof r[0] === "string" && r[0].trim() && typeof r[1] === "number" && isFinite(r[1]) &&
+            typeof r[2] === "string" && typeof r[3] === "string" && typeof r[4] === "string") rows.push(r);
+        else warn(who + " row " + (j + 1) + " skipped: expected [\"Player\", number, \"Date\", \"Opponent\", \"Result\"]");
+      });
+      if (!rows.length) { warn(who + " skipped: no valid rows"); return; }
+      out.categories.push({ tab: c.tab, label: c.label, record: String(c.record || ""), recordDetail: String(c.recordDetail || ""), rows: rows });
+    });
+    if (!out.categories.length) { fail("top10.js has no valid categories"); return null; }
+    return out;
+  }
+
+  M["top-10"] = {
+    extra: { file: "top10.js", global: "HAWKS_TOP10", validate: checkTop10 },
+    css: [
+      ".hksfeats{--r:#FF0013;--k:#000000;--w:#FFFFFF;--row:#111111;--row-alt:#0A0A0A;--line:#222222;--muted:#9A9A9A;--body:#D8D8D8;--strong:#FFFFFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--k);color:var(--w);padding:48px 32px;margin:0;border-top:6px solid var(--r);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:left;}",
+      ".hksfeats *,.hksfeats *::before,.hksfeats *::after{box-sizing:border-box;}",
+      ".hksfeats[hidden],.hksfeats [hidden]{display:none !important;}",
+      ".hksfeats.hksfeats--light{background:var(--w);color:var(--k);border-top-color:var(--k);--row:#F5F5F5;--row-alt:#FFFFFF;--line:#E2E2E2;--muted:#6B6B6B;--body:#373737;--strong:#000000;}",
+      ".hksfeats .hksfeats__inner{max-width:860px;margin:0 auto;}",
+      ".hksfeats .hksfeats__overline{font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin:0 0 12px;text-align:center;}",
+      ".hksfeats .hksfeats__heading{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(28px,4.5cqw,40px);color:var(--strong);margin:0 0 14px;padding:0;text-align:center;}",
+      ".hksfeats .hksfeats__intro{font-size:15px;line-height:1.55;color:var(--body);margin:0 auto 28px;max-width:560px;text-align:center;}",
+      ".hksfeats .hksfeats__tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 0 24px;padding:0;}",
+      ".hksfeats .hksfeats__tab{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:13px;line-height:1.2;letter-spacing:0.05em;text-transform:uppercase;color:var(--strong);background:transparent;border:2px solid var(--line);border-radius:0;padding:10px 16px;margin:0;cursor:pointer;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hksfeats .hksfeats__tab:hover{border-color:var(--r);}",
+      ".hksfeats .hksfeats__tab:active{transform:scale(0.98);}",
+      ".hksfeats .hksfeats__tab:focus-visible{outline:2px solid var(--r);outline-offset:2px;}",
+      ".hksfeats .hksfeats__tab[aria-pressed=\"true\"]{background:var(--r);border-color:var(--r);color:var(--w);}",
+      ".hksfeats .hksfeats__record{display:flex;align-items:baseline;justify-content:center;gap:14px;flex-wrap:wrap;border:2px solid var(--r);padding:16px 20px;margin:0 0 20px;}",
+      ".hksfeats .hksfeats__record-label{font-weight:700;font-size:11px;line-height:1.3;letter-spacing:0.08em;text-transform:uppercase;color:var(--r);}",
+      ".hksfeats .hksfeats__record-stat{font-family:'Anton',Impact,sans-serif;font-size:clamp(22px,3.2cqw,30px);text-transform:uppercase;line-height:1;color:var(--strong);}",
+      ".hksfeats .hksfeats__record-detail{font-size:13px;line-height:1.4;color:var(--muted);}",
+      ".hksfeats .hksfeats__tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0;}",
+      ".hksfeats .hksfeats__table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.4;margin:0;background:transparent;border:0;}",
+      ".hksfeats .hksfeats__caption{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}",
+      ".hksfeats .hksfeats__table th{font-weight:700;font-size:11px;line-height:1.3;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border:0;border-bottom:2px solid var(--r);white-space:nowrap;background:transparent;}",
+      ".hksfeats .hksfeats__table td{font-size:14px;line-height:1.4;padding:12px;border:0;border-bottom:1px solid var(--line);color:var(--body);white-space:nowrap;text-align:left;}",
+      ".hksfeats .hksfeats__table tbody tr:nth-child(odd){background:var(--row);}",
+      ".hksfeats .hksfeats__table tbody tr:nth-child(even){background:var(--row-alt);}",
+      ".hksfeats .hksfeats__table .hksfeats__rank{font-family:'Anton',Impact,sans-serif;font-size:18px;line-height:1.2;color:var(--muted);width:44px;text-align:center;}",
+      ".hksfeats .hksfeats__table .hksfeats__player{font-weight:700;color:var(--strong);}",
+      ".hksfeats .hksfeats__table .hksfeats__stat{font-family:'Anton',Impact,sans-serif;font-size:18px;line-height:1.2;color:var(--strong);letter-spacing:0.02em;}",
+      /* Record rows: a red left edge and full-strength text (no dark red background). */
+      ".hksfeats .hksfeats__table tr.hksfeats__row--record td{color:var(--strong);}",
+      ".hksfeats .hksfeats__table tr.hksfeats__row--record td:first-child{box-shadow:inset 4px 0 0 var(--r);}",
+      ".hksfeats .hksfeats__note{font-size:13px;line-height:1.5;color:var(--muted);margin:18px 0 0;text-align:center;}",
+      "@container (max-width:600px){",
+      ".hksfeats{padding:36px 16px;}",
+      ".hksfeats .hksfeats__table th.hksfeats__col--extra,.hksfeats .hksfeats__table td.hksfeats__col--extra{display:none;}",
+      ".hksfeats .hksfeats__table td,.hksfeats .hksfeats__table th{padding:10px 8px;}",
+      "}",
+      /* Small phones: tighter cells, and long names wrap so the table fits without sideways scrolling. */
+      "@container (max-width:420px){",
+      ".hksfeats .hksfeats__table td,.hksfeats .hksfeats__table th{padding:9px 5px;}",
+      ".hksfeats .hksfeats__table td{font-size:13px;}",
+      ".hksfeats .hksfeats__table .hksfeats__rank{width:26px;font-size:16px;}",
+      ".hksfeats .hksfeats__table .hksfeats__stat{font-size:16px;}",
+      ".hksfeats .hksfeats__table .hksfeats__player{white-space:normal;min-width:72px;}",
+      "}",
+      "@media (prefers-reduced-motion:reduce){.hksfeats .hksfeats__tab{transition:none;}.hksfeats .hksfeats__tab:active{transform:none;}}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var T = ctx.extra, groupId = uid("top10-cats");
+      el.innerHTML =
+        '<section class="hksfeats' + (ctx.theme === "light" ? " hksfeats--light" : "") + '"><div class="hksfeats__inner">' +
+        '<p class="hksfeats__overline">Hawks History</p>' +
+        '<h2 class="hksfeats__heading">All-Time Top 10 Single-Game Feats</h2>' +
+        '<p class="hksfeats__intro">The biggest individual performances in Hawks history - every game since 1979, one table per stat. Pick a category.</p>' +
+        '<div class="hksfeats__tabs" role="group" aria-label="Stat categories" id="' + groupId + '">' +
+        T.categories.map(function (c, i) { return '<button class="hksfeats__tab" type="button" aria-pressed="' + (i === 0) + '" data-i="' + i + '">' + esc(c.tab) + "</button>"; }).join("") +
+        "</div>" +
+        '<div class="hksfeats__record" aria-live="polite"><span class="hksfeats__record-label">Club record</span><span class="hksfeats__record-stat"></span><span class="hksfeats__record-detail"></span></div>' +
+        '<div class="hksfeats__tablewrap"><table class="hksfeats__table"><caption class="hksfeats__caption"></caption><thead><tr>' +
+        '<th scope="col">#</th><th scope="col">Player</th><th scope="col" class="hksfeats__statcol"></th><th scope="col">Date</th>' +
+        '<th scope="col" class="hksfeats__col--extra">Opponent</th><th scope="col" class="hksfeats__col--extra">Result</th>' +
+        "</tr></thead><tbody></tbody></table></div>" +
+        (T.note ? '<p class="hksfeats__note">' + esc(T.note) + "</p>" : "") +
+        "</div></section>";
+      var root = el.firstChild, q = function (c) { return root.querySelector(c); };
+      var tabs = [].slice.call(root.querySelectorAll(".hksfeats__tab"));
+
+      function show(i) {
+        var c = T.categories[i], top = c.rows[0][1];
+        tabs.forEach(function (b, j) { b.setAttribute("aria-pressed", String(j === i)); });
+        q(".hksfeats__record-stat").textContent = c.record;
+        q(".hksfeats__record-detail").textContent = c.recordDetail;
+        q(".hksfeats__record").hidden = !c.record;
+        q(".hksfeats__caption").textContent = "Top 10 single-game feats: " + c.tab;
+        q(".hksfeats__statcol").textContent = c.label;
+        q("tbody").innerHTML = c.rows.map(function (r, n) {
+          return "<tr" + (r[1] === top ? ' class="hksfeats__row--record"' : "") + ">" +
+            '<td class="hksfeats__rank">' + (n + 1) + '</td><td class="hksfeats__player">' + esc(r[0]) + '</td><td class="hksfeats__stat">' + r[1] + "</td>" +
+            "<td>" + esc(r[2]) + '</td><td class="hksfeats__col--extra">' + esc(r[3]) + '</td><td class="hksfeats__col--extra">' + esc(r[4]) + "</td></tr>";
+        }).join("");
+      }
+      tabs.forEach(function (b, i) { b.addEventListener("click", function () { show(i); }); });
+      show(0);
       return {};
     }
   };
