@@ -48,6 +48,8 @@ Requirements:
 - Embeds point at **`@main`** and never change. Do not use version tags in embed URLs: game data changes weekly and editors cannot update the URL in dozens of recaps.
 - jsDelivr caches branch URLs (up to about 12 hours). After each change, the editor opens a purge URL for each changed file, in the form `https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/<file>`. **Verify this format against jsDelivr's current documentation**, then document the exact purge URLs in `README.md` so they can be bookmarked.
 - Rollback is a git revert (or restoring the file on GitHub) followed by a purge.
+- Purge URL format verified against the live CDN on 27 September 2026: `https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/<file>` returns `"status": "finished"`.
+- jsDelivr sends `Cache-Control: public, max-age=604800, s-maxage=43200` for branch files: 12 hours at the CDN, but **7 days in visitors' browsers**, which a purge cannot clear. jsDelivr ignores query strings (same cached object), so `hawks.js` loads `data.js?v=<10 minute bucket>`: data edits reach everyone within about 10 minutes of a purge. `hawks.js` itself can be stale for up to 7 days for returning visitors, so keep code changes rare and backwards compatible with `data.js`.
 
 ### Data
 
@@ -170,7 +172,7 @@ Also spot-check against the reference embeds side by side: same look, same behav
 
 ## Open items (do not invent answers; ask or leave a marked placeholder)
 
-- News listing or game previews category URL (for the `game-preview` fallback)
+- News listing URL for the `game-preview` fallback: using `https://www.hawks.com.au/news` (verified live) until the editor confirms. Fallback button text "Read the latest Hawks news" and hiding the button after the season are proposed defaults awaiting sign-off.
 - Hawks trivia URL (show "Coming soon" until provided)
 - Bus routes near WIN Entertainment Centre (currently omitted; copy says check Transport for NSW)
 - "Around 1,200 parking spaces" and "about a 15 minute walk" from Wollongong Station (unverified, from club copy)

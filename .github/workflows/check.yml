@@ -1,0 +1,18 @@
+# Checks every change to main: data.js is valid and nothing contains an em or en dash.
+# This never blocks or builds anything. Changes go live from jsDelivr whether it passes
+# or not. If it fails, GitHub emails the person who made the change.
+name: Check data and copy
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check-dashes.mjs
+      - run: node scripts/check-data.mjs
