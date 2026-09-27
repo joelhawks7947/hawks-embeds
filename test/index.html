@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hawks embeds: local test page</title>
+<link rel="stylesheet" href="webflow-sim.css">
+</head>
+<body>
+<div class="sim-head">hawks.com.au (simulated Webflow page)</div>
+<p class="sim-note">Local test page. Try <code>?hk_now=2026-10-02T19:29</code>, <code>#game-7</code>, <code>#plan-upgrade</code>. The fallback-only view is <a href="blocked.html">blocked.html</a>.</p>
+
+<!-- ============ GAME DAY GUIDE PAGE (full width Code Embeds) ============ -->
+<p class="sim-label">Game Day Guide page: Code Embeds</p>
+<div class="w-embed w-script">
+<div data-hawks="next-game"><a href="https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493">Buy tickets to Hawks home games</a></div>
+<script src="../hawks.js" defer></script>
+</div>
+<div class="w-embed w-script">
+<div data-hawks="upcoming-games"><a href="https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493">Tickets to all Hawks home games</a></div>
+<script src="../hawks.js" defer></script>
+</div>
+<div class="w-embed w-script">
+<div data-hawks="plan-your-night"><a href="https://www.wsec.com.au/transport">Getting to WIN Entertainment Centre</a></div>
+<script src="../hawks.js" defer></script>
+</div>
+<div class="w-embed w-script">
+<div data-hawks="trivia-mvp"><a href="https://hawks-mvp-vote.lovable.app/">Vote for your Game MVP</a></div>
+<script src="../hawks.js" defer></script>
+</div>
+<div class="w-embed w-script">
+<div data-hawks="game-preview"><a href="https://www.hawks.com.au/news">Hawks news and game previews</a></div>
+<script src="../hawks.js" defer></script>
+</div>
+
+<!-- ============ NEWS RECAP (rich text, narrow column) ============ -->
+<p class="sim-label">News recap: embeds inside rich text</p>
+<article class="sim-article">
+  <h1>Hawks hold on in the Gong</h1>
+  <div class="w-richtext">
+    <p>This is sample recap body copy, standing in for a real News article, so we can see how embeds sit inside the rich text column.</p>
+    <h2>What's next</h2>
+    <div class="w-embed w-script">
+      <div data-hawks="next-game"><a href="https://www.hawks.com.au/pages/gameday">Next home game, key times and tickets</a></div>
+      <script src="../hawks.js" defer></script>
+    </div>
+    <p>More sample body copy between embeds.</p>
+    <ul><li>A rich text list item</li><li>Another list item</li></ul>
+    <div class="w-embed w-script">
+      <div data-hawks="game-preview"><a href="https://www.hawks.com.au/news">Hawks news and game previews</a></div>
+      <script src="../hawks.js" defer></script>
+    </div>
+    <div class="w-embed w-script">
+      <div data-hawks="upcoming-games"><a href="https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493">Tickets to all Hawks home games</a></div>
+      <script src="../hawks.js" defer></script>
+    </div>
+    <div class="w-embed w-script">
+      <div data-hawks="plan-your-night"><a href="https://www.wsec.com.au/transport">Getting to WIN Entertainment Centre</a></div>
+      <script src="../hawks.js" defer></script>
+    </div>
+    <div class="w-embed w-script">
+      <div data-hawks="trivia-mvp"><a href="https://hawks-mvp-vote.lovable.app/">Vote for your Game MVP</a></div>
+      <script src="../hawks.js" defer></script>
+    </div>
+    <p>End of sample recap.</p>
+  </div>
+</article>
+</body>
+</html>
