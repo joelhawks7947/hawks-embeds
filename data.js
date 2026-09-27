@@ -72,22 +72,22 @@ window.HAWKS_DATA = {
      tickets: "" uses defaultTickets above.
      preview: paste the News game preview link once it is published. */
   games: [
-    {n:1,  date:"2026-10-02", opp:"Adelaide 36ers",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
-    {n:2,  date:"2026-10-09", opp:"Tasmania JackJumpers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
-    {n:3,  date:"2026-10-11", opp:"Cairns Taipans",               func:"15:30", doors:"16:00", show:"16:30", tip:"17:00", tickets:"", preview:""},
-    {n:4,  date:"2026-10-22", opp:"Sydney Kings",                 func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
-    {n:5,  date:"2026-10-24", opp:"Brisbane Bullets",             func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"", preview:""},
-    {n:6,  date:"2026-11-19", opp:"Adelaide 36ers",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
-    {n:7,  date:"2026-12-04", opp:"Sydney Kings",                 func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
-    {n:8,  date:"2026-12-10", opp:"Tasmania JackJumpers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
-    {n:9,  date:"2026-12-20", opp:"Melbourne United",             func:"13:30", doors:"14:00", show:"14:30", tip:"15:00", tickets:"", preview:""},
-    {n:10, date:"2026-12-27", opp:"New Zealand Breakers",         func:"13:30", doors:"14:00", show:"14:30", tip:"15:00", tickets:"", preview:""},
-    {n:11, date:"2026-12-31", opp:"South East Melbourne Phoenix", func:"15:30", doors:"16:30", show:"17:00", tip:"17:30", tickets:"", preview:""},
-    {n:12, date:"2027-01-02", opp:"Cairns Taipans",               func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"", preview:""},
-    {n:13, date:"2027-01-06", opp:"Perth Wildcats",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
-    {n:14, date:"2027-01-20", opp:"New Zealand Breakers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
-    {n:15, date:"2027-01-30", opp:"Perth Wildcats",               func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"", preview:""},
-    {n:16, date:"2027-02-04", opp:"Brisbane Bullets",             func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"", preview:""},
+    {n:1,  date:"2026-10-02", opp:"Adelaide 36ers",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-02-10-2026/event/130064FDD1FC7914", preview:""},
+    {n:2,  date:"2026-10-09", opp:"Tasmania JackJumpers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-09-10-2026/event/130064FE8BBF264B", preview:""},
+    {n:3,  date:"2026-10-11", opp:"Cairns Taipans",               func:"15:30", doors:"16:00", show:"16:30", tip:"17:00", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-11-10-2026/event/130064FE93812C34", preview:""},
+    {n:4,  date:"2026-10-22", opp:"Sydney Kings",                 func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-22-10-2026/event/130064FE911C2A64", preview:""},
+    {n:5,  date:"2026-10-24", opp:"Brisbane Bullets",             func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-24-10-2026/event/130064FE93CA2C53", preview:""},
+    {n:6,  date:"2026-11-19", opp:"Adelaide 36ers",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-19-11-2026/event/130064FE93F02C68", preview:""},
+    {n:7,  date:"2026-12-04", opp:"Sydney Kings",                 func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-04-12-2026/event/130064FE91A12AF3", preview:""},
+    {n:8,  date:"2026-12-10", opp:"Tasmania JackJumpers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-10-12-2026/event/130064FE943B2CA3", preview:""},
+    {n:9,  date:"2026-12-20", opp:"Melbourne United",             func:"13:30", doors:"14:00", show:"14:30", tip:"15:00", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-20-12-2026/event/130064FE924D2B56", preview:""},
+    {n:10, date:"2026-12-27", opp:"New Zealand Breakers",         func:"13:30", doors:"14:00", show:"14:30", tip:"15:00", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-27-12-2026/event/130064FE924E2B58", preview:""},
+    {n:11, date:"2026-12-31", opp:"South East Melbourne Phoenix", func:"15:30", doors:"16:30", show:"17:00", tip:"17:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-31-12-2026/event/130064FE92A32BA4", preview:""},
+    {n:12, date:"2027-01-02", opp:"Cairns Taipans",               func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-02-01-2027/event/130064FE92A32BA7", preview:""},
+    {n:13, date:"2027-01-06", opp:"Perth Wildcats",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-06-01-2027/event/130064FE930D2BC4", preview:""},
+    {n:14, date:"2027-01-20", opp:"New Zealand Breakers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-20-01-2027/event/130064FE94712CCE", preview:""},
+    {n:15, date:"2027-01-30", opp:"Perth Wildcats",               func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-30-01-2027/event/130064FE933B2BF7", preview:""},
+    {n:16, date:"2027-02-04", opp:"Brisbane Bullets",             func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-04-02-2027/event/130064FE94922D10", preview:""},
   ]
 
 };

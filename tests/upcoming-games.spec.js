@@ -61,7 +61,7 @@ test("Tickets buttons: exact link, target, rel, label; preview only when set", a
   await open(page, "/test/?hk_now=2026-09-27T12:00");
   const up = page.locator(UP).first();
   const t2 = up.locator("#game-2 a.hksl__btn");
-  await expect(t2).toHaveAttribute("href", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493");
+  await expect(t2).toHaveAttribute("href", "https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-09-10-2026/event/130064FE8BBF264B");
   await expect(t2).toHaveAttribute("target", "_blank");
   await expect(t2).toHaveAttribute("rel", "noopener noreferrer");
   await expect(t2).toHaveAttribute("aria-label", "Tickets for Hawks v Tasmania JackJumpers, Friday 9th October");

@@ -2,10 +2,19 @@
 const { test, expect } = require("@playwright/test");
 const { loadData, referenceGames, useData, watchConsole } = require("./helpers");
 
-test("data.js games match Section 1 of the reference embed exactly", () => {
+test("data.js games match Section 1 of the reference embed exactly (apart from ticket links)", () => {
   const ours = loadData().games, ref = referenceGames();
-  expect(ours).toEqual(ref);
+  expect(ours.map((g) => ({ ...g, tickets: "" }))).toEqual(ref);
   expect(ours).toHaveLength(16);
+});
+
+test("every game has its own Ticketmaster event link for the right date", () => {
+  for (const g of loadData().games) {
+    const [y, m, d] = g.date.split("-");
+    expect(g.tickets, "game " + g.n).toMatch(new RegExp("^https://www\\.ticketmaster\\.com\\.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-" + d + "-" + m + "-" + y + "/event/[0-9A-F]{16}$"));
+  }
+  const ids = loadData().games.map((g) => g.tickets);
+  expect(new Set(ids).size).toBe(16);
 });
 
 test("data.js links match the reference and CLAUDE.md canonical links", () => {
