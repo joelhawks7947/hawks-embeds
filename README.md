@@ -5,7 +5,7 @@ One hosted script that powers the Illawarra Hawks embeds on hawks.com.au: the ne
 Every embed on the site is a short placeholder plus the same script tag. Change something here once and every page and News recap updates.
 
 - **Game data and links:** [`data.js`](data.js). This is the only file you normally edit.
-- **The script:** [`hawks.js`](hawks.js). You shouldn't need to touch it.
+- **The script:** [`hawks-core.js`](hawks-core.js), loaded by the small [`hawks.js`](hawks.js) that every embed points at. You shouldn't need to touch either.
 - **Live address:** `https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js`
 
 ---
@@ -156,7 +156,9 @@ jsDelivr, the service that hosts the files, keeps a copy for up to 12 hours. Aft
 
 - **After editing `data.js`:**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/data.js
-- **After a change to `hawks.js`:**
+- **After a code change (`hawks-core.js`):**
+  https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks-core.js
+- **Only if `hawks.js` itself changes (very rare):**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js
 
 A page of text that includes `"status": "finished"` means it worked. If you're not sure which file changed, open both.
@@ -165,8 +167,9 @@ If the old version is still showing a few minutes after a purge, wait two or thr
 
 **How quickly people see a change**
 
-- **Data changes** (`data.js`): everyone within about 10 minutes of the purge.
-- **Code changes** (`hawks.js`): new visitors straight away. Browsers are told to keep this file for up to 7 days, so some returning visitors may see the old version for a few days. Code changes should be rare. Data changes aren't affected.
+- **Data and code changes** (`data.js`, `hawks-core.js`, including new embeds): everyone within about 10 minutes of the purge.
+- **`hawks.js`** is a tiny loader that browsers may keep for up to 7 days. That's why it should never need to change.
+- If you still see an old version, try a private window or hard-refresh (Cmd+Shift+R on a Mac, Ctrl+Shift+R on Windows).
 
 ---
 
@@ -241,7 +244,8 @@ npm test
 
 | File | What it is |
 |---|---|
-| `hawks.js` | The script. Loads `data.js` from the same folder, checks it, renders every `data-hawks` placeholder. **Public address: never rename.** |
+| `hawks.js` | Tiny loader that every embed points at. Loads `hawks-core.js` from the same folder. **Public address: never rename, and avoid changing it.** |
+| `hawks-core.js` | All the embed code. Loads `data.js` from the same folder, checks it, renders every `data-hawks` placeholder. **Don't rename: the loader depends on it.** |
 | `data.js` | Season data and every link |
 | `test/` | Local test pages |
 | `tests/` | Automated browser tests (Playwright) |

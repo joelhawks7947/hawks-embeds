@@ -49,7 +49,7 @@ Requirements:
 - jsDelivr caches branch URLs (up to about 12 hours). After each change, the editor opens a purge URL for each changed file, in the form `https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/<file>`. **Verify this format against jsDelivr's current documentation**, then document the exact purge URLs in `README.md` so they can be bookmarked.
 - Rollback is a git revert (or restoring the file on GitHub) followed by a purge.
 - Purge URL format verified against the live CDN on 27 September 2026: `https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/<file>` returns `"status": "finished"`.
-- jsDelivr sends `Cache-Control: public, max-age=604800, s-maxage=43200` for branch files: 12 hours at the CDN, but **7 days in visitors' browsers**, which a purge cannot clear. jsDelivr ignores query strings (same cached object), so `hawks.js` loads `data.js?v=<10 minute bucket>`: data edits reach everyone within about 10 minutes of a purge. `hawks.js` itself can be stale for up to 7 days for returning visitors, so keep code changes rare and backwards compatible with `data.js`.
+- jsDelivr sends `Cache-Control: public, max-age=604800, s-maxage=43200` for branch files: 12 hours at the CDN, but **7 days in visitors' browsers**, which a purge cannot clear. jsDelivr ignores query strings (same cached object), so `hawks.js` loads `data.js?v=<10 minute bucket>`: data edits reach everyone within about 10 minutes of a purge. Because `hawks.js` could be stale for up to 7 days (returning visitors saw new embeds as fallback links after the first release), `hawks.js` is now a **tiny loader that should never change**: it loads `hawks-core.js?v=<10 minute bucket>` from the same folder, and the core loads `data.js` the same way. Code changes go in `hawks-core.js` and are purged there; keep them backwards compatible with `data.js`, since the CDN can briefly serve a new core with old data or the reverse.
 
 ### Data
 
@@ -96,7 +96,8 @@ Keep the season-end, "Game on" and rollover logic shared, not duplicated per mod
 
 Once these are in use in EDMs, social posts and recaps, changing them breaks links and embeds silently.
 
-- Script URL path: `hawks-embeds@main/hawks.js` (confirm the final filename once, then never rename it)
+- Script URL path: `hawks-embeds@main/hawks.js` (the loader; never rename it, and avoid changing it)
+- Core and data file names next to it: `hawks-core.js`, `data.js` (the loader and core fetch them by name)
 - Placeholder names: `next-game`, `upcoming-games`, `plan-your-night`, `trivia-mvp`, `game-preview`, `girls-in-the-game`, `newsletter`
 - Placeholder attributes: `data-hawks-primary`, `data-hawks-theme="light"`
 - Hash links: `#game-N`, `#plan-getting-here`, `#plan-eat-drink`, `#plan-upgrade`
@@ -193,7 +194,7 @@ Also spot-check against the reference embeds side by side: same look, same behav
 
 ## Standalone embeds still to convert
 
-The editor has other standalone embeds pasted on many pages. Convert them one at a time into modules in `hawks.js` (same script tag), following the Working style below. Date-driven content goes in `data.js`, never in code (see the 7-day browser cache note). Originals go in `reference/` and get a word-for-word copy test.
+The editor has other standalone embeds pasted on many pages. Convert them one at a time into modules in `hawks-core.js` (same hawks.js script tag), following the Working style below. Date-driven content goes in `data.js`, never in code (see the 7-day browser cache note). Originals go in `reference/` and get a word-for-word copy test.
 
 - `reference/top-10.html` (`.hksfeats`): not started. Its copy contains an em dash (line 226), so it fails the dash check and has not been committed; ask the editor for replacement wording before committing it.
 
