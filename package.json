@@ -1,0 +1,14 @@
+{
+  "name": "hawks-embeds",
+  "private": true,
+  "description": "Illawarra Hawks hosted embeds for hawks.com.au, served by jsDelivr",
+  "scripts": {
+    "serve": "node scripts/serve.mjs",
+    "check:dashes": "node scripts/check-dashes.mjs",
+    "check:data": "node scripts/check-data.mjs",
+    "test": "npm run check:dashes && npm run check:data && playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
