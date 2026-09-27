@@ -645,7 +645,7 @@
 
 
   /* ---------------- trivia-mvp (.hkpv) ----------------
-     Two-panel slab: Hawks trivia (black) and Game MVP vote (red).
+     Two-panel slab: Hawks trivia (red) and Game MVP vote (black).
      Stays on after the season. Trivia shows "Coming soon" until links.trivia is set. */
   M["trivia-mvp"] = {
     css: [
@@ -663,7 +663,8 @@
       ".hkpv .hkpv__panel--k a.hkpv__btn:hover{background:var(--r);border-color:var(--r);color:var(--w);}",
       ".hkpv a.hkpv__btn:active{transform:scale(0.98);}",
       ".hkpv a.hkpv__btn:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
-      ".hkpv .hkpv__soon{background:transparent;color:var(--w);cursor:default;}",
+      /* Black on red: white text on Hawks red is 3.99:1, below AA for 16px text. */
+      ".hkpv .hkpv__soon{background:transparent;border-color:var(--k);color:var(--k);cursor:default;}",
       "@container (max-width:700px){",
       ".hkpv{grid-template-columns:1fr;}",
       ".hkpv .hkpv__panel{padding:40px 16px;gap:20px;}",
@@ -676,10 +677,10 @@
       var L = ctx.data.links;
       el.innerHTML =
         '<section class="hkpv" aria-label="Hawks trivia and Game MVP vote">' +
-        '<div class="hkpv__panel hkpv__panel--k"><h2 class="hkpv__head">Hawks trivia</h2>' +
+        '<div class="hkpv__panel hkpv__panel--r hkpv__trivia"><h2 class="hkpv__head">Hawks trivia</h2>' +
         (L.trivia ? '<a class="hkpv__btn"' + ext(L.trivia) + ">Test your knowledge</a>" : '<span class="hkpv__btn hkpv__soon">Coming soon</span>') +
         "</div>" +
-        '<div class="hkpv__panel hkpv__panel--r">' +
+        '<div class="hkpv__panel hkpv__panel--k hkpv__mvp">' +
         (L.mvpImage ? '<img class="hkpv__img" src="' + esc(L.mvpImage) + '" width="1080" height="1080" loading="lazy" alt="Vote for your Greater Bank Game MVP">' : "") +
         (L.mvpVote ? '<a class="hkpv__btn"' + ext(L.mvpVote) + ">Place your vote</a>" : "") +
         "</div></section>";
