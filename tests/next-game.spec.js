@@ -100,8 +100,14 @@ test("ticket panels and preview button: exact links, target, rel, labels", async
   const check = async (loc, href, label) => {
     await expect(loc).toBeVisible();
     await expect(loc).toHaveAttribute("href", href);
-    await expect(loc).toHaveAttribute("target", "_blank");
-    await expect(loc).toHaveAttribute("rel", "noopener noreferrer");
+    if (href.startsWith("https://www.hawks.com.au/")) {
+      // Our own pages open in the same tab.
+      await expect(loc).not.toHaveAttribute("target", /.*/);
+      await expect(loc).not.toHaveAttribute("rel", /.*/);
+    } else {
+      await expect(loc).toHaveAttribute("target", "_blank");
+      await expect(loc).toHaveAttribute("rel", "noopener noreferrer");
+    }
     if (label) await expect(loc).toHaveAttribute("aria-label", label);
   };
   await expect(ng.locator(".hkng__oh")).toHaveText(["Single game ticket", "3 & 5 game Flexi pack", "Season membership"]);

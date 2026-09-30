@@ -129,7 +129,7 @@ Add new things; don't rename or remove existing ones.
 - `[hidden]` must win: include `.prefix[hidden], .prefix [hidden] {display:none !important;}` for every root that sets `display` (a real bug we hit: a root with `display:grid` ignored `hidden`).
 - Selector order is load-bearing where specificity ties. Keep a deliberate order.
 - **Never** output document scaffolding (`<!DOCTYPE>`, `<html>`, `<head>`, `<body>`, `<meta>`) or global resets (`body{margin:0}`) into the page.
-- External links: `target="_blank" rel="noopener noreferrer"`. `tel:` and `mailto:` links have no `target`.
+- External links (any site other than hawks.com.au): `target="_blank" rel="noopener noreferrer"`. Links to hawks.com.au pages (with or without `www.`) open in the **same tab**, with no `target` or `rel` (editor's request, 30 September 2026); use `ext()` or `setLink()`, which apply this rule. `tel:` and `mailto:` links have no `target`.
 
 ## Accessibility (WCAG 2.2 AA)
 
@@ -178,7 +178,7 @@ Build a local test page (`test/index.html`) that includes every placeholder, loa
 8. Multiple placeholders and duplicate script tags on one page: renders once each, script initialises once, no duplicate IDs.
 9. Script blocked: fallback links visible and working.
 10. Widths 320, 390, 768, 1280: no horizontal scroll.
-11. Every link: exact URL, `target` and `rel` as specified.
+11. Every link: exact URL, `target` and `rel` as specified (hawks.com.au links in the same tab, everything else in a new tab).
 12. No console errors. No em dashes or en dashes anywhere in the repo (add a check).
 
 Also spot-check against the reference embeds side by side: same look, same behaviour.

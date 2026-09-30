@@ -76,7 +76,8 @@ test("Tickets buttons: exact link, target, rel, label; preview only when set", a
   const pv = up.locator("#game-7 .hksl__panel a.hksl__btn");
   await expect(pv).toHaveAttribute("href", "https://www.hawks.com.au/news/test-7");
   await expect(pv).toHaveText("Read the game preview");
-  await expect(pv).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(pv).not.toHaveAttribute("target", /.*/);
+  await expect(pv).not.toHaveAttribute("rel", /.*/);
   await expect(up.locator("#game-2 .hksl__panel a.hksl__btn")).toHaveCount(0);
 });
 

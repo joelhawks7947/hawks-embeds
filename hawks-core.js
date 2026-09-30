@@ -84,8 +84,16 @@
   var uidN = 0;
   function uid(stem) { var id; do { id = "hk" + (++uidN) + "-" + stem; } while (D.getElementById(id)); return id; }
   /* External link attributes, or "" when the link is missing (caller hides the element). */
-  function ext(url) { return url ? ' href="' + esc(url) + '" target="_blank" rel="noopener noreferrer"' : ""; }
-  H.h = { esc: esc, uid: uid, ext: ext };
+  /* Links to other hawks.com.au pages open in the same tab; everything else opens in a new tab. */
+  function isHawks(url) { return /^https:\/\/(www\.)?hawks\.com\.au([\/?#]|$)/i.test(url); }
+  function ext(url) { return url ? ' href="' + esc(url) + '"' + (isHawks(url) ? "" : ' target="_blank" rel="noopener noreferrer"') : ""; }
+  /* The same rule for a link element that's already on the page. */
+  function setLink(a, url) {
+    a.href = url;
+    if (isHawks(url)) { a.removeAttribute("target"); a.removeAttribute("rel"); }
+    else { a.target = "_blank"; a.rel = "noopener noreferrer"; }
+  }
+  H.h = { esc: esc, uid: uid, ext: ext, setLink: setLink, isHawks: isHawks };
 
   /* A game's preview link, or "" if this page IS that preview (so we never link a
      reader to the article they're reading). Ignores www., trailing slashes, ?query and #hash. */
@@ -409,7 +417,7 @@
         '<p class="hkng__over">Next home game</p>' +
         '<h2 class="hkng__head" data-k="head"></h2>' +
         '<p class="hkng__meta" data-k="meta"></p>' +
-        '<p class="hkng__pv" data-k="pv" hidden><a class="hkng__pvl" data-k="prev" href="#" target="_blank" rel="noopener noreferrer"></a></p>' +
+        '<p class="hkng__pv" data-k="pv" hidden><a class="hkng__pvl" data-k="prev" href="#"></a></p>' +
         '<ul class="hkng__timer" data-k="timer" role="timer" aria-live="off" aria-label="Time until tip-off" hidden>' +
         '<li class="hkng__unit"><span class="hkng__num" data-k="d">00</span><span class="hkng__lbl">Days</span></li>' +
         '<li class="hkng__unit"><span class="hkng__num" data-k="h">00</span><span class="hkng__lbl">Hours</span></li>' +
@@ -421,7 +429,7 @@
         '<div data-k="tix">' +
         '<div class="hkng__tix">' +
         '<div class="hkng__opt hkng__opt--r"><h3 class="hkng__oh">Single game ticket</h3>' +
-        '<a class="hkng__btn hkng__btn--inv" data-k="single" href="#" target="_blank" rel="noopener noreferrer">Buy tickets</a></div>' +
+        '<a class="hkng__btn hkng__btn--inv" data-k="single" href="#">Buy tickets</a></div>' +
         '<div class="hkng__opt hkng__opt--w"><h3 class="hkng__oh">3 &amp; 5 game Flexi pack</h3>' +
         '<a class="hkng__btn" data-k="flexi"' + ext(L.flexi) + ' aria-label="Pick your games: 3 and 5 game Flexi pack"' + hide(L.flexi) + '>Pick your games</a></div>' +
         '<div class="hkng__opt hkng__opt--k"><h3 class="hkng__oh">Season membership</h3>' +
@@ -441,11 +449,11 @@
         k.times.hidden = false;
         k.tix.hidden = false;
         var t = U.tickets(g);
-        if (t) { k.single.href = t; k.single.hidden = false; } else k.single.hidden = true;
+        if (t) { setLink(k.single, t); k.single.hidden = false; } else k.single.hidden = true;
         k.single.setAttribute("aria-label", "Buy tickets: single game, Hawks v " + g.opp);
         /* Preview link under the date, only once a preview is set in data.js. */
         var pv = previewFor(g);
-        if (pv) { k.prev.href = pv; k.prev.textContent = "Read the Hawks v " + g.opp + " preview"; k.pv.hidden = false; }
+        if (pv) { setLink(k.prev, pv); k.prev.textContent = "Read the Hawks v " + g.opp + " preview"; k.pv.hidden = false; }
         else k.pv.hidden = true;
         k.meta.classList.toggle("hkng__meta--tight", !!pv);
       }
@@ -790,14 +798,14 @@
     ].join("\n"),
 
     render: function (el, ctx) {
-      el.innerHTML = '<div class="hkgp" hidden><a class="hkgp__btn" href="#" target="_blank" rel="noopener noreferrer"></a></div>';
+      el.innerHTML = '<div class="hkgp" hidden><a class="hkgp__btn" href="#"></a></div>';
       var root = el.firstChild, a = root.firstChild, news = ctx.data.links.newsListing;
       return {
         update: function (s, changed) {
           if (!changed) return;
           var g = s.game;
-          if (g && previewFor(g)) { a.href = previewFor(g); a.textContent = "Read the Hawks v " + g.opp + " preview"; root.hidden = false; }
-          else if (g && news) { a.href = news; a.textContent = "Read the latest Hawks news"; root.hidden = false; }
+          if (g && previewFor(g)) { setLink(a, previewFor(g)); a.textContent = "Read the Hawks v " + g.opp + " preview"; root.hidden = false; }
+          else if (g && news) { setLink(a, news); a.textContent = "Read the latest Hawks news"; root.hidden = false; }
           else root.hidden = true;
         }
       };
