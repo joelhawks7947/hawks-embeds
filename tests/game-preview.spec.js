@@ -18,6 +18,7 @@ test("with a preview set: names the game and links to it", async ({ page }) => {
 });
 
 test("with no preview yet: falls back to the News listing", async ({ page }) => {
+  await useData(page, (d) => d.games.forEach((g) => { g.preview = ""; }));
   await page.goto("/test/?hk_now=2026-09-27T12:00");
   await ready(page);
   const a = page.locator(GP).first().locator("a");

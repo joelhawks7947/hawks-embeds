@@ -123,6 +123,7 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 | Turn on Hawks trivia | `trivia: ""` becomes `trivia: "https://..."` ("Coming soon" becomes a button) |
 | Hide a key time everywhere (for example the pre-game function) | Delete that whole line from the `times` list |
 | Change a ticket, MVP or venue link | Edit it in the `links` section |
+| Change or hide the pre-game function "Buy ticket" link | `functionTickets` in the `links` section (`""` hides it) |
 | Add the next Girls in the Game camp | Add a line to `girlsInTheGame` (see below) |
 
 ### Girls in the Game camps
