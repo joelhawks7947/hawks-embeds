@@ -85,6 +85,8 @@ Each module is a render function keyed by its `data-hawks` name, with its own sc
 
 | `top-10` | `.hksfeats` | `reference/top-10.html` | All-time top 10 single-game feats. Data in `top10.js` (`window.HAWKS_TOP10`), loaded only on pages with this embed. Category buttons use `aria-pressed` (not ARIA tabs); hidden table caption per category. Ranks come from row order. Every row equal to the top stat is a record row: red left edge and full-strength text (the original's dark red row background broke the design rules). The original's slogan is removed from the note. Tables fit without sideways scrolling down to a 256px column. Fallback link: https://www.hawks.com.au/pages/illawarra-hawks-history |
 
+**Preview links never point at the page they're on:** `previewFor(g)` hides a game's preview link (next-game link, upcoming-games button) when the page is that preview article, ignoring `www.`, trailing slashes, query and hash; the game-preview button falls back to the News listing there. Added at the editor's request, 30 September 2026, so the next-game embed can sit inside the preview article.
+
 Keep the season-end, "Game on" and rollover logic shared, not duplicated per module. The shared clock keeps ticking after the last home game, because non-game modules (camps) still change by date.
 
 **Themes:** CTA modules are dark by default; `data-hawks-theme="light"` on the placeholder gives the white version (black top rule). **Time format:** every module shows times with a colon ("1:30pm"), including Girls in the Game (the original embed said "1.30pm"; changed at the editor's request, 27 September 2026).
