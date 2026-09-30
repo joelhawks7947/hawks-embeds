@@ -87,6 +87,18 @@
   function ext(url) { return url ? ' href="' + esc(url) + '" target="_blank" rel="noopener noreferrer"' : ""; }
   H.h = { esc: esc, uid: uid, ext: ext };
 
+  /* A game's preview link, or "" if this page IS that preview (so we never link a
+     reader to the article they're reading). Ignores www., trailing slashes, ?query and #hash. */
+  function pageKey(url) {
+    var a = D.createElement("a");
+    a.href = url;
+    return a.hostname.replace(/^www\./, "").toLowerCase() + a.pathname.replace(/\/+$/, "").toLowerCase();
+  }
+  function previewFor(g) {
+    return g.preview && pageKey(g.preview) !== pageKey(location.href) ? g.preview : "";
+  }
+  H.previewFor = previewFor;
+
   /* ---------------- Data validation ---------------- */
 
   var DATE = /^\d{4}-\d{2}-\d{2}$/, TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -427,9 +439,10 @@
         if (t) { k.single.href = t; k.single.hidden = false; } else k.single.hidden = true;
         k.single.setAttribute("aria-label", "Buy tickets: single game, Hawks v " + g.opp);
         /* Preview link under the date, only once a preview is set in data.js. */
-        if (g.preview) { k.prev.href = g.preview; k.prev.textContent = "Read the Hawks v " + g.opp + " preview"; k.pv.hidden = false; }
+        var pv = previewFor(g);
+        if (pv) { k.prev.href = pv; k.prev.textContent = "Read the Hawks v " + g.opp + " preview"; k.pv.hidden = false; }
         else k.pv.hidden = true;
-        k.meta.classList.toggle("hkng__meta--tight", !!g.preview);
+        k.meta.classList.toggle("hkng__meta--tight", !!pv);
       }
       function wrap() {
         k.head.textContent = "That's a wrap on the home season";
@@ -534,7 +547,7 @@
           '<button class="hksl__btn hksl__btn--sec" type="button" aria-expanded="false" aria-controls="' + pid + '" aria-label="Key times for Hawks v ' + esc(g.opp) + '">Key times</button>' +
           "</div></div>" +
           '<div class="hksl__panel" id="' + pid + '" hidden><ul class="hksl__times">' + keyTimes(g, "hksl") + "</ul>" +
-          (g.preview ? '<a class="hksl__btn hksl__btn--sec"' + ext(g.preview) + ' aria-label="Read the game preview: Hawks v ' + esc(g.opp) + '">Read the game preview</a>' : "") +
+          (previewFor(g) ? '<a class="hksl__btn hksl__btn--sec"' + ext(previewFor(g)) + ' aria-label="Read the game preview: Hawks v ' + esc(g.opp) + '">Read the game preview</a>' : "") +
           "</div>";
         var tog = li.querySelector("button"), panel = li.querySelector(".hksl__panel");
         tog.addEventListener("click", function () { toggle(tog, panel, tog.getAttribute("aria-expanded") !== "true"); });
@@ -775,7 +788,7 @@
         update: function (s, changed) {
           if (!changed) return;
           var g = s.game;
-          if (g && g.preview) { a.href = g.preview; a.textContent = "Read the Hawks v " + g.opp + " preview"; root.hidden = false; }
+          if (g && previewFor(g)) { a.href = previewFor(g); a.textContent = "Read the Hawks v " + g.opp + " preview"; root.hidden = false; }
           else if (g && news) { a.href = news; a.textContent = "Read the latest Hawks news"; root.hidden = false; }
           else root.hidden = true;
         }
