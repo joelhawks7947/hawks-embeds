@@ -12,8 +12,9 @@ test("with a preview set: names the game and links to it", async ({ page }) => {
     const a = page.locator(GP).nth(i).locator("a");
     await expect(a).toHaveText("Read the Hawks v Sydney Kings preview");
     await expect(a).toHaveAttribute("href", "https://www.hawks.com.au/news/game-preview-hawks-sydney-kings-rd2-nbl27");
-    await expect(a).toHaveAttribute("target", "_blank");
-    await expect(a).toHaveAttribute("rel", "noopener noreferrer");
+    // A hawks.com.au page: opens in the same tab.
+    await expect(a).not.toHaveAttribute("target", /.*/);
+    await expect(a).not.toHaveAttribute("rel", /.*/);
   }
 });
 

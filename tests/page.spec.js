@@ -1,6 +1,6 @@
 // Whole page: single render, no duplicate IDs, fallbacks, widths, links, console, headings.
 const { test, expect } = require("@playwright/test");
-const { watchConsole, ready } = require("./helpers");
+const { useData, watchConsole, ready } = require("./helpers");
 
 const STATES = ["2026-09-27T12:00", "2026-10-02T19:45", "2026-12-31T12:00", "2027-02-04T20:00", "2027-02-05T09:00"];
 
@@ -80,13 +80,18 @@ for (const w of [320, 390, 768, 1280]) {
   });
 }
 
-test("every rendered link: https or tel, external links open safely", async ({ page }) => {
+test("every rendered link: https or tel; hawks.com.au in the same tab, other sites in a new tab", async ({ page }) => {
+  // Include hawks.com.au links: a preview link and the News fallback.
+  await useData(page, (d) => { d.games[0].preview = "https://www.hawks.com.au/news/test-preview"; });
   await page.goto("/test/?hk_now=2026-09-27T12:00");
   await ready(page);
+  expect(await page.locator('.hk-host a[href^="https://www.hawks.com.au/"]').count()).toBeGreaterThan(0);
   const bad = await page.$$eval(".hk-host a", (as) => as.filter((a) => !a.closest("[hidden]")).map((a) => {
     const h = a.getAttribute("href") || "";
     if (h.startsWith("tel:")) return a.target || a.rel ? "tel link has target/rel: " + h : null;
     if (!/^https:\/\//.test(h)) return "not https: " + a.textContent + " " + h;
+    // hawks.com.au pages open in the same tab; every other site opens in a new tab.
+    if (/^https:\/\/(www\.)?hawks\.com\.au([\/?#]|$)/i.test(h)) return a.target || a.rel ? "hawks.com.au link opens a new tab: " + h : null;
     if (a.target !== "_blank" || a.rel !== "noopener noreferrer") return "missing target/rel: " + h;
     return null;
   }).filter(Boolean));
