@@ -36,7 +36,7 @@ test("on the game's own preview article: no preview link, but countdown and tick
   // The standalone preview button falls back to the News listing instead of linking to itself.
   await expect(page.locator('[data-hawks="game-preview"] a')).toHaveText("Read the latest Hawks news");
   // Other games' previews in the upcoming list are unaffected.
-  await expect(page.locator("#game-2 .hksl__panel a")).toHaveAttribute("href", G2);
+  await expect(page.locator("#game-2 .hksl__panel a.hksl__btn")).toHaveAttribute("href", G2);
   expect(log.errors).toEqual([]);
 });
 
@@ -49,5 +49,5 @@ test("on a different article (game 2's preview): game 1's preview link still sho
   await expect(link).toHaveAttribute("href", G1);
   await expect(page.locator('[data-hawks="game-preview"] a')).toHaveText("Read the Hawks v Adelaide 36ers preview");
   // Game 2's own preview button in the upcoming list is hidden on game 2's article.
-  await expect(page.locator("#game-2 .hksl__panel a")).toHaveCount(0);
+  await expect(page.locator("#game-2 .hksl__panel a.hksl__btn")).toHaveCount(0);
 });

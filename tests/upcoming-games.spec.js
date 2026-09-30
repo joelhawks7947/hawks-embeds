@@ -38,7 +38,14 @@ test("bar opens and closes; key times toggle reveals that game's times", async (
   await expect(r3.locator(".hksl__panel")).toBeHidden();
   await kt.click();
   await expect(kt).toHaveAttribute("aria-expanded", "true");
-  await expect(r3.locator(".hksl__times li")).toHaveText(["3:30pmPre-game function", "4:00pmMain doors open", "4:30pmShow starts", "5:00pmTip-off"]);
+  await expect(r3.locator(".hksl__times li")).toHaveText(["3:30pmPre-game functionBuy ticket", "4:00pmMain doors open", "4:30pmShow starts", "5:00pmTip-off"]);
+  const buy = r3.locator(".hksl__times a");
+  await expect(buy).toHaveCount(1);
+  await expect(buy).toHaveText("Buy ticket");
+  await expect(buy).toHaveAttribute("href", "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353");
+  await expect(buy).toHaveAttribute("target", "_blank");
+  await expect(buy).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(buy).toHaveAttribute("aria-label", "Buy ticket: pre-game function, Hawks v Cairns Taipans");
   await kt.click();
   await expect(r3.locator(".hksl__panel")).toBeHidden();
   await bar.click();
@@ -66,11 +73,11 @@ test("Tickets buttons: exact link, target, rel, label; preview only when set", a
   await expect(t2).toHaveAttribute("rel", "noopener noreferrer");
   await expect(t2).toHaveAttribute("aria-label", "Tickets for Hawks v Tasmania JackJumpers, Friday 9th October");
   await expect(up.locator("#game-7 .hksl__acts a")).toHaveAttribute("href", "https://www.ticketmaster.com.au/test-game-7");
-  const pv = up.locator("#game-7 .hksl__panel a");
+  const pv = up.locator("#game-7 .hksl__panel a.hksl__btn");
   await expect(pv).toHaveAttribute("href", "https://www.hawks.com.au/news/test-7");
   await expect(pv).toHaveText("Read the game preview");
   await expect(pv).toHaveAttribute("rel", "noopener noreferrer");
-  await expect(up.locator("#game-2 .hksl__panel a")).toHaveCount(0);
+  await expect(up.locator("#game-2 .hksl__panel a.hksl__btn")).toHaveCount(0);
 });
 
 test("#game-7 opens the list and game 7's key times, and scrolls to it", async ({ page }) => {
