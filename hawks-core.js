@@ -324,6 +324,13 @@
   /* MODULES:START */
 
   /* Key times list items for a game, shared by next-game and upcoming-games. */
+  /* Pre-game function tickets (links.functionTickets, the club's Eventbrite page):
+     a "Buy ticket" link under that time, or null if there's no link. */
+  function fnTickets(g, cls) {
+    var fn = H.data.links.functionTickets;
+    return fn ? { func: '<a class="' + cls + '"' + ext(fn) + ' aria-label="Buy ticket: pre-game function, Hawks v ' + esc(g.opp) + '">Buy ticket</a>' } : null;
+  }
+
   /* extra (optional): HTML to add under a time's label, keyed by time field, e.g. { func: "<a ...>" }. */
   function keyTimes(g, p, extra) {
     return H.data.times.map(function (t) {
@@ -430,9 +437,7 @@
       function fill(g) {
         k.head.textContent = "Hawks v " + g.opp;
         k.meta.textContent = U.longDate(g.date) + ", " + ctx.data.venue;
-        /* Pre-game function tickets (links.functionTickets): a Buy ticket link under that time. */
-        var fn = ctx.data.links.functionTickets;
-        k.times.innerHTML = keyTimes(g, "hkng", fn ? { func: '<a class="hkng__tbuy"' + ext(fn) + ' aria-label="Buy ticket: pre-game function, Hawks v ' + esc(g.opp) + '">Buy ticket</a>' } : null);
+        k.times.innerHTML = keyTimes(g, "hkng", fnTickets(g, "hkng__tbuy"));
         k.times.hidden = false;
         k.tix.hidden = false;
         var t = U.tickets(g);
@@ -506,6 +511,9 @@
       ".hksl .hksl__times li{margin:0;padding:0;list-style:none;line-height:1.2;}",
       ".hksl .hksl__t{display:block;font-weight:700;font-size:18px;line-height:1.2;color:var(--k);}",
       ".hksl .hksl__tl{display:block;font-size:13px;line-height:1.3;color:#373737;margin-top:2px;}",
+      ".hksl .hksl__tbuy,.hksl .hksl__tbuy:link,.hksl .hksl__tbuy:visited{display:inline-block;margin-top:6px;font-weight:700;font-size:13px;line-height:1.3;color:var(--k);text-decoration:underline;text-underline-offset:3px;}",
+      ".hksl .hksl__tbuy:hover{color:var(--dr);text-decoration:underline;}",
+      ".hksl .hksl__tbuy:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hksl .hksl__panel .hksl__btn{margin-top:16px;}",
       "@container (max-width:600px){",
       ".hksl{padding:24px 16px;}",
@@ -546,7 +554,7 @@
           (t ? '<a class="hksl__btn"' + ext(t) + ' aria-label="Tickets for Hawks v ' + esc(g.opp) + ", " + esc(U.longDate(g.date)) + '">Tickets</a>' : "") +
           '<button class="hksl__btn hksl__btn--sec" type="button" aria-expanded="false" aria-controls="' + pid + '" aria-label="Key times for Hawks v ' + esc(g.opp) + '">Key times</button>' +
           "</div></div>" +
-          '<div class="hksl__panel" id="' + pid + '" hidden><ul class="hksl__times">' + keyTimes(g, "hksl") + "</ul>" +
+          '<div class="hksl__panel" id="' + pid + '" hidden><ul class="hksl__times">' + keyTimes(g, "hksl", fnTickets(g, "hksl__tbuy")) + "</ul>" +
           (previewFor(g) ? '<a class="hksl__btn hksl__btn--sec"' + ext(previewFor(g)) + ' aria-label="Read the game preview: Hawks v ' + esc(g.opp) + '">Read the game preview</a>' : "") +
           "</div>";
         var tog = li.querySelector("button"), panel = li.querySelector(".hksl__panel");
