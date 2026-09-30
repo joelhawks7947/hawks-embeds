@@ -312,9 +312,10 @@
   /* MODULES:START */
 
   /* Key times list items for a game, shared by next-game and upcoming-games. */
-  function keyTimes(g, p) {
+  /* extra (optional): HTML to add under a time's label, keyed by time field, e.g. { func: "<a ...>" }. */
+  function keyTimes(g, p, extra) {
     return H.data.times.map(function (t) {
-      return g[t[0]] ? '<li><span class="' + p + '__t">' + esc(U.time(g[t[0]])) + '</span><span class="' + p + '__tl">' + esc(t[1]) + "</span></li>" : "";
+      return g[t[0]] ? '<li><span class="' + p + '__t">' + esc(U.time(g[t[0]])) + '</span><span class="' + p + '__tl">' + esc(t[1]) + "</span>" + ((extra && extra[t[0]]) || "") + "</li>" : "";
     }).join("");
   }
 
@@ -344,6 +345,9 @@
       ".hkng .hkng__times li{margin:0;padding:0;line-height:1.2;list-style:none;}",
       ".hkng .hkng__t{display:block;font-weight:700;font-size:20px;line-height:1.2;color:var(--w);}",
       ".hkng .hkng__tl{display:block;font-size:13px;line-height:1.3;color:#D8D8D8;margin-top:4px;}",
+      ".hkng .hkng__tbuy,.hkng .hkng__tbuy:link,.hkng .hkng__tbuy:visited{display:inline-block;margin-top:6px;font-weight:700;font-size:13px;line-height:1.3;color:var(--w);text-decoration:underline;text-underline-offset:3px;}",
+      ".hkng .hkng__tbuy:hover{color:var(--r);text-decoration:underline;}",
+      ".hkng .hkng__tbuy:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
       ".hkng .hkng__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;padding:16px 28px;margin:0;border:2px solid var(--r);border-radius:0;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
       ".hkng .hkng__btn:link,.hkng .hkng__btn:visited{color:var(--w);text-decoration:none;}",
       ".hkng .hkng__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
@@ -414,7 +418,9 @@
       function fill(g) {
         k.head.textContent = "Hawks v " + g.opp;
         k.meta.textContent = U.longDate(g.date) + ", " + ctx.data.venue;
-        k.times.innerHTML = keyTimes(g, "hkng");
+        /* Pre-game function tickets (links.functionTickets): a Buy ticket link under that time. */
+        var fn = ctx.data.links.functionTickets;
+        k.times.innerHTML = keyTimes(g, "hkng", fn ? { func: '<a class="hkng__tbuy"' + ext(fn) + ' aria-label="Buy ticket: pre-game function, Hawks v ' + esc(g.opp) + '">Buy ticket</a>' } : null);
         k.times.hidden = false;
         k.tix.hidden = false;
         var t = U.tickets(g);

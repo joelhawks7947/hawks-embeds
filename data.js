@@ -33,6 +33,10 @@ window.HAWKS_DATA = {
   defaultTickets: "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493",
 
   links: {
+    /* "Buy ticket" link under "Pre-game function" in the next game's key times.
+       Our Eventbrite page lists every function for the season. Leave "" to hide the link. */
+    functionTickets: "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353",
+
     /* Ticket options under the next game */
     flexi:  "https://am.ticketmaster.com/thehawks/FLeximemberships",
     member: "https://am.ticketmaster.com/thehawks/",

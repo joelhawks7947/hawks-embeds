@@ -24,7 +24,7 @@ test("renders the next game, venue, key times and a live countdown", async ({ pa
   await expect(ng.locator(".hkng__over")).toHaveText("Next home game");
   await expect(ng.locator("h2")).toHaveText("Hawks v Adelaide 36ers");
   await expect(ng.locator(".hkng__meta")).toHaveText("Friday 2nd October, WIN Entertainment Centre");
-  await expect(ng.locator(".hkng__times li")).toHaveText(["6:00pmPre-game function", "6:30pmMain doors open", "7:00pmShow starts", "7:30pmTip-off"]);
+  await expect(ng.locator(".hkng__times li")).toHaveText(["6:00pmPre-game functionBuy ticket", "6:30pmMain doors open", "7:00pmShow starts", "7:30pmTip-off"]);
   await expect(ng.locator('[role="timer"]')).toHaveAttribute("aria-live", "off");
   const a = await timer(page);
   expect(a.slice(0, 2)).toEqual(["05", "07"]);
@@ -130,8 +130,36 @@ test("a game with no ticket link of its own uses the default", async ({ page }) 
 });
 
 test("no preview link (and no news fallback) until a preview is set", async ({ page }) => {
+  await useData(page, (d) => d.games.forEach((g) => { g.preview = ""; }));
   await open(page, "/test/?hk_now=2026-09-27T12:00");
   const ng = page.locator(NG).first();
   await expect(ng.locator(".hkng__pv")).toBeHidden();
   await expect(ng.locator('a[href="https://www.hawks.com.au/news"]')).toHaveCount(0);
+});
+
+test("Buy ticket link under Pre-game function goes to our Eventbrite page", async ({ page }) => {
+  await open(page, "/test/?hk_now=2026-09-27T12:00");
+  for (const i of [0, 1]) {
+    const buy = page.locator(NG).nth(i).locator(".hkng__times a");
+    await expect(buy).toHaveCount(1);
+    await expect(buy).toHaveText("Buy ticket");
+    await expect(buy).toHaveAttribute("href", "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353");
+    await expect(buy).toHaveAttribute("target", "_blank");
+    await expect(buy).toHaveAttribute("rel", "noopener noreferrer");
+    await expect(buy).toHaveAttribute("aria-label", "Buy ticket: pre-game function, Hawks v Adelaide 36ers");
+    // It sits in the Pre-game function item.
+    await expect(page.locator(NG).nth(i).locator(".hkng__times li").first().locator("a")).toHaveCount(1);
+  }
+});
+
+test("no Buy ticket link when the link is empty or a game has no function time", async ({ page }) => {
+  await useData(page, (d) => { d.games[1].func = ""; });
+  await open(page, "/test/?hk_now=2026-10-03T09:00");
+  await expect(page.locator(NG).first().locator("h2")).toHaveText("Hawks v Tasmania JackJumpers");
+  await expect(page.locator(NG).first().locator(".hkng__times a")).toHaveCount(0);
+  await page.unrouteAll();
+  await useData(page, (d) => { d.links.functionTickets = ""; });
+  await open(page, "/test/?hk_now=2026-09-27T12:00");
+  await expect(page.locator(NG).first().locator(".hkng__times a")).toHaveCount(0);
+  await expect(page.locator(NG).first().locator(".hkng__times li")).toHaveCount(4);
 });

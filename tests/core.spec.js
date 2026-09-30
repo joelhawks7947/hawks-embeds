@@ -2,9 +2,10 @@
 const { test, expect } = require("@playwright/test");
 const { loadData, referenceGames, useData, watchConsole } = require("./helpers");
 
-test("data.js games match Section 1 of the reference embed exactly (apart from ticket links)", () => {
+test("data.js games match Section 1 of the reference embed exactly (apart from ticket and preview links)", () => {
+  // Ticket links were added later, and preview links are added through the season.
   const ours = loadData().games, ref = referenceGames();
-  expect(ours.map((g) => ({ ...g, tickets: "" }))).toEqual(ref);
+  expect(ours.map((g) => ({ ...g, tickets: "", preview: "" }))).toEqual(ref);
   expect(ours).toHaveLength(16);
 });
 
