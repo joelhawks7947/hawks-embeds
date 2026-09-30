@@ -149,6 +149,8 @@ playwright-report/
 # macOS
 .DS_Store
 
-# Private notes and one-off setup docs (this repository is public)
+# Private notes (kept in the private hawks-embeds-notes repository, linked in here) and one-off setup docs.
+# This repository is public, so these must never be committed.
+CLAUDE.md
 CLAUDE.local.md
 docs/

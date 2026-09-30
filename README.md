@@ -272,4 +272,3 @@ npm test
 | `tests/` | Automated browser tests (Playwright) |
 | `scripts/` | Dash check, data check, local server |
 | `reference/` | The original pasted embeds these modules were built from |
-| `CLAUDE.md` | Project rules and decisions |
