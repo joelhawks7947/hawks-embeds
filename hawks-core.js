@@ -736,8 +736,10 @@
 
 
   /* ---------------- trivia-mvp (.hkpv) ----------------
-     Two-panel slab: Hawks trivia (red) and Game MVP vote (black).
-     Stays on after the season. Trivia shows "Coming soon" until links.trivia is set. */
+     Two-panel slab: red panel (Games Hub, or Hawks trivia) and Game MVP vote (black).
+     Stays on after the season. With links.gamesHub set, the red panel says "Your move,
+     Hawkheads" with a Play now button; without it, Hawks trivia shows "Coming soon"
+     until links.trivia is set. */
   M["trivia-mvp"] = {
     css: [
       ".hkpv{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;margin:0;padding:0;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:center;}",
@@ -767,9 +769,12 @@
     render: function (el, ctx) {
       var L = ctx.data.links;
       el.innerHTML =
-        '<section class="hkpv" aria-label="Hawks trivia and Game MVP vote">' +
-        '<div class="hkpv__panel hkpv__panel--r hkpv__trivia"><h2 class="hkpv__head">Hawks trivia</h2>' +
-        (L.trivia ? '<a class="hkpv__btn"' + ext(L.trivia) + ">Test your knowledge</a>" : '<span class="hkpv__btn hkpv__soon">Coming soon</span>') +
+        '<section class="hkpv" aria-label="' + (L.gamesHub ? "Games Hub" : "Hawks trivia") + ' and Game MVP vote">' +
+        '<div class="hkpv__panel hkpv__panel--r hkpv__trivia">' +
+        (L.gamesHub
+          ? '<h2 class="hkpv__head">Your move, Hawkheads</h2><a class="hkpv__btn"' + ext(L.gamesHub) + ' aria-label="Play now: Hawks Games Hub">Play now</a>'
+          : '<h2 class="hkpv__head">Hawks trivia</h2>' +
+            (L.trivia ? '<a class="hkpv__btn"' + ext(L.trivia) + ">Test your knowledge</a>" : '<span class="hkpv__btn hkpv__soon">Coming soon</span>')) +
         "</div>" +
         '<div class="hkpv__panel hkpv__panel--k hkpv__mvp">' +
         (L.mvpImage ? '<img class="hkpv__img" src="' + esc(L.mvpImage) + '" width="1080" height="1080" loading="lazy" alt="Vote for your Greater Bank Game MVP">' : "") +
