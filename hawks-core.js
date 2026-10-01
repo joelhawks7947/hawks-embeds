@@ -109,6 +109,7 @@
 
   /* ---------------- Data validation ---------------- */
 
+  var CW_HOURS_BEFORE = 4;
   var DATE = /^\d{4}-\d{2}-\d{2}$/, TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
   function realDate(s) {
     if (!DATE.test(s)) return false;
@@ -153,13 +154,16 @@
       if (why.length) { warn(who + " skipped: " + why.join("; ")); return; }
       var c = {};
       Object.keys(g).forEach(function (k) { c[k] = g[k]; });
-      ["tickets", "preview"].forEach(function (k) {
+      ["tickets", "preview", "courtWalk"].forEach(function (k) {
         if (c[k] && !okUrl(c[k])) { warn("game " + g.n + " " + k + " ignored: not an https:// link"); c[k] = ""; }
         c[k] = c[k] || "";
       });
       ["func", "doors", "show"].forEach(function (k) { c[k] = c[k] || ""; });
       c._tip = toUtc(c.date, c.tip);
       c._end = toUtc(nextDay(c.date), "00:00");
+      /* Court Walk tickets come off sale 4 hours before the Court Walk, which starts at the
+         pre-game function time (or tip-off if a game has no function time). */
+      c._cwOff = toUtc(c.date, c.func || c.tip) - CW_HOURS_BEFORE * 3600000;
       seen[g.n] = true;
       out.games.push(c);
     });
@@ -332,6 +336,10 @@
   /* MODULES:START */
 
   /* Key times list items for a game, shared by next-game and upcoming-games. */
+  /* A game's Court Walk link while it's still on sale, otherwise "". */
+  function courtWalkFor(g, now) { return g.courtWalk && now < g._cwOff ? g.courtWalk : ""; }
+  function courtWalkLabel(g) { return "Court Walk tickets: Hawks v " + g.opp + ", " + U.longDate(g.date); }
+
   /* Pre-game function tickets (links.functionTickets, the club's Eventbrite page):
      a "Buy ticket" link under that time, or null if there's no link. */
   function fnTickets(g, cls) {
@@ -350,7 +358,7 @@
      Next home game, preview link (once set), countdown, key times, ticket panels. */
   M["next-game"] = {
     css: [
-      ".hkng{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--k);color:var(--w);padding:48px 32px;margin:0;border-top:6px solid var(--r);text-align:center;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;scroll-margin-top:120px;}",
+      ".hkng{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--t:#4FC3BE;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--k);color:var(--w);padding:48px 32px;margin:0;border-top:6px solid var(--r);text-align:center;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;scroll-margin-top:120px;}",
       ".hkng *,.hkng *::before,.hkng *::after{box-sizing:border-box;}",
       ".hkng[hidden],.hkng [hidden]{display:none !important;}",
       ".hkng .hkng__inner{max-width:800px;margin:0 auto;}",
@@ -382,6 +390,10 @@
       ".hkng .hkng__btn:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
       ".hkng .hkng__btn--inv,.hkng .hkng__btn--inv:link,.hkng .hkng__btn--inv:visited{background:var(--w);border-color:var(--w);color:var(--k);}",
       ".hkng .hkng__btn--inv:hover{background:var(--k);border-color:var(--k);color:var(--w);}",
+      /* Court Walk: teal with black text (white on teal fails contrast); hover goes white. */
+      ".hkng .hkng__cw{margin:28px 0 0;}",
+      ".hkng .hkng__btn--cw,.hkng .hkng__btn--cw:link,.hkng .hkng__btn--cw:visited{background:var(--t);border-color:var(--t);color:var(--k);}",
+      ".hkng .hkng__btn--cw:hover{background:var(--w);border-color:var(--w);color:var(--k);}",
       ".hkng .hkng__tix{display:grid;grid-template-columns:repeat(3,1fr);margin-top:32px;}",
       ".hkng .hkng__opt{display:flex;flex-direction:column;align-items:center;gap:18px;padding:32px 16px;border:2px solid transparent;margin:0;}",
       ".hkng .hkng__opt--r{background:var(--r);}",
@@ -426,6 +438,7 @@
         "</ul>" +
         '<p class="hkng__status" data-k="status" hidden></p>' +
         '<ul class="hkng__times" data-k="times"></ul>' +
+        '<div class="hkng__cw" data-k="cw" hidden><a class="hkng__btn hkng__btn--cw" data-k="cwa" href="#">Court Walk tickets</a></div>' +
         '<div data-k="tix">' +
         '<div class="hkng__tix">' +
         '<div class="hkng__opt hkng__opt--r"><h3 class="hkng__oh">Single game ticket</h3>' +
@@ -460,7 +473,7 @@
       function wrap() {
         k.head.textContent = "That's a wrap on the home season";
         k.meta.textContent = "Thanks for every minute of noise, Hawkheads.";
-        k.timer.hidden = k.status.hidden = k.times.hidden = k.tix.hidden = k.pv.hidden = true;
+        k.timer.hidden = k.status.hidden = k.times.hidden = k.tix.hidden = k.pv.hidden = k.cw.hidden = true;
         k.meta.classList.remove("hkng__meta--tight");
       }
 
@@ -468,6 +481,10 @@
         update: function (s, changed) {
           if (s.phase === "wrap") { if (changed) wrap(); return; }
           if (changed) fill(s.game);
+          /* Court Walk button: checked every tick, so it goes 4 hours before the Court Walk. */
+          var cw = courtWalkFor(s.game, s.now);
+          if (cw && k.cwa.getAttribute("href") !== cw) { setLink(k.cwa, cw); k.cwa.setAttribute("aria-label", courtWalkLabel(s.game)); }
+          k.cw.hidden = !cw;
           if (s.phase === "live") { k.timer.hidden = true; k.status.textContent = "Game on"; k.status.hidden = false; return; }
           var n = Math.floor((s.game._tip - s.now) / 1000);
           k.d.textContent = pad(Math.floor(n / 86400)); k.h.textContent = pad(Math.floor(n % 86400 / 3600));
@@ -483,7 +500,7 @@
      Collapsed list of home games after the next game, each with tickets and key times. */
   M["upcoming-games"] = {
     css: [
-      ".hksl{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--w);color:var(--k);padding:32px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:left;}",
+      ".hksl{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--t:#4FC3BE;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--w);color:var(--k);padding:32px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:left;}",
       ".hksl *,.hksl *::before,.hksl *::after{box-sizing:border-box;}",
       ".hksl .hksl__inner{max-width:880px;margin:0 auto;}",
       ".hksl[hidden],.hksl [hidden]{display:none !important;}",
@@ -514,6 +531,10 @@
       ".hksl .hksl__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hksl .hksl__btn--sec,.hksl .hksl__btn--sec:link,.hksl .hksl__btn--sec:visited{background:transparent;border-color:var(--k);color:var(--k);}",
       ".hksl .hksl__btn--sec:hover,.hksl .hksl__btn--sec[aria-expanded=\"true\"]{background:var(--k);border-color:var(--k);color:var(--w);}",
+      /* Court Walk: teal with black text (white on teal fails contrast); hover inverts to black.
+         After the general button rules so it wins the colour tie. */
+      ".hksl .hksl__btn--cw,.hksl .hksl__btn--cw:link,.hksl .hksl__btn--cw:visited{background:var(--t);border-color:var(--t);color:var(--k);}",
+      ".hksl .hksl__btn--cw:hover{background:var(--k);border-color:var(--k);color:var(--t);}",
       ".hksl .hksl__panel{padding:0 0 18px 96px;}",
       ".hksl .hksl__times{display:flex;flex-wrap:wrap;gap:12px 32px;list-style:none;margin:0;padding:0;}",
       ".hksl .hksl__times li{margin:0;padding:0;list-style:none;line-height:1.2;}",
@@ -523,6 +544,12 @@
       ".hksl .hksl__tbuy:hover{color:var(--dr);text-decoration:underline;}",
       ".hksl .hksl__tbuy:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hksl .hksl__panel .hksl__btn{margin-top:16px;}",
+      /* Rows with a Court Walk have three buttons: below 860px they move under the game,
+         Tickets and Key times side by side, Court Walk full width underneath. */
+      "@container (max-width:860px){",
+      ".hksl .hksl__row--cw .hksl__acts{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:8px;}",
+      ".hksl .hksl__row--cw .hksl__btn--cw{grid-column:1 / -1;order:3;}",
+      "}",
       "@container (max-width:600px){",
       ".hksl{padding:24px 16px;}",
       ".hksl .hksl__bar{padding:16px;gap:12px;}",
@@ -553,13 +580,15 @@
         var rowId = ctx.primary ? "game-" + g.n : uid("game-" + g.n), pid = ctx.primary ? "game-" + g.n + "-times" : uid("game-" + g.n + "-times");
         var t = U.tickets(g);
         var li = D.createElement("li");
-        li.className = "hksl__row"; li.id = rowId; li.setAttribute("data-n", g.n);
+        var cw = courtWalkFor(g, U.now());
+        li.className = "hksl__row" + (cw ? " hksl__row--cw" : ""); li.id = rowId; li.setAttribute("data-n", g.n);
         li.innerHTML =
           '<div class="hksl__main">' +
           '<div class="hksl__date"><span class="hksl__dow">' + esc(U.dow(g.date)) + '</span><span class="hksl__dm">' + esc(U.dm(g.date)) + "</span></div>" +
           '<div class="hksl__info"><p class="hksl__opp">v ' + esc(g.opp) + '</p><p class="hksl__meta">Game ' + g.n + ", " + esc(U.time(g.tip)) + " tip-off</p></div>" +
           '<div class="hksl__acts">' +
           (t ? '<a class="hksl__btn"' + ext(t) + ' aria-label="Tickets for Hawks v ' + esc(g.opp) + ", " + esc(U.longDate(g.date)) + '">Tickets</a>' : "") +
+          (cw ? '<a class="hksl__btn hksl__btn--cw"' + ext(cw) + ' aria-label="' + esc(courtWalkLabel(g)) + '">Court Walk tickets</a>' : "") +
           '<button class="hksl__btn hksl__btn--sec" type="button" aria-expanded="false" aria-controls="' + pid + '" aria-label="Key times for Hawks v ' + esc(g.opp) + '">Key times</button>' +
           "</div></div>" +
           '<div class="hksl__panel" id="' + pid + '" hidden><ul class="hksl__times">' + keyTimes(g, "hksl", fnTickets(g, "hksl__tbuy")) + "</ul>" +
