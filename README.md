@@ -120,7 +120,7 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 | Add a game preview | That game's `preview:""` becomes `preview:"https://www.hawks.com.au/news/game-preview-..."` |
 | Give a game its own ticket link | That game's `tickets:""` becomes `tickets:"https://..."`. Leave it `""` to use the default. |
 | Change a time | For example `tip:"19:30"`. Use 24-hour Sydney time; daylight saving is handled for you. |
-| Change the Games Hub link (red panel next to the MVP vote) | `gamesHub` in the `links` section. Set it to `""` to show Hawks trivia instead. |
+| Change the Game Hub link (red panel next to the MVP vote) | `gamesHub` in the `links` section. Set it to `""` to show Hawks trivia instead. |
 | Turn on Hawks trivia (only when `gamesHub` is `""`) | `trivia: ""` becomes `trivia: "https://..."` ("Coming soon" becomes a button) |
 | Hide a key time everywhere (for example the pre-game function) | Delete that whole line from the `times` list |
 | Change a ticket, MVP or venue link | Edit it in the `links` section |

@@ -42,8 +42,8 @@ window.HAWKS_DATA = {
     member: "https://am.ticketmaster.com/thehawks/",
     picker: "https://hawks-membership-picker.lovable.app/",
 
-    /* Games Hub: the red panel next to the MVP vote says "Your move, Hawkheads"
-       with a Play now button to this link. Leave "" to show Hawks trivia instead. */
+    /* Game Hub: the red panel next to the MVP vote says "Your move, Hawkheads"
+       with a "Visit the interactive Game Hub" button to this link. Leave "" to show Hawks trivia instead. */
     gamesHub: "https://hawks-game-hub.lovable.app/",
 
     /* Hawks trivia (only used when gamesHub is ""): leave "" to show "Coming soon" */

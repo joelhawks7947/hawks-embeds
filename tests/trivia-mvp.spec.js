@@ -51,19 +51,18 @@ test("stays on after the final game", async ({ page }) => {
   await expect(page.locator(PV).first().locator(".hkpv__mvp a")).toBeVisible();
 });
 
-test("Games Hub set: Your move, Hawkheads with a Play now button", async ({ page }) => {
+test("Game Hub set: Your move, Hawkheads with a Visit the interactive Game Hub button", async ({ page }) => {
   const log = watchConsole(page);
   await page.goto("/test/");
   await ready(page);
   const pv = page.locator(PV).first();
-  await expect(pv.locator(".hkpv")).toHaveAttribute("aria-label", "Games Hub and Game MVP vote");
+  await expect(pv.locator(".hkpv")).toHaveAttribute("aria-label", "Game Hub and Game MVP vote");
   await expect(pv.locator(".hkpv__trivia h2")).toHaveText("Your move, Hawkheads");
   const a = pv.locator(".hkpv__trivia a");
-  await expect(a).toHaveText("Play now");
+  await expect(a).toHaveText("Visit the interactive Game Hub");
   await expect(a).toHaveAttribute("href", "https://hawks-game-hub.lovable.app/");
   await expect(a).toHaveAttribute("target", "_blank");
   await expect(a).toHaveAttribute("rel", "noopener noreferrer");
-  await expect(a).toHaveAttribute("aria-label", "Play now: Hawks Games Hub");
   await expect(pv.locator(".hkpv__soon")).toHaveCount(0);
   await expect(pv.locator(".hkpv__mvp a")).toHaveText("Place your vote");
   expect(log.errors).toEqual([]);
