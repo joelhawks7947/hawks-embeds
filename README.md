@@ -218,7 +218,7 @@ Use these in EDMs, social posts and recaps. Add them to the end of the Game Day 
 
 | Link | What it does |
 |---|---|
-| `#game-7` | Opens Upcoming home games and game 7's key times, then scrolls to it. If game 7 is the next game, scrolls to the countdown instead. |
+| `#game-7` | Opens Upcoming home games and game 7's key times, then scrolls to it. Works for the next game too. After a game has been played, the link just opens the page. |
 | `#plan-getting-here` | Opens Plan your night at Getting here |
 | `#plan-eat-drink` | Opens Plan your night at Eat and drink |
 | `#plan-upgrade` | Opens Plan your night at Upgrade |

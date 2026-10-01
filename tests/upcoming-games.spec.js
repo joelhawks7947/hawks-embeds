@@ -10,19 +10,19 @@ async function open(page, url) {
   return log;
 }
 
-test("closed on load, lists games after the next game, with count", async ({ page }) => {
+test("closed on load, lists the next game and every game after it, with count", async ({ page }) => {
   const log = await open(page, "/test/?hk_now=2026-09-27T12:00");
   const up = page.locator(UP).first();
   const bar = up.locator(".hksl__bar");
   await expect(bar).toHaveAttribute("aria-expanded", "false");
   await expect(up.locator(".hksl__list")).toBeHidden();
   await expect(up.locator(".hksl__bt")).toHaveText("Upcoming home games");
-  await expect(up.locator(".hksl__bc")).toHaveText("15 games");
-  await expect(up.locator(".hksl__row")).toHaveCount(15);
-  await expect(up.locator(".hksl__row").first().locator(".hksl__opp")).toHaveText("v Tasmania JackJumpers");
-  await expect(up.locator(".hksl__row").first().locator(".hksl__meta")).toHaveText("Game 2, 7:30pm tip-off");
+  await expect(up.locator(".hksl__bc")).toHaveText("16 games");
+  await expect(up.locator(".hksl__row")).toHaveCount(16);
+  await expect(up.locator(".hksl__row").first().locator(".hksl__opp")).toHaveText("v Adelaide 36ers");
+  await expect(up.locator(".hksl__row").first().locator(".hksl__meta")).toHaveText("Game 1, 7:30pm tip-off");
   await expect(up.locator(".hksl__row").first().locator(".hksl__dow")).toHaveText("Fri");
-  await expect(up.locator(".hksl__row").first().locator(".hksl__dm")).toHaveText("9 Oct");
+  await expect(up.locator(".hksl__row").first().locator(".hksl__dm")).toHaveText("2 Oct");
   expect(log.errors).toEqual([]);
 });
 
@@ -99,26 +99,30 @@ test("hash change after load also works", async ({ page }) => {
   await expect(page.locator("#game-12")).toBeInViewport();
 });
 
-test("#game-N for the current next game scrolls to the next-game module", async ({ page }) => {
+test("#game-N for the current next game opens its row in the list too", async ({ page }) => {
   await open(page, "/test/?hk_now=2026-10-05T12:00#game-2");
-  await page.waitForTimeout(200);
   await expect(page.locator('[data-hawks="next-game"]').first().locator("h2")).toHaveText("Hawks v Tasmania JackJumpers");
-  await expect(page.locator('[data-hawks="next-game"]').first()).toBeInViewport();
-  await expect(page.locator(UP).first().locator(".hksl__bar")).toHaveAttribute("aria-expanded", "false");
+  const up = page.locator(UP).first();
+  await expect(up.locator(".hksl__bar")).toHaveAttribute("aria-expanded", "true");
+  await expect(up.locator("#game-2-times")).toBeVisible();
+  await expect(up.locator("#game-2")).toBeInViewport();
 });
 
-test("one game left after the next: shows 1 game", async ({ page }) => {
+test("last two games: 2 games; only the final game left: 1 game", async ({ page }) => {
   await open(page, "/test/?hk_now=2027-01-30T09:00");
+  await expect(page.locator(UP).first().locator(".hksl__bc")).toHaveText("2 games");
+  await open(page, "/test/?hk_now=2027-02-01T09:00");
   await expect(page.locator(UP).first().locator(".hksl__bc")).toHaveText("1 game");
+  await expect(page.locator(UP).first().locator(".hksl__row")).toHaveCount(1);
 });
 
-test("hidden when only the last game remains, and after the season", async ({ page }) => {
-  await open(page, "/test/?hk_now=2027-02-01T09:00");
+test("final game day: still listed until midnight; hidden after the season", async ({ page }) => {
+  await open(page, "/test/?hk_now=2027-02-04T21:00");
+  await expect(page.locator(UP).first().locator(".hksl")).toBeVisible();
+  await expect(page.locator(UP).first().locator(".hksl__bc")).toHaveText("1 game");
+  await open(page, "/test/?hk_now=2027-02-05T00:01");
   await expect(page.locator(UP).first().locator(".hksl")).toBeHidden();
   await expect(page.locator(UP).nth(1).locator(".hksl")).toBeHidden();
-  await page.goto("/test/?hk_now=2027-02-06T09:00");
-  await ready(page);
-  await expect(page.locator(UP).first().locator(".hksl")).toBeHidden();
 });
 
 test("played games drop off at midnight", async ({ page }) => {
@@ -126,8 +130,8 @@ test("played games drop off at midnight", async ({ page }) => {
   await page.clock.pauseAt(new Date("2026-09-27T00:00:01Z"));
   await open(page, "/test/?hk_now=2026-10-02T23:59:58");
   const up = page.locator(UP).first();
-  await expect(up.locator(".hksl__bc")).toHaveText("15 games");
+  await expect(up.locator(".hksl__bc")).toHaveText("16 games");
   await page.clock.fastForward(3000);
-  await expect(up.locator(".hksl__bc")).toHaveText("14 games");
-  await expect(up.locator(".hksl__row").first()).toHaveAttribute("id", "game-3");
+  await expect(up.locator(".hksl__bc")).toHaveText("15 games");
+  await expect(up.locator(".hksl__row").first()).toHaveAttribute("id", "game-2");
 });

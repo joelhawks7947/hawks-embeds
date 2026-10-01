@@ -497,7 +497,8 @@
 
 
   /* ---------------- upcoming-games (.hksl) ----------------
-     Collapsed list of home games after the next game, each with tickets and key times. */
+     Collapsed list of home games from the next game onwards (the next game stays until
+     midnight after it's played), each with tickets and key times. */
   M["upcoming-games"] = {
     css: [
       ".hksl{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--t:#4FC3BE;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--w);color:var(--k);padding:32px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:left;}",
@@ -588,7 +589,7 @@
           '<div class="hksl__info"><p class="hksl__opp">v ' + esc(g.opp) + '</p><p class="hksl__meta">Game ' + g.n + ", " + esc(U.time(g.tip)) + " tip-off</p></div>" +
           '<div class="hksl__acts">' +
           (t ? '<a class="hksl__btn"' + ext(t) + ' aria-label="Tickets for Hawks v ' + esc(g.opp) + ", " + esc(U.longDate(g.date)) + '">Tickets</a>' : "") +
-          (cw ? '<a class="hksl__btn hksl__btn--cw"' + ext(cw) + ' aria-label="' + esc(courtWalkLabel(g)) + '">Court Walk tickets</a>' : "") +
+          (cw ? '<a class="hksl__btn hksl__btn--cw" data-off="' + g._cwOff + '"' + ext(cw) + ' aria-label="' + esc(courtWalkLabel(g)) + '">Court Walk tickets</a>' : "") +
           '<button class="hksl__btn hksl__btn--sec" type="button" aria-expanded="false" aria-controls="' + pid + '" aria-label="Key times for Hawks v ' + esc(g.opp) + '">Key times</button>' +
           "</div></div>" +
           '<div class="hksl__panel" id="' + pid + '" hidden><ul class="hksl__times">' + keyTimes(g, "hksl", fnTickets(g, "hksl__tbuy")) + "</ul>" +
@@ -600,7 +601,7 @@
       }
 
       function build(s) {
-        var games = s.i < 0 ? [] : H.data.games.slice(s.i + 1);
+        var games = s.i < 0 ? [] : H.data.games.slice(s.i);
         list.innerHTML = "";
         toggle(bar, list, false);
         root.hidden = !games.length;
@@ -610,7 +611,13 @@
       }
 
       return {
-        update: function (s, changed) { if (changed) build(s); },
+        update: function (s, changed) {
+          if (changed) build(s);
+          /* The next game can be on today: its Court Walk button goes 4 hours before the Court Walk. */
+          [].forEach.call(list.querySelectorAll(".hksl__btn--cw:not([hidden])"), function (a) {
+            if (s.now >= +a.getAttribute("data-off")) a.hidden = true;
+          });
+        },
         openGame: function (n) {
           var li = list.querySelector('[data-n="' + n + '"]');
           if (!li || root.hidden) return false;

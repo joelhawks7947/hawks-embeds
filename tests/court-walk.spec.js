@@ -105,3 +105,13 @@ test("layout: three buttons in a row on wide screens; Court Walk drops below on 
     expect(cw[2], `${w}px`).toBeGreaterThan(tix[2] + kt[2]);
   }
 });
+
+test("next game's row in the list: Court Walk button also goes 4 hours before", async ({ page }) => {
+  await freeze(page);
+  await open(page, "/test/?hk_now=2026-10-22T13:59:58");
+  const b = page.locator(UP).first().locator("#game-4 .hksl__btn--cw");
+  await expect(b).toHaveCount(1);
+  await expect(b).not.toHaveAttribute("hidden", /.*/);
+  await page.clock.fastForward(3000);
+  await expect(b).toBeHidden();
+});
