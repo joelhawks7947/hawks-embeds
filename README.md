@@ -121,7 +121,7 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 | Add or remove a Hawks Court Walk | That game's `courtWalk:""` becomes `courtWalk:"https://www.eventbrite.com.au/e/..."` (the teal Court Walk tickets button appears). Set it back to `""` to remove it. The button disappears by itself 4 hours before the Court Walk (the pre-game function time). |
 | Give a game its own ticket link | That game's `tickets:""` becomes `tickets:"https://..."`. Leave it `""` to use the default. |
 | Change a time | For example `tip:"19:30"`. Use 24-hour Sydney time; daylight saving is handled for you. |
-| Change the Game Hub link (red panel next to the MVP vote) | `gamesHub` in the `links` section. Set it to `""` to show Hawks trivia instead. |
+| Change the Fan Engagement Hub link (red panel next to the MVP vote) | `gamesHub` in the `links` section. Set it to `""` to show Hawks trivia instead. |
 | Turn on Hawks trivia (only when `gamesHub` is `""`) | `trivia: ""` becomes `trivia: "https://..."` ("Coming soon" becomes a button) |
 | Hide a key time everywhere (for example the pre-game function) | Delete that whole line from the `times` list |
 | Change a ticket, MVP or venue link | Edit it in the `links` section |
