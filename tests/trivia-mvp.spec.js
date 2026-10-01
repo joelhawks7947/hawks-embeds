@@ -6,6 +6,7 @@ const PV = '[data-hawks="trivia-mvp"]';
 
 test("Coming soon while the trivia link is empty; MVP panel complete", async ({ page }) => {
   const log = watchConsole(page);
+  await useData(page, (d) => { d.links.gamesHub = ""; });
   await page.goto("/test/");
   await ready(page);
   const pv = page.locator(PV).first();
@@ -32,7 +33,7 @@ test("Coming soon while the trivia link is empty; MVP panel complete", async ({ 
 });
 
 test("live Test your knowledge link once the trivia link is set", async ({ page }) => {
-  await useData(page, (d) => { d.links.trivia = "https://example.com/hawks-trivia"; });
+  await useData(page, (d) => { d.links.gamesHub = ""; d.links.trivia = "https://example.com/hawks-trivia"; });
   await page.goto("/test/");
   await ready(page);
   const a = page.locator(PV).first().locator(".hkpv__trivia a");
@@ -48,4 +49,22 @@ test("stays on after the final game", async ({ page }) => {
   await ready(page);
   await expect(page.locator(PV).first().locator(".hkpv")).toBeVisible();
   await expect(page.locator(PV).first().locator(".hkpv__mvp a")).toBeVisible();
+});
+
+test("Games Hub set: Your move, Hawkheads with a Play now button", async ({ page }) => {
+  const log = watchConsole(page);
+  await page.goto("/test/");
+  await ready(page);
+  const pv = page.locator(PV).first();
+  await expect(pv.locator(".hkpv")).toHaveAttribute("aria-label", "Games Hub and Game MVP vote");
+  await expect(pv.locator(".hkpv__trivia h2")).toHaveText("Your move, Hawkheads");
+  const a = pv.locator(".hkpv__trivia a");
+  await expect(a).toHaveText("Play now");
+  await expect(a).toHaveAttribute("href", "https://hawks-game-hub.lovable.app/");
+  await expect(a).toHaveAttribute("target", "_blank");
+  await expect(a).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(a).toHaveAttribute("aria-label", "Play now: Hawks Games Hub");
+  await expect(pv.locator(".hkpv__soon")).toHaveCount(0);
+  await expect(pv.locator(".hkpv__mvp a")).toHaveText("Place your vote");
+  expect(log.errors).toEqual([]);
 });
