@@ -203,7 +203,7 @@ Add `?hk_now=` to any page address with an embed to see it as it would look at a
 |---|---|
 | One minute before game 1 tips off | `?hk_now=2026-10-02T19:29` |
 | Game on (after tip-off) | `?hk_now=2026-10-02T20:00` |
-| Just after midnight, rolled to game 2 | `?hk_now=2026-10-03T00:01` |
+| After the game (2 hours after tip-off), rolled to game 2 | `?hk_now=2026-10-02T21:31` |
 | After daylight saving starts | `?hk_now=2026-10-10T12:00` |
 | After the last game (season wrap) | `?hk_now=2027-02-05T00:01` |
 | Girls in the Game after the 6 October camp | `?hk_now=2026-10-07T09:00` |

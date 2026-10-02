@@ -1,4 +1,4 @@
-// next-game: countdown, Game on, midnight rollover, daylight saving, wrap, links.
+// next-game: countdown, Game on, rollover 2 hours after tip-off, daylight saving, wrap, links.
 const { test, expect } = require("@playwright/test");
 const { useData, watchConsole, ready } = require("./helpers");
 
@@ -44,9 +44,9 @@ test("one minute before tip-off, then flips to Game on", async ({ page }) => {
   await expect(ng.locator("h2")).toHaveText("Hawks v Adelaide 36ers");
 });
 
-test("rolls to the next game at midnight Sydney time", async ({ page }) => {
+test("rolls to the next game 2 hours after tip-off (9:30pm for a 7:30pm game)", async ({ page }) => {
   await freeze(page);
-  await open(page, "/test/?hk_now=2026-10-02T23:59:58");
+  await open(page, "/test/?hk_now=2026-10-02T21:29:58");
   const ng = page.locator(NG).first();
   await expect(ng.locator(".hkng__status")).toHaveText("Game on");
   await page.clock.fastForward(3000);

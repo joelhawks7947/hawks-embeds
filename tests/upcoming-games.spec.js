@@ -116,19 +116,19 @@ test("last two games: 2 games; only the final game left: 1 game", async ({ page 
   await expect(page.locator(UP).first().locator(".hksl__row")).toHaveCount(1);
 });
 
-test("final game day: still listed until midnight; hidden after the season", async ({ page }) => {
-  await open(page, "/test/?hk_now=2027-02-04T21:00");
+test("final game day: still listed until 2 hours after tip-off; hidden after the season", async ({ page }) => {
+  await open(page, "/test/?hk_now=2027-02-04T21:29");
   await expect(page.locator(UP).first().locator(".hksl")).toBeVisible();
   await expect(page.locator(UP).first().locator(".hksl__bc")).toHaveText("1 game");
-  await open(page, "/test/?hk_now=2027-02-05T00:01");
+  await open(page, "/test/?hk_now=2027-02-04T21:31");
   await expect(page.locator(UP).first().locator(".hksl")).toBeHidden();
   await expect(page.locator(UP).nth(1).locator(".hksl")).toBeHidden();
 });
 
-test("played games drop off at midnight", async ({ page }) => {
+test("played games drop off 2 hours after tip-off", async ({ page }) => {
   await page.clock.install({ time: new Date("2026-09-27T00:00:00Z") });
   await page.clock.pauseAt(new Date("2026-09-27T00:00:01Z"));
-  await open(page, "/test/?hk_now=2026-10-02T23:59:58");
+  await open(page, "/test/?hk_now=2026-10-02T21:29:58");
   const up = page.locator(UP).first();
   await expect(up.locator(".hksl__bc")).toHaveText("16 games");
   await page.clock.fastForward(3000);
