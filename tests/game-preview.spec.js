@@ -27,11 +27,11 @@ test("with no preview yet: falls back to the News listing", async ({ page }) => 
   await expect(a).toHaveAttribute("href", "https://www.hawks.com.au/news");
 });
 
-test("rolls over with the active game at midnight", async ({ page }) => {
+test("rolls over with the active game, 2 hours after tip-off", async ({ page }) => {
   await useData(page, (d) => { d.games[0].preview = "https://www.hawks.com.au/news/p1"; d.games[1].preview = "https://www.hawks.com.au/news/p2"; });
   await page.clock.install({ time: new Date("2026-09-27T00:00:00Z") });
   await page.clock.pauseAt(new Date("2026-09-27T00:00:01Z"));
-  await page.goto("/test/?hk_now=2026-10-02T23:59:58");
+  await page.goto("/test/?hk_now=2026-10-02T21:29:58");
   await ready(page);
   const a = page.locator(GP).first().locator("a");
   await expect(a).toHaveAttribute("href", "https://www.hawks.com.au/news/p1");

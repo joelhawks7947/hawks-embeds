@@ -54,7 +54,6 @@
     return new Intl.DateTimeFormat("en-AU", Object.assign({ timeZone: "UTC" }, opts)).format(Date.UTC(d[0], d[1] - 1, d[2], 12));
   }
   function ord(n) { var s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
-  function nextDay(date) { var d = date.split("-").map(Number); return new Date(Date.UTC(d[0], d[1] - 1, d[2] + 1)).toISOString().slice(0, 10); }
 
   var U = H.u = {
     toUtc: toUtc,
@@ -110,6 +109,8 @@
   /* ---------------- Data validation ---------------- */
 
   var CW_HOURS_BEFORE = 4;
+  /* Hours after tip-off when a game counts as finished. Change this one number to adjust. */
+  var GAME_HOURS = 2;
   var DATE = /^\d{4}-\d{2}-\d{2}$/, TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
   function realDate(s) {
     if (!DATE.test(s)) return false;
@@ -160,7 +161,8 @@
       });
       ["func", "doors", "show"].forEach(function (k) { c[k] = c[k] || ""; });
       c._tip = toUtc(c.date, c.tip);
-      c._end = toUtc(nextDay(c.date), "00:00");
+      /* A game is over (and everything rolls to the next game) GAME_HOURS after tip-off. */
+      c._end = c._tip + GAME_HOURS * 3600000;
       /* Court Walk tickets come off sale 4 hours before the Court Walk, which starts at the
          pre-game function time (or tip-off if a game has no function time). */
       c._cwOff = toUtc(c.date, c.func || c.tip) - CW_HOURS_BEFORE * 3600000;
@@ -199,8 +201,8 @@
 
   /* ---------------- Shared game state ---------------- */
 
-  /* The active game is the first whose day has not ended (midnight Sydney).
-     phase: "countdown" before tip-off, "live" from tip-off to midnight, "wrap" after the season. */
+  /* The active game is the first that hasn't finished (2 hours after tip-off, GAME_HOURS).
+     phase: "countdown" before tip-off, "live" from tip-off until then, "wrap" after the season. */
   function state() {
     var now = U.now(), G = H.data.games;
     for (var i = 0; i < G.length; i++) {
@@ -498,7 +500,7 @@
 
   /* ---------------- upcoming-games (.hksl) ----------------
      Collapsed list of home games from the next game onwards (the next game stays until
-     midnight after it's played), each with tickets and key times. */
+     2 hours after its tip-off), each with tickets and key times. */
   M["upcoming-games"] = {
     css: [
       ".hksl{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--t:#4FC3BE;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--w);color:var(--k);padding:32px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:left;}",
