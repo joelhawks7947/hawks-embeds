@@ -174,6 +174,7 @@
     if (sorted.some(function (g, i) { return g !== out.games[i]; })) { warn("games are not in date order in data.js; sorting them by tip-off"); out.games = sorted; }
     if (!out.games.length) warn("no valid games in data.js");
     out.girlsInTheGame = { camps: camps(raw.girlsInTheGame) };
+    out.mvpVote = mvpVote(raw.mvpVote);
     return out;
   }
   H.validate = validate;
@@ -198,6 +199,49 @@
     });
     return out.sort(function (a, b) { return a._end - b._end; });
   }
+
+  /* Game MVP vote windows: every game, home and away. Voting opens at tip-off and closes at
+     closeTime (Sydney) closeDaysAfter days after the game date. Missing section = never open. */
+  function mvpVote(raw) {
+    var out = { image: "", windows: [] };
+    if (!raw) return out;
+    if (raw.image && okUrl(raw.image)) out.image = raw.image;
+    else if (raw.image) warn("mvpVote.image ignored: not an https:// link");
+    var days = raw.closeDaysAfter, close = raw.closeTime;
+    if (!(typeof days === "number" && days >= 0 && Math.floor(days) === days)) { warn("mvpVote.closeDaysAfter should be a whole number; using 2"); days = 2; }
+    if (!TIME.test(close)) { warn("mvpVote.closeTime \"" + close + "\" is not HH:MM; using 15:00"); close = "15:00"; }
+    (Array.isArray(raw.games) ? raw.games : []).forEach(function (g, i) {
+      var who = "MVP vote game in position " + (i + 1), why = [];
+      if (!g || typeof g !== "object") { warn(who + " skipped: not a game line"); return; }
+      if (!realDate(g.date)) why.push("date \"" + g.date + "\" is not a real YYYY-MM-DD date");
+      if (!TIME.test(g.tip)) why.push("tip \"" + g.tip + "\" is not HH:MM");
+      if (typeof g.opp !== "string" || !g.opp.trim()) why.push("opp (opponent) is empty");
+      if (why.length) { warn(who + " skipped: " + why.join("; ")); return; }
+      var d = g.date.split("-").map(Number), c = new Date(Date.UTC(d[0], d[1] - 1, d[2] + days));
+      var cd = c.getUTCFullYear() + "-" + ("0" + (c.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + c.getUTCDate()).slice(-2);
+      out.windows.push({ date: g.date, tip: g.tip, opp: g.opp.trim(), _open: toUtc(g.date, g.tip), _close: toUtc(cd, close) });
+    });
+    if (raw.games && !Array.isArray(raw.games)) warn("mvpVote has no games list");
+    return out;
+  }
+  /* The game whose vote is open now (the most recent tip-off if two overlap), or null. */
+  function mvpOpen(now) {
+    var w = H.data.mvpVote.windows, hit = null;
+    for (var i = 0; i < w.length; i++) if (w[i]._open <= now && now < w[i]._close && (!hit || w[i]._open > hit._open)) hit = w[i];
+    return hit;
+  }
+  /* The next game whose vote hasn't opened yet, or null after the last game. */
+  function mvpNext(now) {
+    var w = H.data.mvpVote.windows, hit = null;
+    for (var i = 0; i < w.length; i++) if (w[i]._open > now && (!hit || w[i]._open < hit._open)) hit = w[i];
+    return hit;
+  }
+  /* "Friday 7:30pm" within the next six days, otherwise "Friday 4th December, 7:30pm". */
+  function mvpWhen(w, now) {
+    var t = U.time(w.tip), soon = w._open - now < 6 * 86400000;
+    return (soon ? fmt(w.date, { weekday: "long" }) : U.longDate(w.date) + ",") + " " + t;
+  }
+  H.mvpOpen = mvpOpen;
 
   /* ---------------- Shared game state ---------------- */
 
@@ -775,6 +819,7 @@
 
   /* ---------------- trivia-mvp (.hkpv) ----------------
      Two-panel slab: red panel (Fan Engagement Hub, or Hawks trivia) and Game MVP vote (black).
+     The vote button follows the mvp-vote windows in data.js.
      Stays on after the season. With links.gamesHub set, the red panel says "Your move,
      Hawkheads" with a "Visit the Fan Engagement Hub" button; without it, Hawks trivia shows "Coming soon"
      until links.trivia is set. */
@@ -818,9 +863,19 @@
         "</div>" +
         '<div class="hkpv__panel hkpv__panel--k hkpv__mvp">' +
         (L.mvpImage ? '<img class="hkpv__img" src="' + esc(L.mvpImage) + '" width="1080" height="1080" loading="lazy" alt="Vote for your Greater Bank Game MVP">' : "") +
-        (L.mvpVote ? '<a class="hkpv__btn"' + ext(L.mvpVote) + ">Place your vote</a>" : "") +
+        (L.mvpVote ? '<a class="hkpv__btn"' + ext(L.mvpVote) + '><span class="hkpv__vote"></span></a>' : "") +
         "</div></section>";
-      return {};
+      /* Same voting window as mvp-vote: "Pick your MVP" while a vote is open, otherwise "See past winners". */
+      var vote = el.querySelector(".hkpv__vote"), shown;
+      return {
+        update: function (s) {
+          if (!vote) return;
+          var g = mvpOpen(s.now);
+          if (g === shown && shown !== undefined) return;
+          shown = g;
+          vote.textContent = g ? "Pick your MVP" : "See past winners";
+        }
+      };
     }
   };
 
@@ -950,6 +1005,96 @@
     }
   };
 
+  /* ---------------- mvp-vote (.hkmvp) ----------------
+     Greater Bank Game MVP vote, keeping the original embed's look (reference/mvp-vote.html).
+     While a vote is open (tip-off until 3pm two days after the game, from data.js mvpVote)
+     it shows "Voting open now" and "Pick your MVP"; otherwise the badge names the next tip-off
+     and the button reads "See past winners" (same link, which lists every past MVP). */
+  M["mvp-vote"] = {
+    css: [
+      ".hkmvp{--r:#FF0013;--k:#000;--w:#FFF;--e:cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;box-sizing:border-box;display:block;background:var(--k);color:var(--w);margin:0;padding:clamp(32px,6cqw,64px) clamp(16px,5cqw,48px);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;text-align:left;}",
+      ".hkmvp *,.hkmvp *::before,.hkmvp *::after{box-sizing:border-box;}",
+      ".hkmvp[hidden],.hkmvp [hidden]{display:none !important;}",
+      ".hkmvp .hkmvp__court{position:absolute;top:50%;right:18%;width:620px;max-width:none;height:620px;transform:translateY(-50%);opacity:.07;pointer-events:none;}",
+      ".hkmvp .hkmvp__inner{position:relative;max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(28px,5cqw,56px);}",
+      ".hkmvp .hkmvp__art{flex:1 1 280px;max-width:440px;display:block;line-height:0;margin:0;border:0;text-decoration:none;box-shadow:0 12px 32px rgba(0,0,0,.5);transition:transform 360ms var(--e),box-shadow 360ms var(--e);}",
+      ".hkmvp .hkmvp__art:hover{transform:rotate(-2deg) translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.6);}",
+      ".hkmvp .hkmvp__img{display:block;width:100%;height:auto;aspect-ratio:1 / 1;object-fit:cover;margin:0;border:0;}",
+      ".hkmvp .hkmvp__copy{flex:999 1 340px;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:20px;}",
+      ".hkmvp .hkmvp__badge{display:inline-flex;align-items:center;gap:10px;margin:0;padding:6px 14px 6px 12px;border:1px solid var(--r);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;color:var(--w);}",
+      ".hkmvp .hkmvp__dot{flex:none;display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--r);animation:hkmvp-dot 1.4s ease-in-out infinite;}",
+      ".hkmvp .hkmvp__title{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(40px,9cqw,92px);line-height:.95;letter-spacing:.01em;color:var(--w);margin:0;padding:0;}",
+      ".hkmvp .hkmvp__title span{color:var(--r);}",
+      ".hkmvp .hkmvp__body{max-width:34em;font-size:clamp(16px,1.8cqw,18px);line-height:1.55;color:#E2E2E2;margin:0;}",
+      ".hkmvp .hkmvp__body strong{color:var(--w);font-weight:700;}",
+      ".hkmvp .hkmvp__terms{max-width:40em;font-size:12px;line-height:1.5;color:#B8B8B8;margin:0;}",
+      ".hkmvp .hkmvp__btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;gap:16px;min-height:72px;margin:8px 0 0;padding:14px 32px 14px 26px;background:var(--r);color:var(--w);border:0;border-radius:0;text-decoration:none;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(26px,3.5cqw,36px);line-height:1;letter-spacing:.03em;text-transform:uppercase;transition:transform 200ms cubic-bezier(.5,1.4,.5,1),color 120ms var(--e);animation:hkmvp-pulse 2.2s var(--e) infinite;}",
+      ".hkmvp .hkmvp__btn:link,.hkmvp .hkmvp__btn:visited{color:var(--w);text-decoration:none;}",
+      ".hkmvp .hkmvp__btn::before{content:\"\";position:absolute;inset:0;background:var(--w);z-index:-1;transform:translateX(-101%);transition:transform 360ms var(--e);}",
+      ".hkmvp .hkmvp__btn::after{content:\"\";position:absolute;top:0;bottom:0;left:0;width:30%;z-index:-1;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.45),rgba(255,255,255,0));transform:translateX(-120%) skewX(-20deg);}",
+      ".hkmvp .hkmvp__btn:hover,.hkmvp .hkmvp__btn:focus-visible{color:var(--k);text-decoration:none;transform:translateY(-3px) scale(1.04);animation:none;}",
+      ".hkmvp .hkmvp__btn:hover::before,.hkmvp .hkmvp__btn:focus-visible::before{transform:translateX(0);}",
+      ".hkmvp .hkmvp__btn:hover::after{animation:hkmvp-shine 700ms var(--e) 1;}",
+      ".hkmvp .hkmvp__btn svg{flex:none;display:block;}",
+      ".hkmvp .hkmvp__ball,.hkmvp .hkmvp__arrow{transition:transform 200ms var(--e),color 120ms;}",
+      ".hkmvp .hkmvp__btn:hover .hkmvp__ball,.hkmvp .hkmvp__btn:focus-visible .hkmvp__ball{animation:hkmvp-dribble 650ms var(--e) infinite;color:var(--r);}",
+      ".hkmvp .hkmvp__btn:hover .hkmvp__arrow,.hkmvp .hkmvp__btn:focus-visible .hkmvp__arrow{transform:translateX(8px);}",
+      ".hkmvp .hkmvp__btn:active{transform:translateY(0) scale(.98);transition-duration:100ms;}",
+      ".hkmvp .hkmvp__btn:focus-visible,.hkmvp .hkmvp__art:focus-visible{outline:2px solid var(--r);outline-offset:4px;}",
+      "@keyframes hkmvp-pulse{0%{box-shadow:0 0 0 0 rgba(255,0,19,.55)}70%{box-shadow:0 0 0 22px rgba(255,0,19,0)}100%{box-shadow:0 0 0 0 rgba(255,0,19,0)}}",
+      "@keyframes hkmvp-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}",
+      "@keyframes hkmvp-dribble{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-7px) rotate(120deg)}55%{transform:translateY(3px) rotate(220deg) scaleY(.88)}75%{transform:translateY(-3px) rotate(300deg)}100%{transform:translateY(0) rotate(360deg)}}",
+      "@keyframes hkmvp-shine{0%{transform:translateX(-120%) skewX(-20deg)}100%{transform:translateX(320%) skewX(-20deg)}}",
+      "@container (max-width:600px){",
+      ".hkmvp .hkmvp__btn{display:flex;width:100%;justify-content:center;padding:14px 20px;gap:12px;}",
+      "}",
+      "@media (prefers-reduced-motion:reduce){",
+      ".hkmvp .hkmvp__btn,.hkmvp .hkmvp__dot,.hkmvp .hkmvp__btn:hover .hkmvp__ball,.hkmvp .hkmvp__btn:focus-visible .hkmvp__ball,.hkmvp .hkmvp__btn:hover::after{animation:none !important;}",
+      ".hkmvp .hkmvp__btn,.hkmvp .hkmvp__art,.hkmvp .hkmvp__btn::before{transition-duration:1ms !important;}",
+      "}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var url = ctx.data.links.mvpVote, img = ctx.data.mvpVote.image, id = uid("mvp-title");
+      el.innerHTML =
+        '<section class="hkmvp" aria-labelledby="' + id + '">' +
+        '<svg class="hkmvp__court" aria-hidden="true" focusable="false" viewBox="0 0 600 600"><circle cx="300" cy="300" r="290" fill="none" stroke="#fff" stroke-width="4"/><circle cx="300" cy="300" r="110" fill="none" stroke="#fff" stroke-width="4"/><line x1="300" y1="0" x2="300" y2="600" stroke="#fff" stroke-width="4"/></svg>' +
+        '<div class="hkmvp__inner">' +
+        (img ? '<a class="hkmvp__art"' + ext(url) + '><img class="hkmvp__img" src="' + esc(img) + '" width="1080" height="1080" loading="lazy" alt="Vote for your Greater Bank Game MVP. Illawarra Hawks and Greater Bank. Stronger. Louder. Together."></a>' : "") +
+        '<div class="hkmvp__copy">' +
+        '<p class="hkmvp__badge" hidden><span class="hkmvp__dot" aria-hidden="true"></span><span class="hkmvp__badge-text"></span></p>' +
+        '<h2 class="hkmvp__title" id="' + id + '">Your vote,<br><span>Hawkheads.</span></h2>' +
+        '<p class="hkmvp__body"></p>' +
+        (url ? '<a class="hkmvp__btn"' + ext(url) + '>' +
+          '<svg class="hkmvp__ball" aria-hidden="true" focusable="false" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2v20"/><path d="M4.9 4.9c2.9 2.9 2.9 11.3 0 14.2"/><path d="M19.1 4.9c-2.9 2.9-2.9 11.3 0 14.2"/></svg>' +
+          '<span class="hkmvp__label"></span>' +
+          '<svg class="hkmvp__arrow" aria-hidden="true" focusable="false" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>' : "") +
+        '<p class="hkmvp__terms">Open to NSW &amp; QLD residents aged 14+. Promotion ends 15/02/2027.</p>' +
+        "</div></div></section>";
+      var root = el.firstChild, badge = root.querySelector(".hkmvp__badge"), dot = root.querySelector(".hkmvp__dot"),
+        badgeText = root.querySelector(".hkmvp__badge-text"), body = root.querySelector(".hkmvp__body"),
+        btn = root.querySelector(".hkmvp__btn"), label = root.querySelector(".hkmvp__label"), shown;
+      var PARTNER = "<strong>Greater Bank Game MVP</strong>, presented by the Hawks’ Major Community Partner, ";
+      return {
+        update: function (s) {
+          var g = mvpOpen(s.now), next = g ? null : mvpNext(s.now);
+          /* The same game is "next" before tip-off and "open" after it, so the key includes which. */
+          var key = g ? "open " + g._open : next ? "next " + next._open + " " + (next._open - s.now < 6 * 86400000) : "none";
+          if (key === shown) return;
+          shown = key;
+          /* Open: "Voting open now" with the pulsing dot. Closed: when the next vote opens, no dot.
+             After the last game: no badge. */
+          badge.hidden = !(g || next);
+          dot.hidden = !g;
+          badgeText.textContent = g ? "Voting open now" : next ? "Next vote opens " + mvpWhen(next, s.now) : "";
+          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game.");
+          if (!btn) return;
+          label.textContent = g ? "Pick your MVP" : "See past winners";
+          btn.setAttribute("aria-label", g ? "Pick your MVP: Greater Bank Game MVP, Hawks v " + g.opp : "See past winners: Greater Bank Game MVP");
+        }
+      };
+    }
+  };
 
   /* ---------------- top-10 (.hksfeats) ----------------
      All-time top 10 single-game feats, one table per stat. Data in top10.js,

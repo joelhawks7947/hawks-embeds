@@ -1,0 +1,93 @@
+<!-- ============================================================
+     Illawarra Hawks: Greater Bank Game MVP vote CTA
+     Paste into a Webflow Embed element (or any HTML block).
+     Self-contained: all classes are prefixed "hmvp-" so they
+     won't clash with site styles. Respects reduced motion.
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;700&display=swap">
+
+<style>
+.hmvp{position:relative;overflow:hidden;background:#000;color:#fff;
+  font-family:'Poppins',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  padding:clamp(32px,5vw,64px) clamp(16px,4vw,48px);box-sizing:border-box}
+.hmvp *,.hmvp *::before,.hmvp *::after{box-sizing:border-box}
+.hmvp-court{position:absolute;top:50%;right:18%;width:620px;height:620px;transform:translateY(-50%);opacity:.07;pointer-events:none}
+.hmvp-inner{position:relative;max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(28px,4vw,56px)}
+
+.hmvp-art{flex:1 1 300px;max-width:440px;display:block;line-height:0;border:0;text-decoration:none;
+  box-shadow:0 12px 32px rgba(0,0,0,.5);
+  transition:transform 360ms cubic-bezier(.22,1,.36,1),box-shadow 360ms cubic-bezier(.22,1,.36,1)}
+.hmvp-art:hover{transform:rotate(-2deg) translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.hmvp-art img{width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;display:block}
+
+.hmvp-copy{flex:999 1 380px;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:20px}
+.hmvp-badge{margin:0;display:inline-flex;align-items:center;gap:10px;padding:6px 14px 6px 12px;border:1px solid #FF0013;
+  font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1.2;color:#fff}
+.hmvp-dot{width:10px;height:10px;border-radius:50%;background:#FF0013;display:inline-block;animation:hmvp-dot 1.4s ease-in-out infinite}
+.hmvp-title{margin:0;font-family:'Anton','Oswald',Impact,'Arial Narrow',sans-serif;font-weight:400;text-transform:uppercase;
+  font-size:clamp(48px,7vw,92px);line-height:.95;letter-spacing:.01em;color:#fff}
+.hmvp-title span{color:#FF0013}
+.hmvp-body{margin:0;max-width:34em;font-size:clamp(16px,1.4vw,18px);line-height:1.55;color:#E2E2E2}
+.hmvp-body strong{color:#fff}
+.hmvp-terms{margin:0;font-size:12px;line-height:1.5;color:#B8B8B8;max-width:40em}
+
+.hmvp-btn{position:relative;overflow:hidden;isolation:isolate;margin-top:8px;display:inline-flex;align-items:center;gap:16px;
+  min-height:72px;padding:14px 32px 14px 26px;background:#FF0013;color:#fff;border:0;text-decoration:none;
+  font-family:'Anton','Oswald',Impact,'Arial Narrow',sans-serif;font-size:clamp(28px,3vw,36px);line-height:1;
+  letter-spacing:.03em;text-transform:uppercase;
+  transition:transform 200ms cubic-bezier(.5,1.4,.5,1),color 120ms cubic-bezier(.22,1,.36,1);
+  animation:hmvp-pulse 2.2s cubic-bezier(.22,1,.36,1) infinite}
+.hmvp-btn::before{content:"";position:absolute;inset:0;background:#fff;z-index:-1;transform:translateX(-101%);
+  transition:transform 360ms cubic-bezier(.22,1,.36,1)}
+.hmvp-btn::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;z-index:-1;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.45),rgba(255,255,255,0));
+  transform:translateX(-120%) skewX(-20deg)}
+.hmvp-btn:hover,.hmvp-btn:focus-visible{color:#000;transform:translateY(-3px) scale(1.04);animation:none}
+.hmvp-btn:hover::before,.hmvp-btn:focus-visible::before{transform:translateX(0)}
+.hmvp-btn:hover::after{animation:hmvp-shine 700ms cubic-bezier(.22,1,.36,1) 1}
+.hmvp-ball,.hmvp-arrow{flex:none;transition:transform 200ms cubic-bezier(.22,1,.36,1),color 120ms}
+.hmvp-btn:hover .hmvp-ball,.hmvp-btn:focus-visible .hmvp-ball{animation:hmvp-dribble 650ms cubic-bezier(.22,1,.36,1) infinite;color:#FF0013}
+.hmvp-btn:hover .hmvp-arrow,.hmvp-btn:focus-visible .hmvp-arrow{transform:translateX(8px)}
+.hmvp-btn:active{transform:translateY(0) scale(.98);transition-duration:100ms}
+.hmvp-btn:focus-visible,.hmvp-art:focus-visible{outline:2px solid #FF0013;outline-offset:4px}
+.hmvp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@keyframes hmvp-pulse{0%{box-shadow:0 0 0 0 rgba(255,0,19,.55)}70%{box-shadow:0 0 0 22px rgba(255,0,19,0)}100%{box-shadow:0 0 0 0 rgba(255,0,19,0)}}
+@keyframes hmvp-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+@keyframes hmvp-dribble{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-7px) rotate(120deg)}55%{transform:translateY(3px) rotate(220deg) scaleY(.88)}75%{transform:translateY(-3px) rotate(300deg)}100%{transform:translateY(0) rotate(360deg)}}
+@keyframes hmvp-shine{0%{transform:translateX(-120%) skewX(-20deg)}100%{transform:translateX(320%) skewX(-20deg)}}
+
+@media (prefers-reduced-motion:reduce){
+  .hmvp-btn,.hmvp-dot,.hmvp-btn:hover .hmvp-ball,.hmvp-btn:hover::after{animation:none!important}
+  .hmvp-btn,.hmvp-art,.hmvp-btn::before{transition-duration:1ms!important}
+}
+</style>
+
+<section class="hmvp" aria-labelledby="hmvp-title">
+  <svg class="hmvp-court" aria-hidden="true" viewBox="0 0 600 600"><circle cx="300" cy="300" r="290" fill="none" stroke="#fff" stroke-width="4"/><circle cx="300" cy="300" r="110" fill="none" stroke="#fff" stroke-width="4"/><line x1="300" y1="0" x2="300" y2="600" stroke="#fff" stroke-width="4"/></svg>
+
+  <div class="hmvp-inner">
+    <a class="hmvp-art" href="https://hawks-mvp-vote.lovable.app/" target="_blank" rel="noopener" aria-label="Vote for your Greater Bank Game MVP (opens in a new tab)">
+      <img src="https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a610/6ab2493948d4bd882a387a13_MVP%20Vote_1080x1080.png"
+           width="1080" height="1080" loading="lazy"
+           alt="Vote for your Greater Bank Game MVP. Illawarra Hawks and Greater Bank. Stronger. Louder. Together.">
+    </a>
+
+    <div class="hmvp-copy">
+      <p class="hmvp-badge"><span class="hmvp-dot" aria-hidden="true"></span>Voting open now</p>
+      <h2 class="hmvp-title" id="hmvp-title">Your vote,<br><span>Hawkheads.</span></h2>
+      <p class="hmvp-body">Voting for the <strong>Greater Bank Game MVP</strong>, presented by the Hawks’ Major Community Partner, is open now.</p>
+
+      <a class="hmvp-btn" href="https://hawks-mvp-vote.lovable.app/" target="_blank" rel="noopener">
+        <svg class="hmvp-ball" aria-hidden="true" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2v20"/><path d="M4.9 4.9c2.9 2.9 2.9 11.3 0 14.2"/><path d="M19.1 4.9c-2.9 2.9-2.9 11.3 0 14.2"/></svg>
+        <span>Vote now</span>
+        <svg class="hmvp-arrow" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        <span class="hmvp-sr">(opens in a new tab)</span>
+      </a>
+
+      <p class="hmvp-terms">Open to NSW &amp; QLD residents aged 14+. Promotion ends 15/02/2027.</p>
+    </div>
+  </div>
+</section>

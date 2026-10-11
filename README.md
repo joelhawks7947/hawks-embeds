@@ -55,6 +55,17 @@ In **News recaps and previews** (the fallback goes to the Game Day Guide):
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
+The "Game MVP" button reads **Pick your MVP** while a vote is open and **See past winners** the rest of the time (same link).
+
+### Greater Bank Game MVP vote
+
+```html
+<div data-hawks="mvp-vote"><a href="https://hawks-mvp-vote.lovable.app/">Vote for your Greater Bank Game MVP</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+Voting opens at tip-off of every game, home and away, and closes at 3pm two days after the game. While a vote is open the embed says **Voting open now** with a **Pick your MVP** button. The rest of the time it says when the next vote opens (for example "Next vote opens Sunday 5:00pm") and the button reads **See past winners**. After the last game the badge disappears.
+
 ### Game preview button
 
 This shows "Read the Hawks v (opponent) preview" once that game's preview link is in `data.js`. Until then it shows "Read the latest Hawks news".
@@ -144,6 +155,19 @@ Each camp is one line in the `girlsInTheGame` section:
 - `venue` appears after "at", so write it to read that way.
 - `details` is the sentence after the date. Use `""` to leave it out.
 
+### Game MVP vote schedule
+
+The `mvpVote` section lists every game of the season, home and away, one line each:
+
+```js
+{round:7, date:"2026-10-31", tip:"21:30", opp:"Perth Wildcats", venue:"RAC Arena"},
+```
+
+- `tip` is the tip-off in **Sydney time**, even for games in Perth or New Zealand. Voting opens at that time.
+- Voting closes at `closeTime` (`"15:00"`), `closeDaysAfter` (`2`) days after the game date. Change those two values to change every game at once.
+- If a game moves, change its date or time here **and**, for a home game, in the `games` list too.
+- `image` is the square vote graphic.
+
 ### Top 10 table
 
 The Top 10 figures are in their own file, **[`top10.js`](top10.js)**. It's only loaded on pages with the Top 10 embed.
@@ -207,6 +231,8 @@ Add `?hk_now=` to any page address with an embed to see it as it would look at a
 | After daylight saving starts | `?hk_now=2026-10-10T12:00` |
 | After the last game (season wrap) | `?hk_now=2027-02-05T00:01` |
 | Girls in the Game after the 6 October camp | `?hk_now=2026-10-07T09:00` |
+| Game MVP vote open (Perth away game) | `?hk_now=2026-10-31T22:00` |
+| Game MVP vote closed, next vote shown | `?hk_now=2026-10-14T12:00` |
 
 Seconds work too: `?hk_now=2026-10-02T23:59:50`. If the page address already has a `?`, use `&hk_now=` instead.
 

@@ -86,6 +86,55 @@ window.HAWKS_DATA = {
     ]
   },
 
+  /* GREATER BANK GAME MVP VOTE
+     Every game, home and away. Voting opens at tip-off and closes at
+     closeTime (Sydney time) closeDaysAfter days after the game date, so a
+     Saturday game closes at 3pm on Monday. While voting is open the embed
+     shows "Voting open now" and a "Vote now" button; otherwise it shows
+     "View past winners" (same link: links.mvpVote).
+     tip: tip-off in 24-hour SYDNEY time, even for games in Perth or New Zealand.
+     image: the square vote graphic shown beside the button. */
+  mvpVote: {
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a610/6ab2493948d4bd882a387a13_MVP%20Vote_1080x1080.png",
+    closeDaysAfter: 2,
+    closeTime: "15:00",
+    games: [
+      {round:1, date:"2026-09-20", tip:"15:00", opp:"New Zealand Breakers",         venue:"Spark Arena"},
+      {round:2, date:"2026-09-25", tip:"19:30", opp:"Brisbane Bullets",             venue:"Brisbane Entertainment Centre"},
+      {round:2, date:"2026-09-27", tip:"18:00", opp:"Sydney Kings",                 venue:"Qudos Bank Arena"},
+      {round:3, date:"2026-10-02", tip:"19:30", opp:"Adelaide 36ers",               venue:"WIN Entertainment Centre"},
+      {round:3, date:"2026-10-04", tip:"15:00", opp:"South East Melbourne Phoenix", venue:"John Cain Arena"},
+      {round:4, date:"2026-10-09", tip:"19:30", opp:"Tasmania JackJumpers",         venue:"WIN Entertainment Centre"},
+      {round:4, date:"2026-10-11", tip:"17:00", opp:"Cairns Taipans",               venue:"WIN Entertainment Centre"},
+      {round:5, date:"2026-10-18", tip:"17:00", opp:"Melbourne United",             venue:"John Cain Arena"},
+      {round:6, date:"2026-10-22", tip:"19:30", opp:"Sydney Kings",                 venue:"WIN Entertainment Centre"},
+      {round:6, date:"2026-10-24", tip:"17:30", opp:"Brisbane Bullets",             venue:"WIN Entertainment Centre"},
+      {round:7, date:"2026-10-31", tip:"21:30", opp:"Perth Wildcats",               venue:"RAC Arena"},
+      {round:8, date:"2026-11-05", tip:"19:30", opp:"Cairns Taipans",               venue:"Cairns Convention Centre"},
+      {round:8, date:"2026-11-07", tip:"17:30", opp:"Adelaide 36ers",               venue:"Adelaide Entertainment Centre"},
+      {round:9, date:"2026-11-11", tip:"19:30", opp:"South East Melbourne Phoenix", venue:"State Basketball Centre"},
+      {round:9, date:"2026-11-14", tip:"21:30", opp:"Perth Wildcats",               venue:"RAC Arena"},
+      {round:10, date:"2026-11-19", tip:"19:30", opp:"Adelaide 36ers",               venue:"WIN Entertainment Centre"},
+      {round:10, date:"2026-11-21", tip:"17:30", opp:"Tasmania JackJumpers",         venue:"MyState Bank Arena"},
+      {round:11, date:"2026-12-04", tip:"19:30", opp:"Sydney Kings",                 venue:"WIN Entertainment Centre"},
+      {round:12, date:"2026-12-10", tip:"19:30", opp:"Tasmania JackJumpers",         venue:"WIN Entertainment Centre"},
+      {round:13, date:"2026-12-20", tip:"15:00", opp:"Melbourne United",             venue:"WIN Entertainment Centre"},
+      {round:14, date:"2026-12-25", tip:"19:30", opp:"Sydney Kings",                 venue:"Qudos Bank Arena"},
+      {round:14, date:"2026-12-27", tip:"15:00", opp:"New Zealand Breakers",         venue:"WIN Entertainment Centre"},
+      {round:15, date:"2026-12-31", tip:"17:30", opp:"South East Melbourne Phoenix", venue:"WIN Entertainment Centre"},
+      {round:15, date:"2027-01-02", tip:"17:30", opp:"Cairns Taipans",               venue:"WIN Entertainment Centre"},
+      {round:16, date:"2027-01-06", tip:"19:30", opp:"Perth Wildcats",               venue:"WIN Entertainment Centre"},
+      {round:16, date:"2027-01-08", tip:"17:30", opp:"New Zealand Breakers",         venue:"Spark Arena"},
+      {round:17, date:"2027-01-17", tip:"17:00", opp:"Brisbane Bullets",             venue:"RAC Arena"},
+      {round:18, date:"2027-01-20", tip:"19:30", opp:"New Zealand Breakers",         venue:"WIN Entertainment Centre"},
+      {round:18, date:"2027-01-23", tip:"17:30", opp:"Adelaide 36ers",               venue:"Adelaide Entertainment Centre"},
+      {round:19, date:"2027-01-27", tip:"17:30", opp:"Tasmania JackJumpers",         venue:"MyState Bank Arena"},
+      {round:19, date:"2027-01-30", tip:"17:30", opp:"Perth Wildcats",               venue:"WIN Entertainment Centre"},
+      {round:20, date:"2027-02-04", tip:"19:30", opp:"Brisbane Bullets",             venue:"WIN Entertainment Centre"},
+      {round:21, date:"2027-02-13", tip:"17:30", opp:"Melbourne United",             venue:"John Cain Arena"},
+    ]
+  },
+
   /* Key times shown for every game, in display order.
      Delete a whole line to hide that time everywhere. */
   times: [

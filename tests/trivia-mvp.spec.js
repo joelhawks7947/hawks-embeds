@@ -7,7 +7,7 @@ const PV = '[data-hawks="trivia-mvp"]';
 test("Coming soon while the trivia link is empty; MVP panel complete", async ({ page }) => {
   const log = watchConsole(page);
   await useData(page, (d) => { d.links.gamesHub = ""; });
-  await page.goto("/test/");
+  await page.goto("/test/?hk_now=2026-10-01T12:00");
   await ready(page);
   const pv = page.locator(PV).first();
   await expect(pv.locator("h2")).toHaveText("Hawks trivia");
@@ -25,7 +25,7 @@ test("Coming soon while the trivia link is empty; MVP panel complete", async ({ 
   await expect(img).toHaveAttribute("loading", "lazy");
   await expect(img).toHaveAttribute("alt", "Vote for your Greater Bank Game MVP");
   const vote = pv.locator(".hkpv__mvp a");
-  await expect(vote).toHaveText("Place your vote");
+  await expect(vote).toHaveText("See past winners");
   await expect(vote).toHaveAttribute("href", "https://hawks-mvp-vote.lovable.app/");
   await expect(vote).toHaveAttribute("target", "_blank");
   await expect(vote).toHaveAttribute("rel", "noopener noreferrer");
@@ -53,7 +53,7 @@ test("stays on after the final game", async ({ page }) => {
 
 test("Fan Engagement Hub set: Your move, Hawkheads with a Visit the Fan Engagement Hub button", async ({ page }) => {
   const log = watchConsole(page);
-  await page.goto("/test/");
+  await page.goto("/test/?hk_now=2026-10-01T12:00");
   await ready(page);
   const pv = page.locator(PV).first();
   await expect(pv.locator(".hkpv")).toHaveAttribute("aria-label", "Fan Engagement Hub and Game MVP vote");
@@ -64,6 +64,15 @@ test("Fan Engagement Hub set: Your move, Hawkheads with a Visit the Fan Engageme
   await expect(a).toHaveAttribute("target", "_blank");
   await expect(a).toHaveAttribute("rel", "noopener noreferrer");
   await expect(pv.locator(".hkpv__soon")).toHaveCount(0);
-  await expect(pv.locator(".hkpv__mvp a")).toHaveText("Place your vote");
+  await expect(pv.locator(".hkpv__mvp a")).toHaveText("See past winners");
   expect(log.errors).toEqual([]);
+});
+
+test("vote button: Pick your MVP while a vote is open, See past winners otherwise", async ({ page }) => {
+  await page.goto("/test/?hk_now=2026-10-02T19:30");
+  await ready(page);
+  for (const i of [0, 1]) await expect(page.locator(PV).nth(i).locator(".hkpv__mvp a")).toHaveText("Pick your MVP");
+  await page.goto("/test/?hk_now=2026-10-02T19:29");
+  await ready(page);
+  for (const i of [0, 1]) await expect(page.locator(PV).nth(i).locator(".hkpv__mvp a")).toHaveText("See past winners");
 });
