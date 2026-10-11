@@ -121,8 +121,7 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 1. On GitHub, open `data.js` and click the **pencil icon** (top right of the file).
 2. Change the text **inside the quote marks** only. Keep the quote marks, commas and brackets exactly as they are.
 3. Click **Commit changes**, then **Commit changes** again in the box that pops up.
-4. Open the **data.js purge link** (section 3).
-5. Check the Game Day Guide page.
+4. Wait about 10 minutes, then check the Game Day Guide page. No purge needed (see section 3).
 
 ### Common edits
 
@@ -176,7 +175,7 @@ The Top 10 figures are in their own file, **[`top10.js`](top10.js)**. It's only 
 - Rows are numbered 1 to 10 for you, in the order they're listed. For a new feat, copy a row, put it in the right place, change it, then delete the last row.
 - Every row that equals the top number is highlighted as the record.
 - The "Club record" line (`record` and `recordDetail`) and the line under the table (`note`) are edited by hand. Update `note` when the figures change, for example "current to the end of NBL27".
-- After committing, open the `top10.js` purge link (section 3).
+- After committing, the change shows within about 10 minutes. No purge needed.
 
 ### Formats
 
@@ -194,13 +193,17 @@ GitHub also checks every change automatically and emails you if `data.js` has a 
 
 ---
 
-## 3. Purge links (bookmark these)
+## 3. How changes go live, and purge links
 
-jsDelivr, the service that hosts the files, keeps a copy for up to 12 hours. After a change, open the matching link below and the new version is served within a few minutes.
+**Data edits (`data.js`, `top10.js`) need no purge.** The embeds load these two files from GitHub Pages (https://joelhawks7947.github.io/hawks-embeds/), which updates about a minute after each commit. Visitors pick up the change within about 10 minutes. If GitHub Pages is down or slow, the embeds load the same file from jsDelivr instead.
 
-- **After editing `data.js`:**
+**Code changes (`hawks-core.js`) still come from jsDelivr**, which keeps a copy for up to 12 hours. After a code change, open the purge link for it below.
+
+The data purge links are a backup only: they refresh jsDelivr's copy, which is used if GitHub Pages is down.
+
+- **`data.js` (backup):**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/data.js
-- **After editing `top10.js`:**
+- **`top10.js` (backup):**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/top10.js
 - **After a code change (`hawks-core.js`):**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks-core.js
@@ -213,7 +216,8 @@ If the old version is still showing a few minutes after a purge, wait two or thr
 
 **How quickly people see a change**
 
-- **Data and code changes** (`data.js`, `hawks-core.js`, including new embeds): everyone within about 10 minutes of the purge.
+- **Data changes** (`data.js`, `top10.js`): everyone within about 10 minutes of the commit.
+- **Code changes** (`hawks-core.js`, including new embeds): everyone within about 10 minutes of the purge.
 - **`hawks.js`** is a tiny loader that browsers may keep for up to 7 days. That's why it should never need to change.
 - If you still see an old version, try a private window or hard-refresh (Cmd+Shift+R on a Mac, Ctrl+Shift+R on Windows).
 
@@ -258,9 +262,9 @@ If a change breaks something:
 1. On GitHub, open the file that changed and click **History** (top right of the file).
 2. Find the last version that worked and click its **`<>`** icon ("Browse repository at this point"). Open the same file there, click **Raw**, and copy everything.
 3. Go back to the current file, click the pencil, select everything, paste the good version over it, and commit.
-4. Open the purge link for that file (section 3).
+4. For `hawks-core.js`, open its purge link (section 3). For `data.js` or `top10.js`, just wait about 10 minutes.
 
-A developer can do the same with `git revert` on the bad commit, then purge.
+A developer can do the same with `git revert` on the bad commit (then purge, for a code change).
 
 ---
 

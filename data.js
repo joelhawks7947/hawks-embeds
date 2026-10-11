@@ -9,8 +9,8 @@
    2. Change the text INSIDE the quote marks only. Keep the quote
       marks, commas and brackets exactly as they are.
    3. Click "Commit changes".
-   4. Open the purge link for data.js (see README.md) so the change
-      shows within minutes instead of hours.
+   4. Wait about 10 minutes. The embeds read this file from GitHub
+      Pages, which updates by itself, so no purge is needed.
 
    FORMATS
    - Dates:  "2026-10-02"  (year-month-day)

@@ -341,16 +341,12 @@
     var f = spec.file;
     if (f in extras) return extras[f];
     extras[f] = LOADING;
-    var s = D.createElement("script");
-    s.src = base + f + "?v=" + Math.floor(Date.now() / 600000);
-    s.onload = function () {
+    loadFile(f, function () {
       var raw = W[spec.global];
       if (!raw) fail(f + " did not set window." + spec.global + ". Check " + f + " for a typo (a missing comma or quote mark).");
       extras[f] = raw ? spec.validate(raw) : null;
       scan();
-    };
-    s.onerror = function () { fail("could not load " + s.src + ". Those embeds are showing their fallback links."); extras[f] = null; scan(); };
-    (D.head || D.documentElement).appendChild(s);
+    }, function (src) { fail("could not load " + src + ". Those embeds are showing their fallback links."); extras[f] = null; scan(); });
     return LOADING;
   }
 
@@ -1210,10 +1206,35 @@
 
   /* MODULES:END */
 
-  /* ---------------- Load data.js from the same folder ---------------- */
+  /* ---------------- Load data.js (and module data files) ---------------- */
 
   var me = D.currentScript;
   var base = me && me.src ? me.src.replace(/[^\/?#]*([?#].*)?$/, "") : "";
+  /* Data files come from GitHub Pages first: it updates about a minute after every commit,
+     with no purge, while jsDelivr can keep serving an old copy of a branch for hours.
+     If Pages fails or takes over 5 seconds, the same file comes from jsDelivr instead. */
+  var PAGES = "https://joelhawks7947.github.io/hawks-embeds/", PAGES_WAIT = 5000;
+  var fromCdn = /^https:\/\/cdn\.jsdelivr\.net\/gh\/joelhawks7947\/hawks-embeds@/.test(base);
+  /* Browsers may keep a file for a while (jsDelivr: 7 days). The ?v= value changes every 10 minutes
+     so browsers re-check; both hosts ignore it for their own caches. */
+  function loadFile(f, ok, bad) {
+    var hosts = fromCdn ? [PAGES, base] : [base], done = false;
+    function attempt(i) {
+      var s = D.createElement("script"), moved = false, t;
+      function next() {
+        if (moved || done) return;
+        moved = true; clearTimeout(t);
+        if (i + 1 < hosts.length) { warn("could not load " + s.src + "; trying " + hosts[i + 1]); attempt(i + 1); }
+        else { done = true; bad(s.src); }
+      }
+      s.src = hosts[i] + f + "?v=" + Math.floor(Date.now() / 600000);
+      s.onload = function () { if (done) return; done = true; clearTimeout(t); ok(); };
+      s.onerror = next;
+      if (i + 1 < hosts.length) t = setTimeout(next, PAGES_WAIT);
+      (D.head || D.documentElement).appendChild(s);
+    }
+    attempt(0);
+  }
 
   function start() {
     var data = validate(W.HAWKS_DATA);
@@ -1226,12 +1247,6 @@
   if (W.HAWKS_DATA) start();
   else if (!base) fail("could not work out where hawks.js was loaded from, so data.js was not loaded");
   else {
-    var s = D.createElement("script");
-    /* jsDelivr tells browsers to keep files for up to 7 days. The ?v= value changes every
-       10 minutes so browsers re-check data.js; jsDelivr ignores it, so its cache and purge still apply. */
-    s.src = base + "data.js?v=" + Math.floor(Date.now() / 600000);
-    s.onload = start;
-    s.onerror = function () { fail("could not load " + s.src + ". Embeds are showing their fallback links."); };
-    (D.head || D.documentElement).appendChild(s);
+    loadFile("data.js", start, function (src) { fail("could not load " + src + ". Embeds are showing their fallback links."); });
   }
 })();

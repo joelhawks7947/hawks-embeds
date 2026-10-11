@@ -8,8 +8,8 @@
    1. Click the pencil icon at the top right of this file.
    2. Change text INSIDE the quote marks. Keep the quote marks, commas
       and brackets exactly as they are.
-   3. Click "Commit changes", then open the top10.js purge link in
-      README.md.
+   3. Click "Commit changes". The change shows within about
+      10 minutes; no purge needed.
 
    ROWS
    Each row is: ["Player", stat, "Date", "Opponent (H or A)", "Result"]
