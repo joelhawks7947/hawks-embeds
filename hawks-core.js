@@ -1334,7 +1334,7 @@
           '<div class="hkbiz__date" aria-hidden="true"><span class="hkbiz__dd">' + (e.date ? +e.date.slice(8) : "TBC") + '</span><span class="hkbiz__my">' +
           esc(fmt(e.month + "-01", { month: "short" }).replace(".", "") + " " + e.month.slice(0, 4)) + "</span></div>" +
           '<div class="hkbiz__main"><p class="hkbiz__title"><span class="hkbiz__sr">' + esc(when(e)) + ": </span>" + esc(e.title) + "</p>" +
-          e.details.map(line).join("") + (i ? line(i) : "") +
+          (i ? line(i) : "") + e.details.map(line).join("") +
           (e.cw ? '<a class="hkbiz__btn hkbiz__btn--cw"' + ext(e.cw) + ' aria-label="' + esc(e.cwLabel) + '">Court Walk tickets</a>' : "") +
           "</div>" +
           (e.presenter ? '<p class="hkbiz__by"><span class="hkbiz__byl">Presented by </span>' + esc(e.presenter) + "</p>" : "") +

@@ -94,7 +94,7 @@ window.HAWKS_DATA = {
      date:      "2026-10-14"; if the day isn't set yet, leave date out and use
                 month:"2027-01" instead (shows as "TBC" in that month)
      title:     the event name
-     details:   extra lines under the name, e.g. ["Panel 1: ...", "Panel 2: ..."]; [] for none
+     details:   extra lines under the venue and time line, e.g. ["Panel: ..."]; [] for none
      venue, start, end, price:
                 shown on one line, e.g. "Sage Hotel · 7:30am · Tickets $65pp".
                 start and end are 24-hour Sydney time ("12:30"); end can be "".
@@ -108,26 +108,22 @@ window.HAWKS_DATA = {
     tickets: "https://hawks-corporate-hospitality.lovable.app/",
     events: [
       {date:"2026-10-14", title:"Hawks in Business Lessons in Leadership Luncheon",
-       details:["Panel 1: Justin Tatum, Terry Egger, Chuck Harmison", "Panel 2: Mick Baines, Paul Jurgens"],
-       venue:"City Beach Function Centre", start:"12:30", end:"15:30", price:"$150pp", presenter:"Greater Bank"},
+       details:["Panel: Terry Egger, Justin Tatum, Chuck Harmison, Paul Jurgens"],
+       venue:"City Beach Function Centre", start:"12:30", end:"", price:"$170pp", presenter:"Greater Bank"},
       {date:"2026-11-05", title:"Hawks in Business Wine + Watch Party", details:[],
-       venue:"Concepts by Gavin Hepper", start:"18:30", end:"", price:"$70pp", presenter:"Concepts by Gavin Hepper"},
-      {date:"2026-11-26", title:"Hawks in Business Breakfast", details:["Speakers: Coaches"],
+       venue:"Concepts by Gavin Hepper", start:"18:00", end:"", price:"$70pp", presenter:"Concepts by Gavin Hepper"},
+      {date:"2026-11-26", title:"Hawks in Business Breakfast", details:[],
        venue:"Sage Hotel", start:"07:30", end:"", price:"$65pp", presenter:"Greater Bank"},
-      {date:"2026-12-04", title:"Hawks in Business Long Table Christmas Lunch", details:[],
-       venue:"Wollongong Golf Club", start:"12:30", end:"15:30", price:"TBC", presenter:""},
-      {date:"2026-12-10", title:"Hawks Court Walk", details:["Pre-game experience. Does not include a game ticket."],
+      {date:"2026-12-04", title:"Hawks in Business Long Table Christmas Lunch", details:["Four courses with paired wines"],
+       venue:"Wollongong Golf Club, New Wine Dining Room", start:"13:00", end:"16:30", price:"$200pp", presenter:""},
+      {date:"2026-12-10", title:"Hawks Court Walk", details:["Hawks v Tasmania JackJumpers", "Match ticket not included"],
        venue:"WIN Entertainment Centre", start:"18:00", end:"", price:"$50pp", presenter:"", game:8},
       {date:"2027-01-29", title:"Hawks in Business & Hawks Alumni Golf Day", details:[],
        venue:"Wollongong Golf Club", start:"07:30", end:"", price:"", presenter:""},
-      {month:"2027-01", title:"Hawks in Business Breakfast", details:[],
-       venue:"", start:"", end:"", price:"", presenter:""},
       {date:"2027-02-07", title:"Hawks in Business Summer Sundowner", details:[],
        venue:"TBC", start:"TBC", end:"", price:"TBC", presenter:""},
       {month:"2027-02", title:"Illawarra Hawks MVP Presentation Dinner", details:[],
        venue:"Sage Hotel", start:"TBC", end:"", price:"TBC", presenter:"Sage Hotel"},
-      {month:"2027-03", title:"NBL27 Finals", details:[],
-       venue:"", start:"", end:"", price:"", presenter:""},
     ]
   },
 
