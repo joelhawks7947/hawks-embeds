@@ -263,29 +263,26 @@ GitHub also checks every change automatically and emails you if `data.js` has a 
 
 ## 3. How changes go live, and purge links
 
-**Data edits (`data.js`, `top10.js`) need no purge.** The embeds load these two files from GitHub Pages (https://joelhawks7947.github.io/hawks-embeds/), which updates about a minute after each commit. Visitors pick up the change within about 10 minutes. If GitHub Pages is down or slow, the embeds load the same file from jsDelivr instead.
+**No purge needed, for data or code.** The embeds load `hawks-core.js`, `data.js` and `top10.js` from GitHub Pages (https://joelhawks7947.github.io/hawks-embeds/), which updates about a minute after each commit. Visitors pick up any change within about 10 minutes, so allow about 11 minutes from the commit. If GitHub Pages is down or slow, the embeds load the same files from jsDelivr instead.
 
-**Code changes (`hawks-core.js`) still come from jsDelivr**, which keeps a copy for up to 12 hours. After a code change, open the purge link for it below.
+Only the small loader, `hawks.js`, still comes from jsDelivr. It should never need to change.
 
-The data purge links are a backup only: they refresh jsDelivr's copy, which is used if GitHub Pages is down.
+The purge links below are a backup only: they refresh jsDelivr's copy, which is used if GitHub Pages is down.
 
+- **`hawks-core.js` (backup):**
+  https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks-core.js
 - **`data.js` (backup):**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/data.js
 - **`top10.js` (backup):**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/top10.js
-- **After a code change (`hawks-core.js`):**
-  https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks-core.js
 - **Only if `hawks.js` itself changes (very rare):**
   https://purge.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js
 
-A page of text that includes `"status": "finished"` means it worked. If you're not sure which file changed, open both.
-
-If the old version is still showing a few minutes after a purge, wait two or three minutes and open the purge link again. jsDelivr sometimes takes a moment to notice that GitHub has changed.
+A page of text that includes `"status": "finished"` means it worked. jsDelivr refuses purges for a while after a few in a row (the text then says `"throttled": true`); try again in an hour.
 
 **How quickly people see a change**
 
-- **Data changes** (`data.js`, `top10.js`): everyone within about 10 minutes of the commit.
-- **Code changes** (`hawks-core.js`, including new embeds): everyone within about 10 minutes of the purge.
+- **Any change** (`data.js`, `top10.js`, `hawks-core.js`, including new embeds): everyone within about 10 minutes of GitHub Pages updating, which takes about a minute after the commit.
 - **`hawks.js`** is a tiny loader that browsers may keep for up to 7 days. That's why it should never need to change.
 - If you still see an old version, try a private window or hard-refresh (Cmd+Shift+R on a Mac, Ctrl+Shift+R on Windows).
 
@@ -330,9 +327,9 @@ If a change breaks something:
 1. On GitHub, open the file that changed and click **History** (top right of the file).
 2. Find the last version that worked and click its **`<>`** icon ("Browse repository at this point"). Open the same file there, click **Raw**, and copy everything.
 3. Go back to the current file, click the pencil, select everything, paste the good version over it, and commit.
-4. For `hawks-core.js`, open its purge link (section 3). For `data.js` or `top10.js`, just wait about 10 minutes.
+4. Wait about 10 minutes. No purge needed.
 
-A developer can do the same with `git revert` on the bad commit (then purge, for a code change).
+A developer can do the same with `git revert` on the bad commit.
 
 ---
 
@@ -364,8 +361,8 @@ npm test
 
 | File | What it is |
 |---|---|
-| `hawks.js` | Tiny loader that every embed points at. Loads `hawks-core.js` from the same folder. **Public address: never rename, and avoid changing it.** |
-| `hawks-core.js` | All the embed code. Loads `data.js` from the same folder, checks it, renders every `data-hawks` placeholder. **Don't rename: the loader depends on it.** |
+| `hawks.js` | Tiny loader that every embed points at. Loads `hawks-core.js` from GitHub Pages (jsDelivr if Pages fails). **Public address: never rename, and avoid changing it.** |
+| `hawks-core.js` | All the embed code. Loads `data.js` from GitHub Pages (jsDelivr if Pages fails), checks it, renders every `data-hawks` placeholder. **Don't rename: the loader depends on it.** |
 | `data.js` | Season data and every link |
 | `top10.js` | Top 10 single-game feats (loaded only by the Top 10 embed) |
 | `test/` | Local test pages |

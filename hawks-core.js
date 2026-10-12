@@ -1398,13 +1398,15 @@
   var base = me && me.src ? me.src.replace(/[^\/?#]*([?#].*)?$/, "") : "";
   /* Data files come from GitHub Pages first: it updates about a minute after every commit,
      with no purge, while jsDelivr can keep serving an old copy of a branch for hours.
-     If Pages fails or takes over 5 seconds, the same file comes from jsDelivr instead. */
+     If Pages fails or takes over 5 seconds, the same file comes from jsDelivr instead.
+     This holds whether this file came from jsDelivr (older loaders) or from Pages (current loader). */
   var PAGES = "https://joelhawks7947.github.io/hawks-embeds/", PAGES_WAIT = 5000;
-  var fromCdn = /^https:\/\/cdn\.jsdelivr\.net\/gh\/joelhawks7947\/hawks-embeds@/.test(base);
+  var CDN = "https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/";
+  var fromCdn = /^https:\/\/cdn\.jsdelivr\.net\/gh\/joelhawks7947\/hawks-embeds@/.test(base), fromPages = base === PAGES;
   /* Browsers may keep a file for a while (jsDelivr: 7 days). The ?v= value changes every 10 minutes
      so browsers re-check; both hosts ignore it for their own caches. */
   function loadFile(f, ok, bad) {
-    var hosts = fromCdn ? [PAGES, base] : [base], done = false;
+    var hosts = fromCdn ? [PAGES, base] : fromPages ? [PAGES, CDN] : [base], done = false;
     function attempt(i) {
       var s = D.createElement("script"), moved = false, t;
       function next() {
