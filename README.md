@@ -111,15 +111,21 @@ The NBL27 events, grouped by month. Past events stay in the list in grey. The ev
 
 ### On other websites (Lovable and plain HTML pages)
 
-The same snippet works on any web page, not just hawks.com.au.
+**Plain HTML page:** paste this where the events should appear (white version):
 
-- **Plain HTML page:** paste the snippet where the embed should appear.
-- **Lovable** (or any React site): the page is built after it loads, so a pasted script tag won't run. Ask Lovable to add this component and place it where the embed should appear:
+```html
+<div data-hawks="hawks-in-business" data-hawks-theme="light"><a href="https://www.hawks.com.au/">Hawks in Business events</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
 
-```jsx
+**Lovable:** a pasted script tag won't run on a Lovable site. Copy everything in the box below and paste it into Lovable's chat as one message:
+
+````text
+Create a new file src/components/HawksEmbed.tsx with exactly this code:
+
 import { useEffect } from "react";
 
-export default function HawksEmbed({ name, fallbackUrl, fallbackText, theme }) {
+export default function HawksEmbed({ name, fallbackUrl, fallbackText, theme }: { name: string; fallbackUrl: string; fallbackText: string; theme?: string }) {
   useEffect(() => {
     const s = document.createElement("script");
     s.src = "https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js";
@@ -135,8 +141,14 @@ export default function HawksEmbed({ name, fallbackUrl, fallbackText, theme }) {
   );
 }
 
-// <HawksEmbed name="hawks-in-business" theme="light" fallbackUrl="https://www.hawks.com.au/" fallbackText="Hawks in Business events" />
-```
+Then add it to the page where the Hawks in Business events should appear, exactly like this:
+
+<HawksEmbed name="hawks-in-business" theme="light" fallbackUrl="https://www.hawks.com.au/" fallbackText="Hawks in Business events" />
+
+Import it at the top of that page with: import HawksEmbed from "@/components/HawksEmbed";
+
+Do not restyle it, change its code, or put it inside a dark background. It sets its own colours and loads its content from the script.
+````
 
 ### White (light) version
 
