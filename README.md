@@ -135,7 +135,7 @@ export default function HawksEmbed({ name, fallbackUrl, fallbackText, theme }) {
   );
 }
 
-// <HawksEmbed name="hawks-in-business" fallbackUrl="https://www.hawks.com.au/" fallbackText="Hawks in Business events" />
+// <HawksEmbed name="hawks-in-business" theme="light" fallbackUrl="https://www.hawks.com.au/" fallbackText="Hawks in Business events" />
 ```
 
 ### White (light) version
