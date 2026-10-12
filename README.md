@@ -1,6 +1,6 @@
 # Hawks embeds
 
-One hosted script that powers the Illawarra Hawks embeds on hawks.com.au: the next home game countdown, upcoming home games, Plan your night, Hawks trivia and MVP vote, and the game preview button.
+One hosted script that powers the Illawarra Hawks embeds on hawks.com.au: the next home game countdown, upcoming home games, Plan your night, Hawks trivia and MVP vote, the game preview button, and the Hawks in Business events list.
 
 Every embed on the site is a short placeholder plus the same script tag. Change something here once and every page and News recap updates.
 
@@ -100,9 +100,47 @@ Shows the next camp from `data.js`, with a Register button. After the last camp 
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
+### Hawks in Business events
+
+```html
+<div data-hawks="hawks-in-business" data-hawks-theme="light"><a href="https://www.hawks.com.au/">Hawks in Business events</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+The NBL27 events, grouped by month. Past events stay in the list in grey. The events are in `data.js` (see section 2).
+
+### On other websites (Lovable and plain HTML pages)
+
+The same snippet works on any web page, not just hawks.com.au.
+
+- **Plain HTML page:** paste the snippet where the embed should appear.
+- **Lovable** (or any React site): the page is built after it loads, so a pasted script tag won't run. Ask Lovable to add this component and place it where the embed should appear:
+
+```jsx
+import { useEffect } from "react";
+
+export default function HawksEmbed({ name, fallbackUrl, fallbackText, theme }) {
+  useEffect(() => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js";
+    s.defer = true;
+    document.body.appendChild(s);
+  }, []);
+  return (
+    <div
+      data-hawks={name}
+      data-hawks-theme={theme}
+      dangerouslySetInnerHTML={{ __html: `<a href="${fallbackUrl}">${fallbackText}</a>` }}
+    />
+  );
+}
+
+// <HawksEmbed name="hawks-in-business" fallbackUrl="https://www.hawks.com.au/" fallbackText="Hawks in Business events" />
+```
+
 ### White (light) version
 
-Girls in the Game, Newsletter and Top 10 are black by default. For the white version, add `data-hawks-theme="light"` to the placeholder:
+Girls in the Game, Newsletter, Top 10 and Hawks in Business are black by default. For the white version, add `data-hawks-theme="light"` to the placeholder:
 
 ```html
 <div data-hawks="newsletter" data-hawks-theme="light"><a href="https://mailchi.mp/hawks/illawarra-hawks-newsletter">Join the Hawks mailing list</a></div>
@@ -166,6 +204,24 @@ The `mvpVote` section lists every game of the season, home and away, one line ea
 - Voting closes at `closeTime` (`"15:00"`), `closeDaysAfter` (`2`) days after the game date. Change those two values to change every game at once.
 - If a game moves, change its date or time here **and**, for a home game, in the `games` list too.
 - `image` is the square vote graphic.
+
+### Hawks in Business events
+
+Each event is one line in the `hawksInBusiness` section:
+
+```js
+{date:"2026-11-26", title:"Hawks in Business Breakfast", details:["Speakers: Coaches"],
+ venue:"Sage Hotel", start:"07:30", end:"", price:"$65pp", presenter:"Greater Bank"},
+```
+
+- The embed groups events by month and sorts them by date for you.
+- `details` are extra lines under the name, such as panel speakers. Use `[]` for none.
+- `venue`, `start`, `end` and `price` make one line, for example "Sage Hotel · 7:30am · Tickets $65pp". Use `"TBC"` for anything not known yet, or `""` to leave it out.
+- If the day isn't set yet, swap `date:"2027-01-29"` for `month:"2027-01"`. The date block shows "TBC".
+- `presenter` shows as "Presented by ...". Use `""` for none.
+- An event turns grey after its `end` time, or at midnight after its date when there's no end time.
+- `tickets` at the top is the **Book now** button under the list. It disappears once every event is past.
+- The Hawks Court Walk line has `game:8`: its teal **Court Walk tickets** button uses that game's `courtWalk` link from the `games` list.
 
 ### Top 10 table
 

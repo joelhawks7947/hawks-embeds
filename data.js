@@ -86,6 +86,51 @@ window.HAWKS_DATA = {
     ]
   },
 
+  /* HAWKS IN BUSINESS
+     One line per event. The embed groups them by month, in date order. Past
+     events stay in the list but turn grey: from the end time if there is one,
+     otherwise from midnight after the event's date.
+     tickets:   the "Book now" button under the list ("" hides it)
+     date:      "2026-10-14"; if the day isn't set yet, leave date out and use
+                month:"2027-01" instead (shows as "TBC" in that month)
+     title:     the event name
+     details:   extra lines under the name, e.g. ["Panel 1: ...", "Panel 2: ..."]; [] for none
+     venue, start, end, price:
+                shown on one line, e.g. "Sage Hotel · 7:30am · Tickets $65pp".
+                start and end are 24-hour Sydney time ("12:30"); end can be "".
+                Use "TBC" for any of venue, start or price that isn't known yet;
+                "" leaves it out completely.
+     presenter: shown as "Presented by ..."; "" for none
+     game:      for the Hawks Court Walk only: the home game number (games list
+                below). The teal "Court Walk tickets" button uses that game's
+                courtWalk link. Leave it out for every other event. */
+  hawksInBusiness: {
+    tickets: "https://hawks-corporate-hospitality.lovable.app/",
+    events: [
+      {date:"2026-10-14", title:"Hawks in Business Lessons in Leadership Luncheon",
+       details:["Panel 1: Justin Tatum, Terry Egger, Chuck Harmison", "Panel 2: Mick Baines, Paul Jurgens"],
+       venue:"City Beach Function Centre", start:"12:30", end:"15:30", price:"$150pp", presenter:"Greater Bank"},
+      {date:"2026-11-05", title:"Hawks in Business Wine + Watch Party", details:[],
+       venue:"Concepts by Gavin Hepper", start:"18:30", end:"", price:"$70pp", presenter:"Concepts by Gavin Hepper"},
+      {date:"2026-11-26", title:"Hawks in Business Breakfast", details:["Speakers: Coaches"],
+       venue:"Sage Hotel", start:"07:30", end:"", price:"$65pp", presenter:"Greater Bank"},
+      {date:"2026-12-04", title:"Hawks in Business Long Table Christmas Lunch", details:[],
+       venue:"Wollongong Golf Club", start:"12:30", end:"15:30", price:"TBC", presenter:""},
+      {date:"2026-12-10", title:"Hawks Court Walk", details:["Pre-game experience. Does not include a game ticket."],
+       venue:"WIN Entertainment Centre", start:"18:00", end:"", price:"$50pp", presenter:"", game:8},
+      {date:"2027-01-29", title:"Hawks in Business & Hawks Alumni Golf Day", details:[],
+       venue:"Wollongong Golf Club", start:"07:30", end:"", price:"", presenter:""},
+      {month:"2027-01", title:"Hawks in Business Breakfast", details:[],
+       venue:"", start:"", end:"", price:"", presenter:""},
+      {date:"2027-02-07", title:"Hawks in Business Summer Sundowner", details:[],
+       venue:"TBC", start:"TBC", end:"", price:"TBC", presenter:""},
+      {month:"2027-02", title:"Illawarra Hawks MVP Presentation Dinner", details:[],
+       venue:"Sage Hotel", start:"TBC", end:"", price:"TBC", presenter:"Sage Hotel"},
+      {month:"2027-03", title:"NBL27 Finals", details:[],
+       venue:"", start:"", end:"", price:"", presenter:""},
+    ]
+  },
+
   /* GREATER BANK GAME MVP VOTE
      Every game, home and away. Voting opens at tip-off and closes at
      closeTime (Sydney time) closeDaysAfter days after the game date, so a

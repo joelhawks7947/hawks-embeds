@@ -175,6 +175,7 @@
     if (!out.games.length) warn("no valid games in data.js");
     out.girlsInTheGame = { camps: camps(raw.girlsInTheGame) };
     out.mvpVote = mvpVote(raw.mvpVote);
+    out.hawksInBusiness = biz(raw.hawksInBusiness, out.games);
     return out;
   }
   H.validate = validate;
@@ -242,6 +243,44 @@
     return (soon ? fmt(w.date, { weekday: "long" }) : U.longDate(w.date) + ",") + " " + t;
   }
   H.mvpOpen = mvpOpen;
+
+  /* Hawks in Business events. An event is past (shown grey) from its end time, or from midnight
+     after its date when it has no end time; an event with only a month is past when that month ends. */
+  function ymd(y, m, d) { var x = new Date(Date.UTC(y, m - 1, d)); return x.getUTCFullYear() + "-" + ("0" + (x.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + x.getUTCDate()).slice(-2); }
+  function biz(raw, games) {
+    var out = { tickets: "", events: [] };
+    if (!raw) return out;
+    if (raw.tickets && okUrl(raw.tickets)) out.tickets = raw.tickets;
+    else if (raw.tickets) warn("hawksInBusiness.tickets ignored: not an https:// link");
+    if (raw.events && !Array.isArray(raw.events)) warn("hawksInBusiness has no events list");
+    function txt(v) { return typeof v === "string" ? v.trim() : ""; }
+    (Array.isArray(raw.events) ? raw.events : []).forEach(function (e, i) {
+      var who = "Hawks in Business event " + (i + 1), why = [];
+      if (!e || typeof e !== "object") { warn(who + " skipped: not an event line"); return; }
+      var start = txt(e.start), end = txt(e.end), d, c;
+      if (e.date != null) { if (!realDate(e.date)) why.push("date \"" + e.date + "\" is not a real YYYY-MM-DD date"); }
+      else if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(e.month)) why.push("needs a date (YYYY-MM-DD) or a month (YYYY-MM)");
+      if (!txt(e.title)) why.push("title is empty");
+      if (start && start !== "TBC" && !TIME.test(start)) why.push("start \"" + start + "\" is not HH:MM or TBC");
+      if (end && !(TIME.test(end) && TIME.test(start))) why.push("end \"" + end + "\" needs to be HH:MM, with a start time");
+      if (why.length) { warn(who + " skipped: " + why.join("; ")); return; }
+      c = { date: e.date || "", month: e.date ? e.date.slice(0, 7) : e.month, title: txt(e.title), venue: txt(e.venue), start: start, end: end,
+        price: txt(e.price), presenter: txt(e.presenter), cw: "", _cwOff: 0,
+        details: (Array.isArray(e.details) ? e.details : [e.details]).map(txt).filter(Boolean) };
+      if (e.game != null) {
+        var g = games.filter(function (x) { return x.n === e.game; })[0];
+        if (g && g.courtWalk) { c.cw = g.courtWalk; c._cwOff = g._cwOff; c.cwLabel = courtWalkLabel(g); }
+        else warn(who + ": game " + e.game + " has no Court Walk link in the games list, so no Court Walk button");
+      }
+      d = c.month.split("-").map(Number);
+      c._end = c.date ? (end ? toUtc(c.date, end) : toUtc(ymd(d[0], d[1], +c.date.slice(8) + 1), "00:00")) : toUtc(ymd(d[0], d[1] + 1, 1), "00:00");
+      c._key = c.date || c.month + "-99";
+      c._i = i;
+      out.events.push(c);
+    });
+    out.events.sort(function (a, b) { return a._key < b._key ? -1 : a._key > b._key ? 1 : a._i - b._i; });
+    return out;
+  }
 
   /* ---------------- Shared game state ---------------- */
 
@@ -1201,6 +1240,126 @@
       tabs.forEach(function (b, i) { b.addEventListener("click", function () { show(i); }); });
       show(0);
       return {};
+    }
+  };
+
+  /* ---------------- hawks-in-business (.hkbiz) ----------------
+     Hawks in Business events from data.js (hawksInBusiness.events), grouped by month like the
+     flyer and EDM list. Past events stay in the list in grey. The Court Walk row gets the teal
+     button from its game's courtWalk link; "Book now" (hawksInBusiness.tickets) sits underneath. */
+  M["hawks-in-business"] = {
+    css: [
+      ".hkbiz{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--t:#4FC3BE;--bg:#000000;--fg:#FFFFFF;--body:#D8D8D8;--line:#2A2A2A;--past:#8C8C8C;--by:#FF0013;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--bg);color:var(--fg);padding:48px 32px;margin:0;border-top:6px solid var(--r);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;text-align:left;}",
+      ".hkbiz *,.hkbiz *::before,.hkbiz *::after{box-sizing:border-box;}",
+      ".hkbiz[hidden],.hkbiz [hidden]{display:none !important;}",
+      ".hkbiz.hkbiz--light{--bg:#FFFFFF;--fg:#000000;--body:#373737;--line:#E2E2E2;--past:#767676;--by:#000000;border-top-color:var(--k);}",
+      ".hkbiz .hkbiz__inner{max-width:880px;margin:0 auto;}",
+      ".hkbiz .hkbiz__heading{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(28px,4.5cqw,40px);color:var(--fg);margin:0 0 8px;padding:0;}",
+      ".hkbiz .hkbiz__month{margin:28px 0 0;padding:0;}",
+      ".hkbiz .hkbiz__mh{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:24px;color:var(--r);margin:0 0 4px;padding:0;}",
+      ".hkbiz .hkbiz__list{list-style:none;margin:0;padding:0;}",
+      ".hkbiz .hkbiz__ev{display:grid;grid-template-columns:76px minmax(0,1fr) auto;column-gap:18px;row-gap:6px;align-items:start;margin:0;padding:14px 0;border-bottom:1px solid var(--line);}",
+      ".hkbiz .hkbiz__ev::before,.hkbiz .hkbiz__ev::marker{content:none;}",
+      ".hkbiz .hkbiz__date{grid-column:1;grid-row:1 / span 2;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:64px;padding:6px 4px;margin:0;background:var(--r);color:var(--w);border:2px solid var(--r);text-align:center;}",
+      ".hkbiz .hkbiz__dd{display:block;font-family:'Anton',Impact,sans-serif;font-size:30px;line-height:1;letter-spacing:0.01em;}",
+      ".hkbiz .hkbiz__my{display:block;font-weight:700;font-size:11px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;margin:4px 0 0;}",
+      ".hkbiz .hkbiz__main{grid-column:2;grid-row:1;min-width:0;}",
+      ".hkbiz .hkbiz__title{font-weight:700;font-size:17px;line-height:1.3;color:var(--fg);margin:0;padding:0;}",
+      ".hkbiz .hkbiz__line{font-size:14px;line-height:1.5;color:var(--body);margin:2px 0 0;padding:0;}",
+      ".hkbiz .hkbiz__by{grid-column:3;grid-row:1;font-weight:700;font-size:14px;line-height:1.3;color:var(--by);text-align:right;margin:0;padding:2px 0 0;max-width:180px;}",
+      ".hkbiz .hkbiz__byl{display:block;font-weight:400;font-size:11px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;margin:0 0 2px;}",
+      ".hkbiz .hkbiz__sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}",
+      ".hkbiz .hkbiz__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:14px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;text-align:center;padding:12px 18px;margin:10px 0 0;border:2px solid var(--r);border-radius:0;cursor:pointer;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkbiz .hkbiz__btn:link,.hkbiz .hkbiz__btn:visited{color:var(--w);text-decoration:none;}",
+      ".hkbiz .hkbiz__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
+      ".hkbiz .hkbiz__btn:active{transform:scale(0.98);}",
+      ".hkbiz .hkbiz__btn:focus-visible{outline:2px solid var(--fg);outline-offset:2px;}",
+      ".hkbiz .hkbiz__btn--cw,.hkbiz .hkbiz__btn--cw:link,.hkbiz .hkbiz__btn--cw:visited{background:var(--t);border-color:var(--t);color:var(--k);}",
+      ".hkbiz .hkbiz__btn--cw:hover{background:var(--fg);border-color:var(--fg);color:var(--bg);}",
+      ".hkbiz .hkbiz__cta{margin:28px 0 0;}",
+      ".hkbiz .hkbiz__cta .hkbiz__btn{font-size:17px;padding:18px 32px;margin:0;}",
+      /* Past events: grey text, and an outline date block instead of red. */
+      ".hkbiz .hkbiz__ev--past .hkbiz__title,.hkbiz .hkbiz__ev--past .hkbiz__line,.hkbiz .hkbiz__ev--past .hkbiz__by{color:var(--past);}",
+      ".hkbiz .hkbiz__ev--past .hkbiz__date{background:transparent;border-color:var(--past);color:var(--past);}",
+      "@container (max-width:600px){",
+      ".hkbiz{padding:36px 16px;}",
+      ".hkbiz .hkbiz__ev{grid-template-columns:64px minmax(0,1fr);column-gap:14px;}",
+      ".hkbiz .hkbiz__date{grid-row:1 / span 2;min-height:58px;}",
+      ".hkbiz .hkbiz__dd{font-size:26px;}",
+      ".hkbiz .hkbiz__by{grid-column:2;grid-row:2;text-align:left;max-width:none;padding:0;}",
+      ".hkbiz .hkbiz__byl{display:inline;font-size:inherit;font-weight:700;letter-spacing:0;text-transform:none;margin:0;}",
+      ".hkbiz .hkbiz__title{font-size:16px;}",
+      ".hkbiz .hkbiz__btn{display:block;width:100%;}",
+      ".hkbiz .hkbiz__cta .hkbiz__btn{padding:18px 20px;}",
+      "}",
+      "@media (prefers-reduced-motion:reduce){.hkbiz .hkbiz__btn{transition:none;}.hkbiz .hkbiz__btn:active{transform:none;}}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var B = ctx.data.hawksInBusiness, rows = [];
+      function monthName(m) { return fmt(m + "-01", { month: "long" }) + " " + m.slice(0, 4); }
+      function when(e) { return e.date ? U.longDate(e.date) : monthName(e.month) + ", date TBC"; }
+      /* "Sage Hotel · 7:30am · Tickets $65pp"; side-by-side TBCs merge: "Venue, time and tickets TBC". */
+      function info(e) {
+        var parts = [], tbc = [];
+        function flush() {
+          if (!tbc.length) return;
+          var s = tbc.length === 1 ? tbc[0] : tbc.slice(0, -1).join(", ") + " and " + tbc[tbc.length - 1];
+          parts.push(s.charAt(0).toUpperCase() + s.slice(1) + " TBC"); tbc = [];
+        }
+        [["venue", e.venue, e.venue], ["time", e.start, e.start && e.start !== "TBC" ? U.time(e.start) + (e.end ? " to " + U.time(e.end) : "") : ""],
+         ["tickets", e.price, "Tickets " + e.price]].forEach(function (p) {
+          if (!p[1]) return;
+          if (p[1] === "TBC") { tbc.push(p[0]); return; }
+          flush(); parts.push(p[2]);
+        });
+        flush();
+        return parts.join(" · ");
+      }
+      function line(t) { return '<p class="hkbiz__line">' + esc(t) + "</p>"; }
+      function row(e) {
+        var i = info(e);
+        return '<li class="hkbiz__ev">' +
+          '<div class="hkbiz__date" aria-hidden="true"><span class="hkbiz__dd">' + (e.date ? +e.date.slice(8) : "TBC") + '</span><span class="hkbiz__my">' +
+          esc(fmt(e.month + "-01", { month: "short" }).replace(".", "") + " " + e.month.slice(0, 4)) + "</span></div>" +
+          '<div class="hkbiz__main"><p class="hkbiz__title"><span class="hkbiz__sr" data-k="past" hidden>Past event: </span><span class="hkbiz__sr">' + esc(when(e)) + ": </span>" + esc(e.title) + "</p>" +
+          e.details.map(line).join("") + (i ? line(i) : "") +
+          (e.cw ? '<a class="hkbiz__btn hkbiz__btn--cw"' + ext(e.cw) + ' aria-label="' + esc(e.cwLabel) + '">Court Walk tickets</a>' : "") +
+          "</div>" +
+          (e.presenter ? '<p class="hkbiz__by"><span class="hkbiz__byl">Presented by </span>' + esc(e.presenter) + "</p>" : "") +
+          "</li>";
+      }
+      var months = [], html = "";
+      B.events.forEach(function (e) { if (months[months.length - 1] !== e.month) months.push(e.month); });
+      months.forEach(function (m) {
+        html += '<div class="hkbiz__month"><h3 class="hkbiz__mh">' + esc(monthName(m)) + '</h3><ul class="hkbiz__list">' +
+          B.events.filter(function (e) { return e.month === m; }).map(row).join("") + "</ul></div>";
+      });
+      el.innerHTML =
+        '<section class="hkbiz' + (ctx.theme === "light" ? " hkbiz--light" : "") + '"><div class="hkbiz__inner">' +
+        '<h2 class="hkbiz__heading">Hawks in Business NBL27</h2>' + html +
+        (B.tickets ? '<div class="hkbiz__cta"><a class="hkbiz__btn"' + ext(B.tickets) + ' aria-label="Book now: Hawks in Business events">Book now</a></div>' : "") +
+        "</div></section>";
+      var root = el.firstChild, cta = root.querySelector(".hkbiz__cta");
+      /* Events are sorted by date, so the rows are in the same order as B.events. */
+      [].forEach.call(root.querySelectorAll(".hkbiz__ev"), function (li, i) {
+        rows.push({ e: B.events[i], li: li, past: null, sr: li.querySelector('[data-k="past"]'), cw: li.querySelector(".hkbiz__btn--cw") });
+      });
+      return {
+        update: function (s) {
+          var any = false;
+          rows.forEach(function (r) {
+            var past = s.now >= r.e._end;
+            if (!past) any = true;
+            if (r.cw) r.cw.hidden = past || s.now >= r.e._cwOff;
+            if (past === r.past) return;
+            r.past = past;
+            r.li.classList.toggle("hkbiz__ev--past", past);
+            r.sr.hidden = !past;
+          });
+          if (cta) cta.hidden = !any;
+        }
+      };
     }
   };
 
