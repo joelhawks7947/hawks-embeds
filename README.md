@@ -107,7 +107,7 @@ Shows the next camp from `data.js`, with a Register button. After the last camp 
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
-The NBL27 events, grouped by month. Past events stay in the list in grey. The events are in `data.js` (see section 2).
+The NBL27 events, grouped by month. Finished events move to a collapsed **Past events** bar at the bottom (grey, most recent first). The events are in `data.js` (see section 2).
 
 ### On other websites (Lovable and plain HTML pages)
 
@@ -231,7 +231,7 @@ Each event is one line in the `hawksInBusiness` section:
 - `venue`, `start`, `end` and `price` make one line, for example "Sage Hotel · 7:30am · Tickets $65pp". Use `"TBC"` for anything not known yet, or `""` to leave it out.
 - If the day isn't set yet, swap `date:"2027-01-29"` for `month:"2027-01"`. The date block shows "TBC".
 - `presenter` shows as "Presented by ...". Use `""` for none.
-- An event turns grey after its `end` time, or at midnight after its date when there's no end time.
+- An event moves to **Past events** after its `end` time, or at midnight after its date when there's no end time. Events with only a `month` move when that month ends.
 - `tickets` at the top is the **Book now** button under the list. It disappears once every event is past.
 - The Hawks Court Walk line has `game:8`: its teal **Court Walk tickets** button uses that game's `courtWalk` link from the `games` list.
 

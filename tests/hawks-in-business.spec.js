@@ -1,4 +1,4 @@
-// hawks-in-business: events grouped by month, past events grey, Court Walk button, Book now, light theme.
+// hawks-in-business: events grouped by month, past events grey under a collapsed bar, Court Walk button, Book now, light theme.
 const { test, expect } = require("@playwright/test");
 const { useData, watchConsole, ready } = require("./helpers");
 
@@ -22,7 +22,7 @@ test("heading, months and every event's copy, carried over from the flyer", asyn
   for (const i of [0, 1]) {
     const biz = page.locator(BIZ).nth(i);
     await expect(biz.locator("h2")).toHaveText("Hawks in Business NBL27");
-    await expect(biz.locator("h3")).toHaveText(["October 2026", "November 2026", "December 2026", "January 2027", "February 2027", "March 2027"]);
+    await expect(biz.locator("h3.hkbiz__mh")).toHaveText(["October 2026", "November 2026", "December 2026", "January 2027", "February 2027", "March 2027"]);
     const r = await rows(biz);
     expect(r.map((x) => [x.date, x.title, x.lines, x.by])).toEqual([
       ["14Oct 2026", "Wednesday 14th October: Hawks in Business Lessons in Leadership Luncheon",
@@ -42,35 +42,62 @@ test("heading, months and every event's copy, carried over from the flyer", asyn
       ["TBCFeb 2027", "February 2027, date TBC: Illawarra Hawks MVP Presentation Dinner", ["Sage Hotel · Time and tickets TBC"], "Presented by Sage Hotel"],
       ["TBCMar 2027", "March 2027, date TBC: NBL27 Finals", [], ""]
     ]);
+    await expect(biz.locator(".hkbiz__past")).toBeHidden();
     // Date blocks are decorative; the date is read out with the title.
     expect(await biz.locator('.hkbiz__date[aria-hidden="true"]').count()).toBe(10);
   }
   expect(log.errors).toEqual([]);
 });
 
-test("past events turn grey; a timed event at its end time, others at midnight", async ({ page }) => {
-  const past = async () => (await rows(page.locator(BIZ).first())).map((x) => x.past);
+test("past events move under a collapsed Past events bar, grey, most recent first", async ({ page }) => {
+  const up = async () => (await rows(page.locator(BIZ).first())).filter((x) => !x.past).map((x) => x.title.split(": ").pop());
+  const pastTitles = (biz) => biz.locator(".hkbiz__plist .hkbiz__title").evaluateAll((ts) => ts.map((t) => t.textContent.split(": ").pop()));
+  // A timed event moves at its end time.
   await open(page, "2026-10-14T15:29");
-  expect((await past())[0]).toBe(false);
+  expect((await up())[0]).toBe("Hawks in Business Lessons in Leadership Luncheon");
+  await expect(page.locator(BIZ).first().locator(".hkbiz__past")).toBeHidden();
   await open(page, "2026-10-14T15:30");
-  expect((await past())[0]).toBe(true);
-  const first = page.locator(BIZ).first().locator(".hkbiz__ev").first();
-  expect(await first.locator(".hkbiz__title").evaluate((t) => [...t.childNodes].filter((n) => !n.hidden).map((n) => n.textContent).join(""))).toBe("Past event: Wednesday 14th October: Hawks in Business Lessons in Leadership Luncheon");
+  const biz = page.locator(BIZ).first();
+  expect((await up())[0]).toBe("Hawks in Business Wine + Watch Party");
+  await expect(biz.locator("h3.hkbiz__mh").first()).toHaveText("November 2026");
+  // Collapsed on load, with a count; opens and closes.
+  const bar = biz.locator(".hkbiz__bar");
+  await expect(bar).toHaveText("Past events(1)");
+  await expect(bar).toHaveAttribute("aria-expanded", "false");
+  await expect(biz.locator(".hkbiz__plist")).toBeHidden();
+  await bar.click();
+  await expect(bar).toHaveAttribute("aria-expanded", "true");
+  await expect(biz.locator(".hkbiz__plist")).toBeVisible();
+  const first = biz.locator(".hkbiz__plist .hkbiz__ev").first();
   expect(await first.locator(".hkbiz__title").evaluate((e) => getComputedStyle(e).color)).toBe("rgb(140, 140, 140)");
   expect(await first.locator(".hkbiz__date").evaluate((e) => getComputedStyle(e).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
-  // No end time: grey from midnight after the date.
+  await bar.press("Enter");
+  await expect(biz.locator(".hkbiz__plist")).toBeHidden();
+  // No end time: moves at midnight after the date. Most recent first.
   await open(page, "2026-11-05T23:59");
-  expect((await past()).slice(0, 2)).toEqual([true, false]);
+  expect((await up())[0]).toBe("Hawks in Business Wine + Watch Party");
   await open(page, "2026-11-06T00:00");
-  expect((await past()).slice(0, 2)).toEqual([true, true]);
-  // Month-only events: grey once the month ends.
+  expect(await pastTitles(page.locator(BIZ).first())).toEqual(["Hawks in Business Wine + Watch Party", "Hawks in Business Lessons in Leadership Luncheon"]);
+  // Month-only events: move once the month ends.
   await open(page, "2027-01-31T23:59");
-  expect((await past())[6]).toBe(false);
+  expect((await up())[0]).toBe("Hawks in Business Breakfast");
   await open(page, "2027-02-01T00:00");
-  expect((await past())[6]).toBe(true);
+  expect((await up())[0]).toBe("Hawks in Business Summer Sundowner");
   // Light theme greys with its own colour.
-  const light = page.locator(BIZ).nth(1).locator(".hkbiz__ev").first().locator(".hkbiz__title");
-  expect(await light.evaluate((e) => getComputedStyle(e).color)).toBe("rgb(118, 118, 118)");
+  const light = page.locator(BIZ).nth(1);
+  await light.locator(".hkbiz__bar").click();
+  expect(await light.locator(".hkbiz__plist .hkbiz__title").first().evaluate((e) => getComputedStyle(e).color)).toBe("rgb(118, 118, 118)");
+});
+
+test("an event moves to Past events live, without a reload", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-10-14T00:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-10-14T00:00:01Z"));
+  await open(page, "2026-10-14T15:29:58");
+  const biz = page.locator(BIZ).first();
+  await expect(biz.locator(".hkbiz__past")).toBeHidden();
+  await page.clock.fastForward(3000);
+  await expect(biz.locator(".hkbiz__bar")).toHaveText("Past events(1)");
+  await expect(biz.locator("h3.hkbiz__mh").first()).toHaveText("November 2026");
 });
 
 test("Court Walk row: teal button from game 8, gone 4 hours before; Book now under the list", async ({ page }) => {
@@ -91,10 +118,12 @@ test("Court Walk row: teal button from game 8, gone 4 hours before; Book now und
   await expect(page.locator(BIZ).first().locator(".hkbiz__btn--cw")).toBeHidden();
 });
 
-test("after the last event: everything grey and no Book now button", async ({ page }) => {
+test("after the last event: only Past events (10), no months and no Book now button", async ({ page }) => {
   await open(page, "2027-04-01T00:00");
   const biz = page.locator(BIZ).first();
   expect((await rows(biz)).every((x) => x.past)).toBe(true);
+  expect(await biz.locator(".hkbiz__month").count()).toBe(0);
+  await expect(biz.locator(".hkbiz__bar")).toHaveText("Past events(10)");
   await expect(biz.locator(".hkbiz__cta")).toBeHidden();
 });
 

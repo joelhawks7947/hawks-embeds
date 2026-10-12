@@ -1245,7 +1245,7 @@
 
   /* ---------------- hawks-in-business (.hkbiz) ----------------
      Hawks in Business events from data.js (hawksInBusiness.events), grouped by month like the
-     flyer and EDM list. Past events stay in the list in grey. The Court Walk row gets the teal
+     flyer and EDM list. Finished events move, in grey, under a collapsed "Past events" bar. The Court Walk row gets the teal
      button from its game's courtWalk link; "Book now" (hawksInBusiness.tickets) sits underneath. */
   M["hawks-in-business"] = {
     css: [
@@ -1277,6 +1277,17 @@
       ".hkbiz .hkbiz__btn--cw,.hkbiz .hkbiz__btn--cw:link,.hkbiz .hkbiz__btn--cw:visited{background:var(--t);border-color:var(--t);color:var(--k);}",
       ".hkbiz .hkbiz__btn--cw:hover{background:var(--fg);border-color:var(--fg);color:var(--bg);}",
       ".hkbiz .hkbiz__cta{margin:28px 0 0;}",
+      ".hkbiz .hkbiz__past{margin:36px 0 0;}",
+      ".hkbiz .hkbiz__ph{margin:0;padding:0;font-size:inherit;line-height:inherit;font-weight:400;}",
+      ".hkbiz .hkbiz__bar{display:flex;align-items:center;gap:16px;width:100%;margin:0;padding:16px 20px;background:transparent;color:var(--fg);border:2px solid var(--fg);border-radius:0;cursor:pointer;text-align:left;font-family:'Poppins',Arial,sans-serif;font-size:16px;line-height:1.2;transition:background-color 120ms var(--e),color 120ms var(--e);}",
+      ".hkbiz .hkbiz__bar:hover,.hkbiz .hkbiz__bar[aria-expanded=\"true\"]{background:var(--fg);color:var(--bg);}",
+      ".hkbiz .hkbiz__bar:focus-visible{outline:2px solid var(--fg);outline-offset:2px;}",
+      ".hkbiz .hkbiz__bt{flex:1 1 auto;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:22px;line-height:1;text-transform:uppercase;letter-spacing:0.01em;}",
+      ".hkbiz .hkbiz__bc{flex:0 0 auto;font-weight:700;font-size:14px;line-height:1.3;}",
+      ".hkbiz .hkbiz__ic{flex:0 0 auto;position:relative;width:16px;height:16px;}",
+      ".hkbiz .hkbiz__ic::before,.hkbiz .hkbiz__ic::after{content:\"\";position:absolute;background:currentColor;left:0;top:7px;width:16px;height:2px;transition:transform 120ms var(--e);}",
+      ".hkbiz .hkbiz__ic::after{transform:rotate(90deg);}",
+      ".hkbiz .hkbiz__bar[aria-expanded=\"true\"] .hkbiz__ic::after{transform:rotate(0deg);}",
       ".hkbiz .hkbiz__cta .hkbiz__btn{font-size:17px;padding:18px 32px;margin:0;}",
       /* Past events: grey text, and an outline date block instead of red. */
       ".hkbiz .hkbiz__ev--past .hkbiz__title,.hkbiz .hkbiz__ev--past .hkbiz__line,.hkbiz .hkbiz__ev--past .hkbiz__by{color:var(--past);}",
@@ -1292,7 +1303,7 @@
       ".hkbiz .hkbiz__btn{display:block;width:100%;}",
       ".hkbiz .hkbiz__cta .hkbiz__btn{padding:18px 20px;}",
       "}",
-      "@media (prefers-reduced-motion:reduce){.hkbiz .hkbiz__btn{transition:none;}.hkbiz .hkbiz__btn:active{transform:none;}}"
+      "@media (prefers-reduced-motion:reduce){.hkbiz .hkbiz__btn,.hkbiz .hkbiz__bar,.hkbiz .hkbiz__ic::before,.hkbiz .hkbiz__ic::after{transition:none;}.hkbiz .hkbiz__btn:active{transform:none;}}"
     ].join("\n"),
 
     render: function (el, ctx) {
@@ -1322,42 +1333,58 @@
         return '<li class="hkbiz__ev">' +
           '<div class="hkbiz__date" aria-hidden="true"><span class="hkbiz__dd">' + (e.date ? +e.date.slice(8) : "TBC") + '</span><span class="hkbiz__my">' +
           esc(fmt(e.month + "-01", { month: "short" }).replace(".", "") + " " + e.month.slice(0, 4)) + "</span></div>" +
-          '<div class="hkbiz__main"><p class="hkbiz__title"><span class="hkbiz__sr" data-k="past" hidden>Past event: </span><span class="hkbiz__sr">' + esc(when(e)) + ": </span>" + esc(e.title) + "</p>" +
+          '<div class="hkbiz__main"><p class="hkbiz__title"><span class="hkbiz__sr">' + esc(when(e)) + ": </span>" + esc(e.title) + "</p>" +
           e.details.map(line).join("") + (i ? line(i) : "") +
           (e.cw ? '<a class="hkbiz__btn hkbiz__btn--cw"' + ext(e.cw) + ' aria-label="' + esc(e.cwLabel) + '">Court Walk tickets</a>' : "") +
           "</div>" +
           (e.presenter ? '<p class="hkbiz__by"><span class="hkbiz__byl">Presented by </span>' + esc(e.presenter) + "</p>" : "") +
           "</li>";
       }
-      var months = [], html = "";
-      B.events.forEach(function (e) { if (months[months.length - 1] !== e.month) months.push(e.month); });
-      months.forEach(function (m) {
-        html += '<div class="hkbiz__month"><h3 class="hkbiz__mh">' + esc(monthName(m)) + '</h3><ul class="hkbiz__list">' +
-          B.events.filter(function (e) { return e.month === m; }).map(row).join("") + "</ul></div>";
-      });
+      var listId = uid("biz-past");
       el.innerHTML =
         '<section class="hkbiz' + (ctx.theme === "light" ? " hkbiz--light" : "") + '"><div class="hkbiz__inner">' +
-        '<h2 class="hkbiz__heading">Hawks in Business NBL27</h2>' + html +
+        '<h2 class="hkbiz__heading">Hawks in Business NBL27</h2><div class="hkbiz__up"></div>' +
         (B.tickets ? '<div class="hkbiz__cta"><a class="hkbiz__btn"' + ext(B.tickets) + ' aria-label="Book now: Hawks in Business events">Book now</a></div>' : "") +
+        '<div class="hkbiz__past" hidden><h3 class="hkbiz__ph"><button class="hkbiz__bar" type="button" aria-expanded="false" aria-controls="' + listId + '">' +
+        '<span class="hkbiz__bt">Past events</span><span class="hkbiz__bc"></span><span class="hkbiz__ic" aria-hidden="true"></span></button></h3>' +
+        '<ul class="hkbiz__list hkbiz__plist" id="' + listId + '" hidden></ul></div>' +
         "</div></section>";
-      var root = el.firstChild, cta = root.querySelector(".hkbiz__cta");
-      /* Events are sorted by date, so the rows are in the same order as B.events. */
-      [].forEach.call(root.querySelectorAll(".hkbiz__ev"), function (li, i) {
-        rows.push({ e: B.events[i], li: li, past: null, sr: li.querySelector('[data-k="past"]'), cw: li.querySelector(".hkbiz__btn--cw") });
+      var root = el.firstChild, up = root.querySelector(".hkbiz__up"), cta = root.querySelector(".hkbiz__cta"),
+        pastBox = root.querySelector(".hkbiz__past"), bar = root.querySelector(".hkbiz__bar"), plist = root.querySelector(".hkbiz__plist"),
+        tmp = D.createElement("ul"), key = null;
+      bar.addEventListener("click", function () {
+        var open = bar.getAttribute("aria-expanded") !== "true";
+        bar.setAttribute("aria-expanded", String(open)); plist.hidden = !open;
       });
+      /* One list item per event, built once and moved between the two sections as events finish. */
+      B.events.forEach(function (e) {
+        tmp.innerHTML = row(e);
+        rows.push({ e: e, li: tmp.firstChild, cw: tmp.firstChild.querySelector(".hkbiz__btn--cw") });
+      });
+      /* Upcoming events by month, in date order; past events under the collapsed bar, most recent first. */
+      function place(now) {
+        var upc = rows.filter(function (r) { return now < r.e._end; }), past = rows.filter(function (r) { return now >= r.e._end; }).reverse();
+        up.innerHTML = "";
+        upc.forEach(function (r, i) {
+          if (!i || upc[i - 1].e.month !== r.e.month) {
+            var m = D.createElement("div");
+            m.className = "hkbiz__month";
+            m.innerHTML = '<h3 class="hkbiz__mh">' + esc(monthName(r.e.month)) + '</h3><ul class="hkbiz__list"></ul>';
+            up.appendChild(m);
+          }
+          r.li.classList.remove("hkbiz__ev--past");
+          up.lastChild.lastChild.appendChild(r.li);
+        });
+        past.forEach(function (r) { r.li.classList.add("hkbiz__ev--past"); plist.appendChild(r.li); });
+        pastBox.hidden = !past.length;
+        root.querySelector(".hkbiz__bc").textContent = "(" + past.length + ")";
+        if (cta) cta.hidden = !upc.length;
+      }
       return {
         update: function (s) {
-          var any = false;
-          rows.forEach(function (r) {
-            var past = s.now >= r.e._end;
-            if (!past) any = true;
-            if (r.cw) r.cw.hidden = past || s.now >= r.e._cwOff;
-            if (past === r.past) return;
-            r.past = past;
-            r.li.classList.toggle("hkbiz__ev--past", past);
-            r.sr.hidden = !past;
-          });
-          if (cta) cta.hidden = !any;
+          var k = rows.map(function (r) { return s.now >= r.e._end ? 1 : 0; }).join("");
+          rows.forEach(function (r) { if (r.cw) r.cw.hidden = s.now >= r.e._end || s.now >= r.e._cwOff; });
+          if (k !== key) { key = k; place(s.now); }
         }
       };
     }
