@@ -1,0 +1,371 @@
+{
+  "about": "Illawarra Hawks fan FAQ. Generated from the FAQ tracker by scripts/build-faq.mjs; the same questions and answers as the FAQ page on hawks.com.au.",
+  "page": "https://www.hawks.com.au/pages/faqs",
+  "sections": [
+    "Game day",
+    "Tickets",
+    "Membership",
+    "Accessibility",
+    "Kids and families",
+    "Corporate, groups and community",
+    "General"
+  ],
+  "questions": [
+    {
+      "id": "GD-01",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-01",
+      "section": "Game day",
+      "question": "What time do doors open?",
+      "answer": "Door times are different for every game. Check Key times for your game on our game day page, which lists the pre-game function, main doors, show start and tip-off.",
+      "link": {
+        "url": "https://www.hawks.com.au/pages/gameday",
+        "text": "Game Day Guide"
+      }
+    },
+    {
+      "id": "GD-02",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-02",
+      "section": "Game day",
+      "question": "Where do I park?",
+      "answer": "There are around 1,200 parking spaces within a short walk of WIN Entertainment Centre, and special event rates apply at some car parks. Closest to the venue: Stewart Street car parks, Salvation Army car park, St Francis Xavier Cathedral (limited spaces) and Woolworths car park, Burelli Street. In the city centre: Market Street, Wollongong Central, Crown Central (north and south) and Wollongong Station car park. Parking on the street? Check the signs before you walk away.",
+      "link": {
+        "url": "https://www.wsec.com.au/transport",
+        "text": "WIN Entertainment Centre transport"
+      }
+    },
+    {
+      "id": "GD-03",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-03",
+      "section": "Game day",
+      "question": "Can I get there by train or bus?",
+      "answer": "Yes. Wollongong Station is about a 15 minute walk from the venue. Several bus routes stop near WIN Entertainment Centre. Check the Transport for NSW timetable for your route.",
+      "link": {
+        "url": "https://www.wsec.com.au/transport",
+        "text": "WIN Entertainment Centre transport"
+      }
+    },
+    {
+      "id": "GD-04",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-04",
+      "section": "Game day",
+      "question": "Is there a taxi rank or drop-off zone?",
+      "answer": "Yes. Taxi ranks and a drop-off zone are available near WIN Entertainment Centre. Check the venue's transport page before travelling for current access details.",
+      "link": {
+        "url": "https://www.wsec.com.au/transport",
+        "text": "WIN Entertainment Centre transport"
+      }
+    },
+    {
+      "id": "GD-05",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-05",
+      "section": "Game day",
+      "question": "What can I bring in? What's not allowed?",
+      "answer": "WIN Entertainment Centre restricts items that could cause injury, nuisance or inconvenience. Prohibited items include glass, drink bottles or cans; alcohol; aerosols; bags larger than 30 cm x 40 cm; commercial food; fireworks, weapons and laser pointers; noise-making devices; scooters and similar wheeled items; confetti or glitter; commercial recording equipment, selfie sticks, drones and oversized lenses; and oversized banners or flags. Umbrellas cannot be used in the auditorium and can be stored at external doors. Security may inspect bags and patrons on entry, and event-specific conditions may also apply.",
+      "link": {
+        "url": "https://www.wsec.com.au/plan-your-visit/conditions_of_entry",
+        "text": "WIN Entertainment Centre conditions of entry"
+      }
+    },
+    {
+      "id": "GD-06",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-06",
+      "section": "Game day",
+      "question": "Can I bring my own food or water?",
+      "answer": "Commercial food and alcohol cannot be brought into the venue. You may bring one factory-sealed, non-alcoholic PET bottle under 600 mL; other drink bottles and cans are prohibited. Event-specific conditions may also apply.",
+      "link": {
+        "url": "https://www.wsec.com.au/plan-your-visit/conditions_of_entry",
+        "text": "WIN Entertainment Centre conditions of entry"
+      }
+    },
+    {
+      "id": "GD-07",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-07",
+      "section": "Game day",
+      "question": "What food and drink is available?",
+      "answer": "Game night starts long before tip-off. Everything sits inside the Lower Crown Quarter, with the ocean at the end of the street and food and drinks a few minutes from your seat.\n\nInside the venue: Bars and canteens run throughout WIN Entertainment Centre. Grab food early, because queues build the closer it gets to tip-off.",
+      "link": {
+        "url": "https://www.hawks.com.au/pages/gameday",
+        "text": "Game Day Guide"
+      }
+    },
+    {
+      "id": "GD-08",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-08",
+      "section": "Game day",
+      "question": "Is the venue cashless?",
+      "answer": "WIN Entertainment Centre and WIN Stadium are cashless venues. All transactions will be by contactless card. Cash cards will no longer be available for purchase at outlets.",
+      "link": null
+    },
+    {
+      "id": "GD-09",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-09",
+      "section": "Game day",
+      "question": "Can I leave and come back in?",
+      "answer": "Generally, no. Pass-outs for re-entry are not issued unless the specific event conditions expressly allow them.",
+      "link": null
+    },
+    {
+      "id": "GD-10",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-10",
+      "section": "Game day",
+      "question": "When should I be in my seat?",
+      "answer": "Be seated at least 30 minutes before tip-off. That's when pregame entertainment starts.",
+      "link": {
+        "url": "https://www.hawks.com.au/pages/gameday",
+        "text": "Game Day Guide"
+      }
+    },
+    {
+      "id": "GD-11",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-11",
+      "section": "Game day",
+      "question": "What time does the game finish?",
+      "answer": "The game will typically finish within 2-hours. Occasionally like the famous 4-overtime game a few years ago it will extend. But that's \"free basketball\" in basketball lingo.",
+      "link": null
+    },
+    {
+      "id": "GD-12",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-12",
+      "section": "Game day",
+      "question": "What should I wear?",
+      "answer": "We're red and black, so wear red and black.",
+      "link": null
+    },
+    {
+      "id": "GD-14",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-14",
+      "section": "Game day",
+      "question": "Where is lost property?",
+      "answer": "If you have lost an item and it has been handed in, it will be given to our security personnel and placed in a lost property area. Please call Centre Management on 02 4220 2800 the working day after an event to claim your item.",
+      "link": {
+        "url": "https://www.wsec.com.au/plan-your-visit/frequently_asked_questions",
+        "text": "WIN Entertainment Centre FAQs"
+      }
+    },
+    {
+      "id": "GD-15",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gd-15",
+      "section": "Game day",
+      "question": "Is there a code of conduct?",
+      "answer": "Yes. The NBL Code of Conduct applies at every game. Please read the NBL spectator standards before you come.",
+      "link": {
+        "url": "https://nbl.com.au/pages/nbl-spectator-standards",
+        "text": "NBL spectator standards"
+      }
+    },
+    {
+      "id": "TK-01",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-01",
+      "section": "Tickets",
+      "question": "How do I buy tickets?",
+      "answer": "Tickets to all home games are sold through Ticketmaster. Choose your game on our game day page and select Buy tickets.",
+      "link": {
+        "url": "https://www.hawks.com.au/pages/gameday",
+        "text": "Game Day Guide"
+      }
+    },
+    {
+      "id": "TK-04",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-04",
+      "section": "Tickets",
+      "question": "Can I get a refund or swap to a different game?",
+      "answer": "No. As with all ticket sales, there are no refunds, exchanges or cancellations.",
+      "link": {
+        "url": "https://www.wsec.com.au/plan-your-visit/frequently_asked_questions",
+        "text": "WIN Entertainment Centre FAQs"
+      }
+    },
+    {
+      "id": "TK-05",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-05",
+      "section": "Tickets",
+      "question": "Do kids and babies need a ticket?",
+      "answer": "Children under 4 years are admitted for free provided they do not occupy a seat.",
+      "link": null
+    },
+    {
+      "id": "TK-06",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-06",
+      "section": "Tickets",
+      "question": "Are there concession prices?",
+      "answer": "Yes. Government issued Pensioner Concession Card or Veteran Pensioner Concession Card. Seniors Card or Commonwealth Seniors Health Card (CSHC) or Veteran Healthcare Card. Full-Time secondary or tertiary Australian student cards.",
+      "link": null
+    },
+    {
+      "id": "TK-07",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-07",
+      "section": "Tickets",
+      "question": "How do group bookings work?",
+      "answer": "Hawks Group bookings are for groups of 10+\n\nGroup bookings save off normal public ticket prices and have the opportunity for additional benefits and exclusive experiences on game day. Perfect for corporate events, social groups, birthdays or any occasion!\n\nFill in the group tickets form on our website and our team will be in touch.",
+      "link": {
+        "url": "https://illawarrahawks.typeform.com/to/ldprCJhI",
+        "text": "Group tickets form"
+      }
+    },
+    {
+      "id": "TK-08",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-08",
+      "section": "Tickets",
+      "question": "Can I buy tickets at the door?",
+      "answer": "Yes. Both WIN Entertainment Centre and WIN Stadium Box Offices operate in line with event times.",
+      "link": null
+    },
+    {
+      "id": "TK-09",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-09",
+      "section": "Tickets",
+      "question": "What's the best place to sit? Is there a seat map?",
+      "answer": "Seatmap is available via the Ticketmaster site for individual game tickets, or via our membership site.\n\nBoth available directly from www.hawks.com.au",
+      "link": null
+    },
+    {
+      "id": "TK-10",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-10",
+      "section": "Tickets",
+      "question": "What are court walk tickets?",
+      "answer": "A unique experience. Be right in the middle of all the warm up action! Grab a high five and a selfie from the middle of the court. A rare opportunity to be as close to the action as you can get.\n\nCheck our Game Day guide for games when the Court Walk is taking place.",
+      "link": {
+        "url": "https://www.hawks.com.au/pages/gameday",
+        "text": "Game Day Guide"
+      }
+    },
+    {
+      "id": "TK-11",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-11",
+      "section": "Tickets",
+      "question": "What is the pre-game function?",
+      "answer": "Upstairs in the Premiers Room. You will enjoy VIP access 90 mins before tip off, canapes and 2 drinks. Here from the guest speaker, and occasionally a player who is not suiting up for the game due to injury.",
+      "link": null
+    },
+    {
+      "id": "MB-01",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-01",
+      "section": "Membership",
+      "question": "What's the difference between a season membership and a 3 or 5 game Flexi pack?",
+      "answer": "A season membership gets you into all home games of the season at WIN Entertainment Centre. A 3 or 5 game Flexi pack lets you pick any 3 or 5 home games you like, so it's the best value way to see the Hawks if you can't make every game. Not sure which suits you? Try our membership picker.",
+      "link": {
+        "url": "https://hawks-membership-picker.lovable.app/",
+        "text": "Membership picker"
+      }
+    },
+    {
+      "id": "MB-02",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-02",
+      "section": "Membership",
+      "question": "How do I buy a membership?",
+      "answer": "NBL27 memberships are sold through Ticketmaster. Not sure which option suits you? Try our membership picker on the website.",
+      "link": {
+        "url": "https://hawks-membership-picker.lovable.app/",
+        "text": "Membership picker"
+      }
+    },
+    {
+      "id": "AC-01",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-ac-01",
+      "section": "Accessibility",
+      "question": "How do I book wheelchair or accessible seating?",
+      "answer": "Easy-access and wheelchair seating is limited and must be booked before the event. Call the WSEC Ticketmaster Box Office on 02 4220 2884 during business hours to book.",
+      "link": null
+    },
+    {
+      "id": "AC-02",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-ac-02",
+      "section": "Accessibility",
+      "question": "Do you accept the Companion Card?",
+      "answer": "Yes. Wheelchair-accessible and Companion Card seating is available for Illawarra Hawks games through Ticketmaster's interactive section map. Select Accessible Seating from the price categories. Your Companion Card number may be required when booking; for help, contact the WSEC Ticketmaster Box Office on 02 4220 2884.",
+      "link": null
+    },
+    {
+      "id": "AC-03",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-ac-03",
+      "section": "Accessibility",
+      "question": "Is there accessible parking and drop-off?",
+      "answer": "Limited reserved accessible parking is available in the WSEC car park area and Quilkey Place and must be booked in advance. Call the WSEC Ticketmaster Box Office on 02 4220 2884; barrier-free entry is available from the Crown Street and Harbour Street entrances.",
+      "link": null
+    },
+    {
+      "id": "AC-04",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-ac-04",
+      "section": "Accessibility",
+      "question": "Is there lift access to all seating levels?",
+      "answer": "WIN Entertainment Centre is equipped with lifts and ramps where required, with accessible seating available on both main seating levels. Because venue configurations vary and accessible spaces are limited, book easy-access seating in advance through the WSEC Ticketmaster Box Office on 02 4220 2884.",
+      "link": null
+    },
+    {
+      "id": "AC-06",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-ac-06",
+      "section": "Accessibility",
+      "question": "Are assistance animals allowed?",
+      "answer": "Yes. Certified service animals are allowed; other animals and pets are prohibited.",
+      "link": null
+    },
+    {
+      "id": "KF-01",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-kf-01",
+      "section": "Kids and families",
+      "question": "Can I bring a pram?",
+      "answer": "Prams and strollers cannot be taken into WIN Entertainment Centre for safety reasons. They may be left in the venue's designated stroller bays; the venue is not responsible for loss, theft or damage.",
+      "link": null
+    },
+    {
+      "id": "KF-02",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-kf-02",
+      "section": "Kids and families",
+      "question": "What's on for kids before the game?",
+      "answer": "Plenty. The i98FM Street Fleet is onsite at every home game with games and prizes before the doors open, so come early. Inside, the free Activation Zone has Greater Bank mini hoops, the vertical jump tester and our measure-up wall. TomaHawk is out before every home game for photos.",
+      "link": null
+    },
+    {
+      "id": "CG-04",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-cg-04",
+      "section": "Corporate, groups and community",
+      "question": "Can players visit our school or club?",
+      "answer": "You can submit a request for players to visit your school via the \"Community\" pages on our website. Choose the program that best suits your school.",
+      "link": {
+        "url": "https://www.hawks.com.au/",
+        "text": "hawks.com.au"
+      }
+    },
+    {
+      "id": "GN-01",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gn-01",
+      "section": "General",
+      "question": "How do I contact the club?",
+      "answer": "Call 1300 142 957 or email info@hawks.com.au. Our office is Hawks HQ, Foley St, Gwynneville NSW 2500 (The Snakepit).",
+      "link": null
+    },
+    {
+      "id": "GN-02",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gn-02",
+      "section": "General",
+      "question": "How do I vote for Game MVP?",
+      "answer": "Vote for the Game MVP after every home game using the voting form on our game day page.",
+      "link": {
+        "url": "https://www.hawks.com.au/pages/gameday",
+        "text": "Game Day Guide"
+      }
+    },
+    {
+      "id": "GN-03",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gn-03",
+      "section": "General",
+      "question": "Where can I watch highlights and press conferences?",
+      "answer": "Game recaps, highlights and press conference videos are posted on our website and socials after every game.",
+      "link": {
+        "url": "https://www.hawks.com.au/",
+        "text": "hawks.com.au"
+      }
+    },
+    {
+      "id": "GN-04",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-gn-04",
+      "section": "General",
+      "question": "How can I watch the game if I can't be there?",
+      "answer": "Every NBL match is live on ESPN / Disney.\n\nSee the NBL's website for latest details",
+      "link": {
+        "url": "https://www.nbl.com.au/how-to-watch",
+        "text": "How to watch on the NBL website"
+      }
+    }
+  ]
+}

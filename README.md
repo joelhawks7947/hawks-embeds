@@ -109,6 +109,14 @@ Shows the next camp from `data.js`, with a Register button. After the last camp 
 
 The NBL27 events, grouped by month. Finished events move to a collapsed **Past events** bar at the bottom (grey, most recent first). The events are in `data.js` (see section 2).
 
+### FAQ (one page only)
+
+This embed is different: it isn't a short snippet. The questions and answers are written into the embed itself as plain HTML, so Google and AI search tools (which often don't run scripts) can read them. `hawks.js` then adds the look, the open and close accordion, search and the topic buttons.
+
+Paste the **whole** of [`faq/faq-embed.html`](faq/faq-embed.html) into one Code Embed on the FAQ page, https://www.hawks.com.au/pages/faqs (the address is set as `PAGE` in `scripts/build-faq.mjs`; if the page ever moves, change it there and rebuild). Give the page itself the H1 "Frequently asked questions": the topics in the embed are H2s and the questions H3s. See section 2 for how to update it.
+
+Each question has a link that opens it, from its ID in the spreadsheet: https://www.hawks.com.au/pages/faqs#faq-gd-02 opens "Where do I park?". Use these in EDMs and social replies. Don't renumber IDs once they're live.
+
 ### On other websites (Lovable and plain HTML pages)
 
 **Plain HTML page:** paste this where the events should appear (white version):
@@ -245,6 +253,25 @@ The Top 10 figures are in their own file, **[`top10.js`](top10.js)**. It's only 
 - The "Club record" line (`record` and `recordDetail`) and the line under the table (`note`) are edited by hand. Update `note` when the figures change, for example "current to the end of NBL27".
 - After committing, the change shows within about 10 minutes. No purge needed.
 
+### FAQ questions and answers
+
+The master copy is the **Hawks fan FAQ tracker** spreadsheet, not a file in this repository. Only rows with Status **Done** are published, and only the ID, Section, Question, Answer and Link columns. Owners, notes and status stay private.
+
+To publish changes:
+
+1. Update the spreadsheet and download it as `.xlsx`.
+2. Rebuild: `npm run faq -- "/path/to/Hawks-Fan-FAQ-Tracker.xlsx"` (or give the file to Claude Code and ask it to rebuild the FAQ). It stops with a clear message if a Done row is missing a section, question or answer, has a duplicate ID, contains a dash, or has a link with no link text.
+3. Run `npm test`, commit and push.
+4. Paste the new `faq/faq-embed.html` into the Code Embed on the FAQ page (replacing all of the old code) and publish the page. **This step is needed for every content change**: the questions live in the embed, not in a file the script loads.
+
+Notes:
+
+- **Related links** show as "More info: WIN Entertainment Centre transport". The text for each link address is in `LINK_TEXT` at the top of `scripts/build-faq.mjs`. To use different text for one question, add a column headed **Link text** to the spreadsheet.
+- Phone numbers (for example 02 4220 2884) and email addresses in answers become tap-to-call and email links automatically.
+- Line breaks in an answer become new paragraphs.
+- Webflow allows 50,000 characters per Code Embed. The build prints the size and warns from 45,000. With 37 questions it's about 32,000.
+- [`faq/faq.json`](faq/faq.json) holds the same questions and answers as data, for a future help bot: `https://joelhawks7947.github.io/hawks-embeds/faq/faq.json`
+
 ### Formats
 
 - **Dates:** `"2026-10-02"` (year, month, day)
@@ -365,7 +392,8 @@ npm test
 | `hawks-core.js` | All the embed code. Loads `data.js` from GitHub Pages (jsDelivr if Pages fails), checks it, renders every `data-hawks` placeholder. **Don't rename: the loader depends on it.** |
 | `data.js` | Season data and every link |
 | `top10.js` | Top 10 single-game feats (loaded only by the Top 10 embed) |
+| `faq/` | The FAQ embed to paste (`faq-embed.html`) and the same content as data (`faq.json`). Built from the FAQ tracker by `npm run faq`; don't edit by hand |
 | `test/` | Local test pages |
 | `tests/` | Automated browser tests (Playwright) |
-| `scripts/` | Dash check, data check, local server |
+| `scripts/` | Dash check, data check, FAQ build, local server |
 | `reference/` | The original pasted embeds these modules were built from |

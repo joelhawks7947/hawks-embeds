@@ -1390,6 +1390,198 @@
     }
   };
 
+  /* ---------------- faq (.hkfaq) ----------------
+     Unlike the other modules, the questions and answers are already in the placeholder as plain
+     HTML (built from the FAQ tracker by scripts/build-faq.mjs), so search engines and AI crawlers
+     can read them. This adds the styling, the accordion, search, topic filters and #faq-xx-nn links.
+     Answers use hidden="until-found", so the browser's own find (Ctrl+F) can still open them. */
+  var FAQ_STOP = " a an and are at be can do does for get how i if in is it me my of on or our the there to we what when where which who why will with you your ";
+  function faqNorm(s) { return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ']/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
+  function faqTerms(q) {
+    var all = faqNorm(q).split(" ").filter(Boolean), key = all.filter(function (t) { return FAQ_STOP.indexOf(" " + t + " ") < 0; });
+    return (key.length ? key : all).map(function (t) { return t.length > 3 && /[^s]s$/.test(t) ? t.slice(0, -1) : t; });
+  }
+  /* Wrap matches of the search words in <mark>, inside text only (never inside tags). */
+  function faqMark(node, terms) {
+    if (!terms.length) return;
+    var re = new RegExp("(" + terms.map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|") + ")", "gi");
+    var w = D.createTreeWalker(node, NodeFilter.SHOW_TEXT, null), list = [], t;
+    while ((t = w.nextNode())) if (!t.parentNode.closest(".hkfaq__nt")) list.push(t);
+    list.forEach(function (n) {
+      var s = n.nodeValue; re.lastIndex = 0;
+      if (!re.test(s)) return;
+      var f = D.createDocumentFragment(), i = 0; re.lastIndex = 0;
+      s.replace(re, function (m, g, at) {
+        if (at > i) f.appendChild(D.createTextNode(s.slice(i, at)));
+        var mk = D.createElement("mark"); mk.className = "hkfaq__mk"; mk.textContent = m; f.appendChild(mk);
+        i = at + m.length;
+      });
+      if (i < s.length) f.appendChild(D.createTextNode(s.slice(i)));
+      n.parentNode.replaceChild(f, n);
+    });
+  }
+  function faqUnmark(node) {
+    [].forEach.call(node.querySelectorAll("mark.hkfaq__mk"), function (mk) { var p = mk.parentNode; p.replaceChild(D.createTextNode(mk.textContent), mk); p.normalize(); });
+  }
+
+  M.faq = {
+    css: [
+      ".hkfaq{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--body:#373737;--line:#E2E2E2;--muted:#6B6B6B;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--w);color:var(--k);padding:32px 0 8px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;text-align:left;}",
+      ".hkfaq *,.hkfaq *::before,.hkfaq *::after{box-sizing:border-box;}",
+      ".hkfaq[hidden],.hkfaq [hidden]:not([hidden=\"until-found\"]){display:none !important;}",
+      ".hkfaq .hkfaq__sr,.hkfaq .hkfaq__nt{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}",
+      ".hkfaq .hkfaq__label{display:block;font-weight:700;font-size:13px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--k);margin:0 0 8px;padding:0;}",
+      ".hkfaq .hkfaq__field{position:relative;margin:0;padding:0;}",
+      ".hkfaq .hkfaq__field svg{position:absolute;left:16px;top:50%;width:20px;height:20px;margin:-10px 0 0;fill:none;stroke:var(--k);stroke-width:2.5;pointer-events:none;}",
+      ".hkfaq .hkfaq__input{display:block;width:100%;height:56px;margin:0;padding:0 16px 0 48px;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:17px;line-height:1.3;color:var(--k);background:var(--w);border:2px solid var(--k);border-radius:0;box-shadow:none;-webkit-appearance:none;appearance:none;}",
+      ".hkfaq .hkfaq__input::placeholder{color:var(--muted);opacity:1;}",
+      ".hkfaq .hkfaq__input:focus{outline:none;}",
+      ".hkfaq .hkfaq__input:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkfaq .hkfaq__cats{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;}",
+      ".hkfaq .hkfaq__cat{font-family:'Poppins',Arial,Helvetica,sans-serif;font-weight:700;font-size:13px;line-height:1.2;letter-spacing:0.05em;text-transform:uppercase;color:var(--k);background:var(--w);border:2px solid var(--k);border-radius:0;padding:9px 14px;margin:0;cursor:pointer;transition:background-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkfaq .hkfaq__cat:hover{background:var(--k);color:var(--w);}",
+      ".hkfaq .hkfaq__cat[aria-pressed=\"true\"]{background:var(--k);color:var(--w);}",
+      ".hkfaq .hkfaq__cat:active{transform:scale(0.98);}",
+      ".hkfaq .hkfaq__cat:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkfaq .hkfaq__status{font-size:14px;line-height:1.4;color:var(--muted);margin:16px 0 0;padding:0;min-height:1.4em;}",
+      ".hkfaq .hkfaq__none{margin:24px 0 0;padding:24px;border:2px solid var(--line);}",
+      ".hkfaq .hkfaq__none p{font-size:16px;line-height:1.5;color:var(--body);margin:0 0 16px;padding:0;}",
+      ".hkfaq .hkfaq__clear{display:inline-block;font-family:'Poppins',Arial,Helvetica,sans-serif;font-weight:700;font-size:14px;line-height:1.2;letter-spacing:0.05em;text-transform:uppercase;color:var(--k);background:transparent;border:2px solid var(--k);border-radius:0;padding:12px 20px;margin:0;cursor:pointer;transition:background-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkfaq .hkfaq__clear:hover{background:var(--k);color:var(--w);}",
+      ".hkfaq .hkfaq__clear:active{transform:scale(0.98);}",
+      ".hkfaq .hkfaq__clear:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkfaq .hkfaq__src{display:block;margin:0;padding:0;}",
+      ".hkfaq .hkfaq__sec{display:block;margin:40px 0 0;padding:0;}",
+      ".hkfaq .hkfaq__sh{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(26px,4cqw,34px);color:var(--k);margin:0;padding:0 0 12px;border-bottom:2px solid var(--k);}",
+      ".hkfaq .hkfaq__item{margin:0;padding:0;border-bottom:1px solid var(--line);scroll-margin-top:120px;}",
+      ".hkfaq .hkfaq__q{font-family:'Poppins',Arial,Helvetica,sans-serif;font-weight:700;font-size:17px;line-height:1.35;text-transform:none;letter-spacing:0;color:var(--k);margin:0;padding:0;}",
+      ".hkfaq .hkfaq__btn{display:flex;align-items:flex-start;gap:16px;width:100%;margin:0;padding:18px 0;background:transparent;color:var(--k);border:0;border-radius:0;cursor:pointer;text-align:left;font:inherit;line-height:1.35;transition:color 120ms var(--e);}",
+      ".hkfaq .hkfaq__btn:hover{color:var(--dr);}",
+      ".hkfaq .hkfaq__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkfaq .hkfaq__qt{flex:1 1 auto;min-width:0;}",
+      ".hkfaq .hkfaq__ic{flex:0 0 auto;position:relative;width:16px;height:16px;margin:4px 0 0;color:var(--r);}",
+      ".hkfaq .hkfaq__ic::before,.hkfaq .hkfaq__ic::after{content:\"\";position:absolute;background:currentColor;left:0;top:7px;width:16px;height:2px;transition:transform 120ms var(--e);}",
+      ".hkfaq .hkfaq__ic::after{transform:rotate(90deg);}",
+      ".hkfaq .hkfaq__btn[aria-expanded=\"true\"] .hkfaq__ic::after{transform:rotate(0deg);}",
+      ".hkfaq .hkfaq__a{margin:0;padding:0;}",
+      ".hkfaq .hkfaq__a:not([hidden]){padding:0 32px 22px 0;}",
+      ".hkfaq .hkfaq__a p{font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;color:var(--body);margin:0 0 12px;padding:0;}",
+      ".hkfaq .hkfaq__a p:last-child{margin-bottom:0;}",
+      ".hkfaq .hkfaq__a a,.hkfaq .hkfaq__a a:link,.hkfaq .hkfaq__a a:visited{color:var(--k);text-decoration:underline;text-decoration-color:var(--r);text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700;}",
+      ".hkfaq .hkfaq__a a:hover{color:var(--dr);}",
+      ".hkfaq .hkfaq__a a:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkfaq .hkfaq__a a[target=\"_blank\"]::after{content:\"\";display:inline-block;width:0.75em;height:0.75em;margin:0 0 0 0.3em;vertical-align:0;background:currentColor;-webkit-mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4 1h7v7M11 1 1 11' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E\") center/contain no-repeat;mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4 1h7v7M11 1 1 11' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E\") center/contain no-repeat;}",
+      ".hkfaq .hkfaq__a .hkfaq__more{font-weight:400;color:var(--k);}",
+      ".hkfaq mark.hkfaq__mk{background:var(--line);color:inherit;font-weight:700;padding:0;}",
+      "@container (max-width:480px){.hkfaq .hkfaq__a:not([hidden]){padding-right:0;}.hkfaq .hkfaq__q{font-size:16px;}}",
+      "@media (prefers-reduced-motion:reduce){.hkfaq .hkfaq__cat,.hkfaq .hkfaq__clear,.hkfaq .hkfaq__btn,.hkfaq .hkfaq__ic::before,.hkfaq .hkfaq__ic::after{transition:none;}.hkfaq .hkfaq__cat:active,.hkfaq .hkfaq__clear:active{transform:none;}}"
+    ].join("\n"),
+
+    render: function (el) {
+      var src = el.querySelector(".hkfaq__src");
+      if (!src || !src.querySelector(".hkfaq__item")) throw new Error("no questions found in the placeholder. Paste the whole of faq/faq-embed.html");
+      var inputId = uid("faq-search"), statusId = uid("faq-status");
+      var secs = [].slice.call(src.querySelectorAll(".hkfaq__sec")).map(function (s) {
+        var h = s.querySelector(".hkfaq__sh");
+        return { el: s, name: h ? h.textContent.trim() : "", items: [] };
+      });
+      var items = [];
+      secs.forEach(function (s) {
+        [].forEach.call(s.el.querySelectorAll(".hkfaq__item"), function (it) {
+          var h = it.querySelector(".hkfaq__q"), a = it.querySelector(".hkfaq__a");
+          if (!h || !a) return;
+          a.id = uid("faq-a");
+          var b = D.createElement("button");
+          b.type = "button"; b.className = "hkfaq__btn";
+          b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-controls", a.id);
+          b.innerHTML = '<span class="hkfaq__qt"></span><span class="hkfaq__ic" aria-hidden="true"></span>';
+          b.firstChild.textContent = h.textContent.trim();
+          h.textContent = ""; h.appendChild(b);
+          a.setAttribute("hidden", "until-found");
+          var x = { el: it, btn: b, a: a, sec: s, text: faqNorm(s.name + " " + b.textContent + " " + a.textContent) };
+          b.addEventListener("click", function () { set(x, b.getAttribute("aria-expanded") !== "true"); });
+          /* Find in page (Ctrl+F) reveals a closed answer: keep the button in step. */
+          a.addEventListener("beforematch", function () { b.setAttribute("aria-expanded", "true"); });
+          s.items.push(x); items.push(x);
+        });
+      });
+      var contact = el.querySelector("#faq-gn-01") ? "faq-gn-01" : "";
+
+      var root = D.createElement("div");
+      root.className = "hkfaq";
+      root.innerHTML =
+        '<label class="hkfaq__label" for="' + inputId + '">Search our FAQs</label>' +
+        '<div class="hkfaq__field"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="7"/><path d="M15.5 15.5 21 21"/></svg>' +
+        '<input class="hkfaq__input" id="' + inputId + '" type="search" autocomplete="off" spellcheck="false" placeholder="Try parking, tickets or prams" aria-describedby="' + statusId + '"></div>' +
+        '<div class="hkfaq__cats" role="group" aria-label="Filter by topic">' +
+        '<button class="hkfaq__cat" type="button" aria-pressed="true" data-i="-1">All</button>' +
+        secs.map(function (s, i) { return '<button class="hkfaq__cat" type="button" aria-pressed="false" data-i="' + i + '">' + esc(s.name) + "</button>"; }).join("") +
+        "</div>" +
+        '<p class="hkfaq__status" id="' + statusId + '" aria-live="polite"></p>' +
+        '<div class="hkfaq__none" hidden><p class="hkfaq__nt1"></p><button class="hkfaq__clear" type="button">Clear search</button></div>';
+      root.appendChild(src);
+      el.innerHTML = "";
+      el.appendChild(root);
+
+      var input = root.querySelector(".hkfaq__input"), status = root.querySelector(".hkfaq__status");
+      var none = root.querySelector(".hkfaq__none"), cats = [].slice.call(root.querySelectorAll(".hkfaq__cat"));
+      var cat = -1, said = null;
+
+      function set(x, open) {
+        x.btn.setAttribute("aria-expanded", String(open));
+        if (open) x.a.removeAttribute("hidden"); else x.a.setAttribute("hidden", "until-found");
+      }
+      function plural(n) { return n + (n === 1 ? " question" : " questions"); }
+      function apply() {
+        var q = input.value.trim(), terms = q ? faqTerms(q) : [], n = 0;
+        items.forEach(function (x) {
+          var show = (cat < 0 || secs[cat] === x.sec) && terms.every(function (t) { return x.text.indexOf(t) >= 0; });
+          x.el.hidden = !show;
+          faqUnmark(x.btn); faqUnmark(x.a);
+          if (show) { n++; faqMark(x.btn.firstChild, terms); faqMark(x.a, terms); }
+        });
+        secs.forEach(function (s) { s.el.hidden = !s.items.some(function (x) { return !x.el.hidden; }); });
+        cats.forEach(function (b) { b.setAttribute("aria-pressed", String(+b.getAttribute("data-i") === cat)); });
+        var where = cat < 0 ? "" : " in " + secs[cat].name;
+        none.hidden = n > 0;
+        if (!n) {
+          var p = none.querySelector("p");
+          p.textContent = "No questions" + where + " match “" + q + "”. Try a different word" + (contact ? ", or " : ".");
+          if (contact) {
+            var a = D.createElement("a"); a.href = "#" + contact; a.textContent = "get in touch with us";
+            a.addEventListener("click", function (e) { e.preventDefault(); go(contact); });
+            p.appendChild(a); p.appendChild(D.createTextNode("."));
+          }
+        }
+        var msg = !q && cat < 0 ? "" : n ? plural(n) + where + (q ? (n === 1 ? " matches" : " match") + " “" + q + "”" : "") : "No questions" + where + " match “" + q + "”";
+        /* Wait for a pause in typing so screen readers don't hear every keystroke. */
+        clearTimeout(said);
+        said = setTimeout(function () { status.textContent = msg; }, q ? 500 : 0);
+      }
+      function clear() { input.value = ""; cat = -1; apply(); }
+      function go(id) {
+        var x = null;
+        items.forEach(function (y) { if (y.el.id === id) x = y; });
+        if (!x) return false;
+        if (x.el.hidden) clear();
+        set(x, true);
+        x.el.scrollIntoView({ block: "start" });
+        x.btn.focus({ preventScroll: true });
+        if (W.history && history.replaceState && location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+        return true;
+      }
+
+      input.addEventListener("input", apply);
+      input.addEventListener("keydown", function (e) { if (e.key === "Escape" && input.value) { e.preventDefault(); input.value = ""; apply(); } });
+      cats.forEach(function (b) { b.addEventListener("click", function () { cat = +b.getAttribute("data-i"); apply(); }); });
+      root.querySelector(".hkfaq__clear").addEventListener("click", function () { clear(); input.focus(); });
+
+      return {
+        onHash: function (h) { var m = /^#(faq-[a-z]{2}-\d{2,3})$/i.exec(h); if (m) go(m[1].toLowerCase()); }
+      };
+    }
+  };
+
   /* MODULES:END */
 
   /* ---------------- Load data.js (and module data files) ---------------- */
