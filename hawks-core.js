@@ -1394,7 +1394,8 @@
      Unlike the other modules, the questions and answers are already in the placeholder as plain
      HTML (built from the FAQ tracker by scripts/build-faq.mjs), so search engines and AI crawlers
      can read them. This adds the styling, the accordion, search, topic filters and #faq-xx-nn links.
-     Answers use hidden="until-found", so the browser's own find (Ctrl+F) can still open them. */
+     Answers use hidden="until-found", so the browser's own find (Ctrl+F) can still open them.
+     No background of its own: it sits on the page (light grey #F5F5F5 on hawks.com.au), with a white search box. */
   var FAQ_STOP = " a an and are at be can do does for get how i if in is it me my of on or our the there to we what when where which who why will with you your ";
   function faqNorm(s) { return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ']/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
   function faqTerms(q) {
@@ -1426,7 +1427,7 @@
 
   M.faq = {
     css: [
-      ".hkfaq{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--body:#373737;--line:#E2E2E2;--muted:#6B6B6B;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--w);color:var(--k);padding:32px 0 8px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;text-align:left;}",
+      ".hkfaq{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--body:#373737;--line:#D8D8D8;--muted:#6B6B6B;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:transparent;color:var(--k);padding:32px 0 8px;margin:0;border-top:6px solid var(--k);font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;text-align:left;}",
       ".hkfaq *,.hkfaq *::before,.hkfaq *::after{box-sizing:border-box;}",
       ".hkfaq[hidden],.hkfaq [hidden]:not([hidden=\"until-found\"]){display:none !important;}",
       ".hkfaq .hkfaq__sr,.hkfaq .hkfaq__nt{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}",
@@ -1438,7 +1439,7 @@
       ".hkfaq .hkfaq__input:focus{outline:none;}",
       ".hkfaq .hkfaq__input:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hkfaq .hkfaq__cats{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;padding:0;}",
-      ".hkfaq .hkfaq__cat{font-family:'Poppins',Arial,Helvetica,sans-serif;font-weight:700;font-size:13px;line-height:1.2;letter-spacing:0.05em;text-transform:uppercase;color:var(--k);background:var(--w);border:2px solid var(--k);border-radius:0;padding:9px 14px;margin:0;cursor:pointer;transition:background-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkfaq .hkfaq__cat{font-family:'Poppins',Arial,Helvetica,sans-serif;font-weight:700;font-size:13px;line-height:1.2;letter-spacing:0.05em;text-transform:uppercase;color:var(--k);background:transparent;border:2px solid var(--k);border-radius:0;padding:9px 14px;margin:0;cursor:pointer;transition:background-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
       ".hkfaq .hkfaq__cat:hover{background:var(--k);color:var(--w);}",
       ".hkfaq .hkfaq__cat[aria-pressed=\"true\"]{background:var(--k);color:var(--w);}",
       ".hkfaq .hkfaq__cat:active{transform:scale(0.98);}",
