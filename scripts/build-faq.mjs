@@ -31,7 +31,8 @@ const LINK_TEXT = {
   "nbl.com.au/pages/nbl-spectator-standards": "NBL spectator standards",
   "nbl.com.au/how-to-watch": "How to watch on the NBL website",
   "illawarrahawks.typeform.com/to/ldprcjhi": "Group tickets form",
-  "hawks-membership-picker.lovable.app": "Membership picker"
+  "hawks-membership-picker.lovable.app": "Membership picker",
+  "shop-illawarrahawks.com": "Hawks shop"
 };
 
 const file = process.argv[2];

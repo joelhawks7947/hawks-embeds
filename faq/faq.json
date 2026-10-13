@@ -128,8 +128,11 @@
       "url": "https://www.hawks.com.au/pages/faqs#faq-gd-12",
       "section": "Game day",
       "question": "What should I wear?",
-      "answer": "We're red and black, so wear red and black.",
-      "link": null
+      "answer": "We're red and black, so wear red and black. Need some? Visit our online store, or get some from the Merch Stand at the game.",
+      "link": {
+        "url": "https://shop-illawarrahawks.com/",
+        "text": "Hawks shop"
+      }
     },
     {
       "id": "GD-14",
