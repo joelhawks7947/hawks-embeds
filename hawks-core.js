@@ -1402,6 +1402,53 @@
     var all = faqNorm(q).split(" ").filter(Boolean), key = all.filter(function (t) { return FAQ_STOP.indexOf(" " + t + " ") < 0; });
     return (key.length ? key : all).map(function (t) { return t.length > 3 && /[^s]s$/.test(t) ? t.slice(0, -1) : t; });
   }
+  /* Fan words that should also find the FAQ's own words. Keys are in search form: lower case,
+     with a trailing s dropped from words over 3 letters ("kids" is "kid", "colours" is "colour").
+     Values are bits of FAQ text ("famil" finds family and families). */
+  var FAQ_SYN = {
+    tix: ["ticket"], ticket: ["tix"], stroller: ["pram"], pushchair: ["pram"], buggy: ["pram"], pram: ["stroller"],
+    wheelchair: ["accessible"], disabled: ["accessible"], disability: ["accessible"], mobility: ["accessible"], access: ["accessible"],
+    car: ["park"], carpark: ["park"], parking: ["park"],
+    refund: ["exchange", "cancel"], money: ["refund"], exchange: ["refund", "swap"], swap: ["exchange"],
+    kid: ["child", "famil"], child: ["kid"], children: ["kid"], baby: ["babie", "child"], babie: ["child"], toddler: ["child", "kid"], infant: ["babie", "child"],
+    eat: ["food"], hungry: ["food"], snack: ["food"], beer: ["drink", "alcohol"], alcohol: ["drink"],
+    backpack: ["bag"], handbag: ["bag"],
+    uber: ["taxi", "drop"], rideshare: ["taxi", "drop"], cab: ["taxi"], transport: ["train", "bus"],
+    merch: ["shop", "store"], merchandise: ["merch", "shop", "store"], jersey: ["wear", "shop"], shirt: ["wear", "shop"], singlet: ["wear", "shop"], store: ["shop"],
+    start: ["tip"], tipoff: ["tip"], begin: ["tip", "door"], end: ["finish"],
+    gate: ["door"], entry: ["door", "entr"], missing: ["lost"],
+    dog: ["animal"], pet: ["animal"],
+    pensioner: ["concession"], student: ["concession"], senior: ["concession"], discount: ["concession"], cheap: ["concession", "value"],
+    corporate: ["group"], party: ["group"], birthday: ["group"], school: ["group"],
+    tv: ["watch"], stream: ["watch"], broadcast: ["watch"],
+    phone: ["call", "contact"], email: ["contact"], office: ["contact"], replay: ["highlight"],
+    seating: ["seat"], seatmap: ["seat"], cash: ["cashless"], eftpos: ["cashless", "card"],
+    banned: ["allowed", "prohibited"], rule: ["allowed", "conduct"],
+    dress: ["wear"], colour: ["wear"]
+  };
+  /* Damerau-Levenshtein distance (a swap of two letters counts as one typo), stopping early past max. */
+  function faqDist(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    var d = [], i, j;
+    for (i = 0; i <= a.length; i++) { d[i] = [i]; }
+    for (j = 0; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) {
+      var low = max + 1;
+      for (j = 1; j <= b.length; j++) {
+        var c = a[i - 1] === b[j - 1] ? 0 : 1;
+        d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + c);
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+        if (d[i][j] < low) low = d[i][j];
+      }
+      if (low > max) return max + 1;
+    }
+    return d[a.length][b.length];
+  }
+  /* Analytics: sent through the site's own Google Analytics (gtag) when it's on the page; otherwise nothing is sent.
+     Email addresses and long numbers (phones, orders) are removed from search wording first. */
+  function faqTrack(name, params) { try { if (typeof W.gtag === "function") W.gtag("event", name, params); } catch (e) { /* analytics must never break the FAQ */ } }
+  function faqRedact(s) { return s.replace(/\S+@\S+/g, "[email]").replace(/\d[\d\s.-]{3,}\d/g, "[number]").replace(/\s+/g, " ").trim().slice(0, 100); }
+
   /* Wrap matches of the search words in <mark>, inside text only (never inside tags). */
   function faqMark(node, terms) {
     if (!terms.length) return;
@@ -1500,13 +1547,22 @@
           h.textContent = ""; h.appendChild(b);
           a.setAttribute("hidden", "until-found");
           var x = { el: it, btn: b, a: a, sec: s, text: faqNorm(s.name + " " + b.textContent + " " + a.textContent) };
-          b.addEventListener("click", function () { set(x, b.getAttribute("aria-expanded") !== "true"); });
+          x.q = faqNorm(b.textContent);
+          b.addEventListener("click", function () {
+            var open = b.getAttribute("aria-expanded") !== "true";
+            set(x, open);
+            if (open) opened(x, input.value.trim() ? "search" : "browse");
+          });
           /* Find in page (Ctrl+F) reveals a closed answer: keep the button in step. */
-          a.addEventListener("beforematch", function () { b.setAttribute("aria-expanded", "true"); });
+          a.addEventListener("beforematch", function () { b.setAttribute("aria-expanded", "true"); opened(x, "find"); });
           s.items.push(x); items.push(x);
         });
       });
       var contact = el.querySelector("#faq-gn-01") ? "faq-gn-01" : "";
+      /* Every word in the FAQ, for typo matching. */
+      var vocab = {};
+      items.forEach(function (x) { x.text.split(" ").forEach(function (w) { if (w.length > 3) vocab[w] = 1; }); });
+      vocab = Object.keys(vocab);
 
       var root = D.createElement("div");
       root.className = "hkfaq";
@@ -1533,39 +1589,86 @@
         if (open) x.a.removeAttribute("hidden"); else x.a.setAttribute("hidden", "until-found");
       }
       function plural(n) { return n + (n === 1 ? " question" : " questions"); }
+      /* Each search word becomes a list of things to look for: the word, its fan synonyms, and,
+         if none of those appear anywhere in the FAQ, the FAQ words one typo away (two for long words). */
+      function expand(t) {
+        var alts = [t].concat(FAQ_SYN[t] || []);
+        if (t.length < 4 || items.some(function (x) { return alts.some(function (a) { return x.text.indexOf(a) >= 0; }); })) return alts;
+        var max = t.length >= 8 ? 2 : 1;
+        return alts.concat(vocab.filter(function (w) { return faqDist(t, w, max) <= max; }));
+      }
+      function hit(text, alts) { return alts.some(function (a) { return text.indexOf(a) >= 0; }); }
+      var result = { q: "", n: 0, match: "" };
       function apply() {
-        var q = input.value.trim(), terms = q ? faqTerms(q) : [], n = 0;
+        var q = input.value.trim(), terms = q ? faqTerms(q).map(expand) : [], marks = [].concat.apply([], terms), n = 0;
+        var pool = items.filter(function (x) { return cat < 0 || secs[cat] === x.sec; });
+        var shown = pool.filter(function (x) { return terms.every(function (alts) { return hit(x.text, alts); }); });
+        var close = false;
+        if (!shown.length && terms.length) {
+          /* No question matches every word: show the 3 that match the most. A word found in the question
+             counts double, and rarer words count for more ("dog" beats "bring"). */
+          var rare = terms.map(function (alts) { return 1 / Math.max(1, items.filter(function (x) { return hit(x.text, alts); }).length); });
+          shown = pool.map(function (x, i) {
+            var sc = 0;
+            terms.forEach(function (alts, k) { sc += (hit(x.q, alts) ? 2 : hit(x.text, alts) ? 1 : 0) * rare[k]; });
+            return { x: x, sc: sc, i: i };
+          }).filter(function (r) { return r.sc > 0; }).sort(function (a, b) { return b.sc - a.sc || a.i - b.i; }).slice(0, 3).map(function (r) { return r.x; });
+          close = shown.length > 0;
+        }
         items.forEach(function (x) {
-          var show = (cat < 0 || secs[cat] === x.sec) && terms.every(function (t) { return x.text.indexOf(t) >= 0; });
+          var show = shown.indexOf(x) >= 0;
           x.el.hidden = !show;
           faqUnmark(x.btn); faqUnmark(x.a);
-          if (show) { n++; faqMark(x.btn.firstChild, terms); faqMark(x.a, terms); }
+          if (show) { n++; faqMark(x.btn.firstChild, marks); faqMark(x.a, marks); }
         });
         secs.forEach(function (s) { s.el.hidden = !s.items.some(function (x) { return !x.el.hidden; }); });
         cats.forEach(function (b) { b.setAttribute("aria-pressed", String(+b.getAttribute("data-i") === cat)); });
         var where = cat < 0 ? "" : " in " + secs[cat].name;
-        none.hidden = n > 0;
-        if (!n) {
+        none.hidden = n > 0 && !close;
+        if (!n || close) {
           var p = none.querySelector("p");
-          p.textContent = "No questions" + where + " match “" + q + "”. Try a different word" + (contact ? ", or " : ".");
+          p.textContent = close
+            ? "No exact match for “" + q + "”. " + (n === 1 ? "This question" : "These questions") + " might help" + (contact ? ", or " : ".")
+            : "No questions" + where + " match “" + q + "”. Try a different word" + (contact ? ", or " : ".");
           if (contact) {
             var a = D.createElement("a"); a.href = "#" + contact; a.textContent = "get in touch with us";
-            a.addEventListener("click", function (e) { e.preventDefault(); go(contact); });
+            a.addEventListener("click", function (e) { e.preventDefault(); go(contact, "no_results"); });
             p.appendChild(a); p.appendChild(D.createTextNode("."));
           }
         }
-        var msg = !q && cat < 0 ? "" : n ? plural(n) + where + (q ? (n === 1 ? " matches" : " match") + " “" + q + "”" : "") : "No questions" + where + " match “" + q + "”";
+        var msg = !q && cat < 0 ? "" : close ? "No exact match for “" + q + "”. Showing " + plural(n) + " that might help" :
+          n ? plural(n) + where + (q ? (n === 1 ? " matches" : " match") + " “" + q + "”" : "") : "No questions" + where + " match “" + q + "”";
         /* Wait for a pause in typing so screen readers don't hear every keystroke. */
         clearTimeout(said);
         said = setTimeout(function () { status.textContent = msg; }, q ? 500 : 0);
+        result = { q: q, n: close ? 0 : n, match: !q ? "" : close ? "closest" : n ? "exact" : "none" };
+        clearTimeout(pend);
+        if (q) pend = setTimeout(report, 1500);
+      }
+      /* Report a search once the fan stops typing (or leaves the box, or opens an answer).
+         search_term is GA4's own name for it; faq_no_results flags the searches the FAQ can't answer yet. */
+      var pend = null, sent = "";
+      function report() {
+        clearTimeout(pend);
+        var r = result, term = faqRedact(r.q);
+        if (term.length < 2 || term + "|" + cat === sent) return;
+        sent = term + "|" + cat;
+        var p = { search_term: term, faq_results: r.n, faq_match: r.match, faq_topic: cat < 0 ? "All" : secs[cat].name };
+        faqTrack("search", p);
+        if (!r.n) faqTrack("faq_no_results", p);
+      }
+      function opened(x, via) {
+        if (via === "search") report();
+        faqTrack("faq_open", { faq_id: x.el.id.replace(/^faq-/, "").toUpperCase(), faq_question: x.btn.textContent.slice(0, 100), faq_via: via });
       }
       function clear() { input.value = ""; cat = -1; apply(); }
-      function go(id) {
+      function go(id, via) {
         var x = null;
         items.forEach(function (y) { if (y.el.id === id) x = y; });
         if (!x) return false;
-        if (x.el.hidden) clear();
+        if (x.el.hidden) { report(); clear(); }
         set(x, true);
+        opened(x, via || "link");
         x.el.scrollIntoView({ block: "start" });
         x.btn.focus({ preventScroll: true });
         if (W.history && history.replaceState && location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
@@ -1573,9 +1676,10 @@
       }
 
       input.addEventListener("input", apply);
-      input.addEventListener("keydown", function (e) { if (e.key === "Escape" && input.value) { e.preventDefault(); input.value = ""; apply(); } });
+      input.addEventListener("blur", report);
+      input.addEventListener("keydown", function (e) { if (e.key === "Escape" && input.value) { e.preventDefault(); report(); input.value = ""; apply(); } });
       cats.forEach(function (b) { b.addEventListener("click", function () { cat = +b.getAttribute("data-i"); apply(); }); });
-      root.querySelector(".hkfaq__clear").addEventListener("click", function () { clear(); input.focus(); });
+      root.querySelector(".hkfaq__clear").addEventListener("click", function () { report(); clear(); input.focus(); });
 
       return {
         onHash: function (h) { var m = /^#(faq-[a-z]{2}-\d{2,3})$/i.exec(h); if (m) go(m[1].toLowerCase()); }

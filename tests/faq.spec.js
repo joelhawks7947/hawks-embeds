@@ -172,3 +172,100 @@ test("no horizontal scroll at 320, 390, 768 and 1280", async ({ page }) => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
+
+/* ---------------- Smarter search ---------------- */
+
+async function ids(page, q) { await page.fill(".hkfaq__input", q); return visibleIds(page); }
+
+test("fan wording finds the FAQ's words", async ({ page }) => {
+  await open(page);
+  expect(await ids(page, "stroller")).toEqual(["faq-kf-01"]);
+  expect(await ids(page, "can I bring a stroller?")).toEqual(["faq-kf-01"]);
+  expect(await ids(page, "uber")).toContain("faq-gd-04");
+  expect(await ids(page, "jersey")).toEqual(["faq-gd-12"]);
+  expect(await ids(page, "tix")).toContain("faq-tk-01");
+  await expect(page.locator(".hkfaq__none")).toBeHidden();
+});
+
+test("typos still find the answer", async ({ page }) => {
+  await open(page);
+  expect(await ids(page, "parkng")).toContain("faq-gd-02");
+  expect(await ids(page, "wollongon")).toContain("faq-gd-03");
+  expect(await ids(page, "concesion")).toEqual(["faq-tk-06"]);
+  // Short words are never treated as typos.
+  expect(await ids(page, "zzq")).toEqual([]);
+});
+
+test("no exact match: the closest 3 questions show, with a way to get in touch", async ({ page }) => {
+  await open(page);
+  const found = await ids(page, "can I bring my dog");
+  expect(found.length).toBeLessThanOrEqual(3);
+  expect(found).toContain("faq-ac-06");
+  await expect(page.locator(".hkfaq__none p")).toHaveText("No exact match for “can I bring my dog”. These questions might help, or get in touch with us.");
+  await expect(page.locator(".hkfaq__status")).toHaveText("No exact match for “can I bring my dog”. Showing 3 questions that might help");
+  await expect(item(page, "AC-06").locator("mark.hkfaq__mk")).toHaveText(["animal", "animal", "animal"]);
+});
+
+/* ---------------- Analytics (the site's Google Analytics) ---------------- */
+
+async function withGtag(page, url = "/test/faq.html") {
+  await page.addInitScript(() => { window.__ev = []; window.gtag = (...a) => window.__ev.push(a); });
+  const log = await open(page, url);
+  return log;
+}
+const events = (page) => page.evaluate(() => window.__ev.filter((e) => e[0] === "event").map((e) => [e[1], e[2]]));
+
+test("a search is reported once the fan stops typing, with personal details removed", async ({ page }) => {
+  await withGtag(page);
+  await page.fill(".hkfaq__input", "parkng");
+  expect(await events(page)).toEqual([]);
+  await page.waitForTimeout(1700);
+  expect(await events(page)).toEqual([["search", { search_term: "parkng", faq_results: 2, faq_match: "exact", faq_topic: "All" }]]);
+  // Leaving the box does not report the same search twice.
+  await page.locator(".hkfaq__input").blur();
+  expect((await events(page)).length).toBe(1);
+  await page.fill(".hkfaq__input", "order 1234 5678 for jo@example.com");
+  await page.locator(".hkfaq__input").blur();
+  const [ev, p] = (await events(page)).find((e) => e[0] === "faq_no_results");
+  expect(p.search_term).toBe("order [number] for [email]");
+  expect(p.faq_results).toBe(0);
+});
+
+test("searches with no exact match are flagged faq_no_results", async ({ page }) => {
+  await withGtag(page);
+  await page.fill(".hkfaq__input", "is there wifi");
+  await page.press(".hkfaq__input", "Escape");
+  expect(await events(page)).toEqual([
+    ["search", { search_term: "is there wifi", faq_results: 0, faq_match: "none", faq_topic: "All" }],
+    ["faq_no_results", { search_term: "is there wifi", faq_results: 0, faq_match: "none", faq_topic: "All" }]
+  ]);
+  await page.fill(".hkfaq__input", "can I bring my dog");
+  await page.click(".hkfaq__clear");
+  expect((await events(page)).slice(2).map((e) => e[0] + ":" + e[1].faq_match)).toEqual(["search:closest", "faq_no_results:closest"]);
+});
+
+test("opening a question is reported with how the fan got there", async ({ page }) => {
+  await withGtag(page, "/test/faq.html#faq-ac-01");
+  await item(page, "GD-01").locator("button").click();
+  await item(page, "GD-01").locator("button").click(); // closing is not reported
+  await page.fill(".hkfaq__input", "pram");
+  await item(page, "KF-01").locator("button").click();
+  const ev = await events(page);
+  expect(ev.filter((e) => e[0] === "faq_open").map((e) => e[1])).toEqual([
+    { faq_id: "AC-01", faq_question: "How do I book wheelchair or accessible seating?", faq_via: "link" },
+    { faq_id: "GD-01", faq_question: "What time do doors open?", faq_via: "browse" },
+    { faq_id: "KF-01", faq_question: "Can I bring a pram?", faq_via: "search" }
+  ]);
+  // The search that led to the answer is reported first.
+  expect(ev.map((e) => e[0]).slice(-2)).toEqual(["search", "faq_open"]);
+});
+
+test("a broken analytics function never breaks the FAQ", async ({ page }) => {
+  await page.addInitScript(() => { window.gtag = () => { throw new Error("blocked"); }; });
+  const log = await open(page);
+  await page.fill(".hkfaq__input", "pram");
+  await page.locator(".hkfaq__input").blur();
+  await item(page, "KF-01").locator("button").click();
+  await expect(item(page, "KF-01").locator("button")).toHaveAttribute("aria-expanded", "true");
+  expect(log.errors).toEqual([]);
+});
