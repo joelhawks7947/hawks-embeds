@@ -1,0 +1,205 @@
+<!-- Hawks 2-Game Bundle: tier cards. Paste into a Webflow Embed element. -->
+<!-- Delete the next line if the site already loads Anton and Poppins. -->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+.hwk-bundle{
+  --hb-red:#FF0013; --hb-dark-red:#BF0000; --hb-black:#000; --hb-grey:#373737;
+  --hb-white:#FFF; --hb-border:#E2E2E2;
+  --hb-display:'Anton',Impact,'Arial Narrow',sans-serif;
+  --hb-body:'Poppins',Arial,Helvetica,sans-serif;
+  --hb-ease:cubic-bezier(0.22,1,0.36,1);
+  /* Columns follow the embed's own width, not the window, so a narrow article column never crops the cards. */
+  container-type:inline-size;
+  display:block; margin:0; background:transparent; color:var(--hb-black);
+  border-top:6px solid var(--hb-black);
+  font-family:var(--hb-body); font-size:16px; line-height:1.55;
+  padding:32px 20px 56px;
+}
+.hwk-bundle[hidden],.hwk-bundle [hidden]{display:none !important;}
+.hwk-bundle *,.hwk-bundle *::before,.hwk-bundle *::after{box-sizing:border-box;}
+.hwk-bundle .hb-inner{max-width:1120px; margin:0 auto;}
+
+/* Heading */
+.hwk-bundle .hb-title{
+  font-family:var(--hb-display); font-weight:400; text-transform:uppercase;
+  font-size:clamp(36px,5vw,56px); line-height:0.95; letter-spacing:0.01em;
+  margin:0 0 14px; color:var(--hb-black);
+}
+
+/* Grid: one column until the embed itself is wide enough for three cards */
+.hwk-bundle .hb-grid{
+  list-style:none; margin:0; padding:0;
+  display:grid; grid-template-columns:1fr; gap:20px;
+}
+@container (min-width:720px){ .hwk-bundle .hb-grid{grid-template-columns:repeat(3,minmax(0,1fr));} }
+
+/* Card */
+.hwk-bundle .hb-card{
+  display:flex; flex-direction:column; margin:0; padding:0; min-width:0;
+  border:1px solid var(--hb-black); background:var(--hb-white);
+  container-type:inline-size;
+}
+.hwk-bundle .hb-head{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:var(--hb-black); color:var(--hb-white); padding:16px 22px;
+}
+.hwk-bundle .hb-card--feature .hb-head{background:var(--hb-red);}
+.hwk-bundle .hb-tier{
+  font-family:var(--hb-display); font-weight:400; text-transform:uppercase;
+  font-size:30px; line-height:1; letter-spacing:0.01em; margin:0; color:var(--hb-white);
+}
+.hwk-bundle .hb-flag{
+  font-size:13px; font-weight:700; line-height:1.3; margin:0; padding:4px 10px;
+  background:var(--hb-black); color:var(--hb-white);
+}
+
+.hwk-bundle .hb-body{padding:24px 22px 22px;}
+.hwk-bundle .hb-lead{display:flex; align-items:flex-end; gap:14px; margin:0 0 20px; line-height:1;}
+.hwk-bundle .hb-price{
+  font-family:var(--hb-display); font-weight:400;
+  font-size:clamp(64px,7vw,84px); line-height:0.95; color:var(--hb-black);
+}
+.hwk-bundle .hb-per{font-size:14px; line-height:1.4; padding-bottom:6px; color:var(--hb-grey);}
+.hwk-bundle .hb-per strong{display:block; line-height:1.4; color:var(--hb-black); font-weight:700;}
+
+.hwk-bundle .hb-rows{margin:0; padding:0;}
+.hwk-bundle .hb-row{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:10px 0; border-top:1px solid var(--hb-border);
+}
+.hwk-bundle .hb-row dt{font-size:15px; font-weight:400; line-height:1.4; margin:0;}
+.hwk-bundle .hb-row dd{
+  font-family:var(--hb-display); font-size:26px; line-height:1; margin:0;
+}
+
+/* Family block: the hook */
+.hwk-bundle .hb-family{
+  margin-top:auto; background:var(--hb-black); color:var(--hb-white);
+  padding:20px 22px; display:grid; grid-template-columns:1fr auto; align-items:end; gap:4px 12px;
+}
+.hwk-bundle .hb-fam-label{margin:0; font-weight:700; font-size:16px; line-height:1.3; color:var(--hb-white);}
+.hwk-bundle .hb-fam-label span{display:block; font-weight:400; font-size:13px; line-height:1.4; color:#CFCFCF;}
+.hwk-bundle .hb-fam-price{
+  grid-row:span 2; margin:0; font-family:var(--hb-display);
+  font-size:56px; line-height:0.95; color:var(--hb-red);
+}
+.hwk-bundle .hb-fam-note{margin:0; font-size:13px; line-height:1.4; color:#CFCFCF;}
+
+/* Footer and CTA */
+.hwk-bundle .hb-foot{margin-top:32px;}
+.hwk-bundle .hb-fine{font-size:14px; line-height:1.55; color:var(--hb-grey); max-width:680px; margin:0 0 22px;}
+.hwk-bundle .hb-btn,
+.hwk-bundle .hb-btn:link,
+.hwk-bundle .hb-btn:visited{
+  display:inline-block; background:var(--hb-red); color:var(--hb-white);
+  font-family:var(--hb-body); font-weight:700; font-size:17px; line-height:1.2; letter-spacing:0.02em;
+  padding:16px 32px; text-decoration:none; border:0; border-radius:0;
+  transition:background-color 120ms var(--hb-ease), transform 120ms var(--hb-ease);
+}
+.hwk-bundle .hb-btn:hover{background:var(--hb-dark-red); color:var(--hb-white);}
+.hwk-bundle .hb-btn:active{transform:scale(0.98);}
+.hwk-bundle .hb-btn:focus-visible{outline:2px solid var(--hb-black); outline-offset:2px;}
+.hwk-bundle .hb-sr{position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
+.hwk-bundle .hb-because{font-size:14px; line-height:1.55; margin:12px 0 0; color:var(--hb-grey);}
+
+/* Narrow cards (three across in an article column): stack the price over its label */
+@container (max-width:340px){
+  .hwk-bundle .hb-lead{flex-direction:column; align-items:flex-start; gap:8px;}
+  .hwk-bundle .hb-price{font-size:72px;}
+  .hwk-bundle .hb-per{padding-bottom:0;}
+  .hwk-bundle .hb-family{grid-template-columns:1fr;}
+  .hwk-bundle .hb-fam-price{grid-row:auto; margin:8px 0 2px;}
+}
+
+@media (max-width:480px){
+  .hwk-bundle{padding:28px 16px 40px;}
+  .hwk-bundle .hb-btn,
+  .hwk-bundle .hb-btn:link,
+  .hwk-bundle .hb-btn:visited{display:block; text-align:center;}
+}
+@media (prefers-reduced-motion:reduce){
+  .hwk-bundle .hb-btn{transition:none;}
+  .hwk-bundle .hb-btn:active{transform:none;}
+}
+</style>
+
+<section class="hwk-bundle" aria-labelledby="hb-title">
+  <div class="hb-inner">
+    <h2 class="hb-title" id="hb-title">What It Costs</h2>
+    <ul class="hb-grid" role="list">
+
+      <li class="hb-card hb-card--feature">
+        <div class="hb-head">
+          <h3 class="hb-tier">Ruby</h3>
+          <p class="hb-flag">Lowest price</p>
+        </div>
+        <div class="hb-body">
+          <p class="hb-lead">
+            <span class="hb-price">$49</span>
+            <span class="hb-per"><strong>Adult, for two games</strong> That's $24.50 a game</span>
+          </p>
+          <dl class="hb-rows">
+            <div class="hb-row"><dt>Concession</dt><dd>$40</dd></div>
+            <div class="hb-row"><dt>Junior (4 to 16)</dt><dd>$40</dd></div>
+          </dl>
+        </div>
+        <div class="hb-family">
+          <p class="hb-fam-label">Family <span>2 adults, 2 juniors</span></p>
+          <p class="hb-fam-price">$140</p>
+          <p class="hb-fam-note">$17.50 a person, a game</p>
+        </div>
+      </li>
+
+      <li class="hb-card">
+        <div class="hb-head">
+          <h3 class="hb-tier">Ruby Plus</h3>
+        </div>
+        <div class="hb-body">
+          <p class="hb-lead">
+            <span class="hb-price">$75</span>
+            <span class="hb-per"><strong>Adult, for two games</strong> That's $37.50 a game</span>
+          </p>
+          <dl class="hb-rows">
+            <div class="hb-row"><dt>Concession</dt><dd>$60</dd></div>
+            <div class="hb-row"><dt>Junior (4 to 16)</dt><dd>$60</dd></div>
+          </dl>
+        </div>
+        <div class="hb-family">
+          <p class="hb-fam-label">Family <span>2 adults, 2 juniors</span></p>
+          <p class="hb-fam-price">$230</p>
+          <p class="hb-fam-note">$28.75 a person, a game</p>
+        </div>
+      </li>
+
+      <li class="hb-card">
+        <div class="hb-head">
+          <h3 class="hb-tier">Opal Plus</h3>
+        </div>
+        <div class="hb-body">
+          <p class="hb-lead">
+            <span class="hb-price">$120</span>
+            <span class="hb-per"><strong>Adult, for two games</strong> That's $60 a game</span>
+          </p>
+          <dl class="hb-rows">
+            <div class="hb-row"><dt>Concession</dt><dd>$105</dd></div>
+            <div class="hb-row"><dt>Junior (4 to 16)</dt><dd>$105</dd></div>
+          </dl>
+        </div>
+        <div class="hb-family">
+          <p class="hb-fam-label">Family <span>2 adults, 2 juniors</span></p>
+          <p class="hb-fam-price">$360</p>
+          <p class="hb-fam-note">$45 a person, a game</p>
+        </div>
+      </li>
+
+    </ul>
+
+    <div class="hb-foot">
+      <!-- If Ticketmaster booking fees apply on top, add "Plus booking fees." to the end of this line. -->
+      <p class="hb-fine">Every price covers both games at WIN Entertainment Centre: Thursday 22nd October v Sydney Kings and Saturday 24th October v Brisbane Bullets. One ticket per seat gets you into both.</p>
+      <a class="hb-btn" href="https://www.ticketmaster.com.au/event/1300654C85B92436" target="_blank" rel="noopener noreferrer">Get your 2-Game Bundle<span class="hb-sr"> (opens in a new tab)</span></a>
+      <p class="hb-because">Lock in your seat now, because bundle seats come from a limited block.</p>
+    </div>
+  </div>
+</section>
