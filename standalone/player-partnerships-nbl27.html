@@ -1,0 +1,343 @@
+<style>body{margin:0;background:#FFFFFF;padding:40px 24px}</style>
+
+<!-- ==================== COPY FROM HERE ==================== -->
+<!-- Fonts: Anton (headings) + Poppins (body). Safe to leave as-is. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- ==========================================================================
+     ILLAWARRA HAWKS - PLAYER PARTNERSHIPS EMBED - JOEL ARMSTRONG
+     EDIT EVERYTHING IN THE BLOCK BELOW. Nothing below "END OF EDITABLE" needs
+     to be touched. Paste this whole fenced section into a Webflow HTML embed.
+
+     Players sort themselves alphabetically by surname, and split themselves
+     into two groups, so you can add or edit entries in any order you like.
+     Set available:true to move a player under the AVAILABLE heading.
+     ========================================================================== -->
+<script>
+/* --------------------------------------------------------------------------
+   1. PLAYERS - edit name, surname, sponsor, url, image, sentence, available.
+      surname   : used for sorting only. Set it for anything the code cannot
+                  guess from the last word of the name (compound surnames,
+                  nicknames in quotes). Leave off and it uses the last word.
+      available : true puts the player in the AVAILABLE group. Those cards
+                  show the photo and name only, so leave sponsor and url
+                  empty for them.
+      image     : the CMS image URL (partner logo is baked into this graphic).
+      url       : partner website (opens in a new tab). Leave "" for no link,
+                  the sponsor name still shows, just unlinked.
+      sentence  : leave "" for no line under the sponsor name.
+   -------------------------------------------------------------------------- */
+var PLAYERS = [
+  {
+    name: "Sam Froling",
+    surname: "Froling",
+    sponsor: "City Motors Group",
+    url: "https://www.citymotorsgroup.com.au",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a890c8d6c0fd01eff070888_e549ff260940a4243167241423b21460_SAM%20FROLING%20CMG.jpg",
+    sentence: ""
+  },
+  {
+    name: "Mason Peatling",
+    surname: "Peatling",
+    sponsor: "Droppoint",
+    url: "https://www.droppoint.com.au",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a890c8dff86075bed71692e_6300b355a534fc9ab86e349e8669346e_Mason%20Peatling%20DROPOINT.jpg",
+    sentence: ""
+  },
+  {
+    name: "Amarco Doyle",
+    surname: "Doyle",
+    sponsor: "IAMS",
+    url: "https://www.illawarraams.com.au",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ac61683b7996f3932f5aebc_AMARCO%20-%20IAMS.jpg",
+    sentence: ""
+  },
+  {
+    name: "Johny Narkle",
+    surname: "Narkle",
+    sponsor: "IAMS",
+    url: "https://www.illawarraams.com.au",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a890c8dc988ddf42d168156_f93167cabbb6de658aa25746da06019e_JOHNY%20NARKLE%20-%20IAMS.jpg",
+    sentence: ""
+  },
+  {
+    name: "Wani Swaka Lo Buluk",
+    surname: "Swaka Lo Buluk",
+    sponsor: "IAMS",
+    url: "https://www.illawarraams.com.au",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a890c8da140146867bba5bf_120ac1ec805e4162b16f83a1f5b35480_WANI%20SWAKA%20LO%20BULUK%20IAMS.jpg",
+    sentence: ""
+  },
+  {
+    name: "Todd Blanchfield",
+    surname: "Blanchfield",
+    sponsor: "Lancaster Law",
+    url: "https://www.lancasterlaw.com.au",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a890c8db547c8440367c59f_1e9d5face9ca6eaa42703fbe20d08cd8_TODD%20BLANCHFIELD%20LANCASTER%20LAW.jpg",
+    sentence: ""
+  },
+  {
+    name: "Tyler Harvey",
+    surname: "Harvey",
+    sponsor: "The Agency - Cristian Cignarella",
+    url: "https://theagency.com.au/team/cristian-cignarella",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a890c8db0dd900b0b1c3289_e423d5f59ba8ab64a6adbdc888efbab8_TYLER%20HARVEY%20THE%20AGENCY.jpg",
+    sentence: ""
+  },
+  {
+    name: "Dan Grida",
+    surname: "Grida",
+    sponsor: "TLE",
+    url: "https://www.tle.mmem.com.au",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a890c8d9e05af99fa079c02_37a5db2b8eab7602d8f9926981369de9_Dan%20Grida%20TLE.jpg",
+    sentence: ""
+  },
+  {
+    name: "William 'Davo' Hickey",
+    surname: "Hickey",
+    sponsor: "Wallawa Traffic Group",
+    url: "https://www.wallawatrafficgroup.com.au",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a890c8d7527519f1212faf3_411db245807a64c83df55230046482da_DAVO%20HICKEY%20WALLAWA.jpg",
+    sentence: ""
+  },
+  {
+    name: "Milton Doyle",
+    surname: "Doyle",
+    sponsor: "Spot On Hose & Fittings",
+    url: "https://www.spotonhoseandfittings.com.au/",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a922fe8bacbbe3bff7d6b4c_af734bab2944926ccdb8dd76f870029d_Milton%20Doyle.jpg",
+    sentence: ""
+  },
+  {
+    name: "Kelan Martin",
+    surname: "Martin",
+    sponsor: "Hott Electrics",
+    url: "https://www.hottelectrics.com.au/",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a922fe8852082eebb929ed0_30c0ded45fceff2e64188eb375200e51_Kelan%20Martin.jpg",
+    sentence: ""
+  },
+  {
+    name: "Lamar Patterson",
+    surname: "Patterson",
+    sponsor: "McGrath Illawarra",
+    url: "https://www.mcgrathillawarra.com.au/",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a922fe721e4e0a4c3241d83_d30f1e8b53df02c2f1f246eb85980f0b_Lamar%20Patteron.jpg",
+    sentence: ""
+  },
+  {
+    name: "Brodie McGregor",
+    surname: "McGregor",
+    available: true,
+    sponsor: "",
+    url: "",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a922fe872714f0a5f99ff07_fb4846f071da6ceadada60765d979b79_Brodie%20McGregor.jpg",
+    sentence: ""
+  },
+  {
+    name: "Fletcher MacDonald",
+    surname: "MacDonald",
+    available: true,
+    sponsor: "",
+    url: "",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a922fe81a528791e95bb76b_b5420d71442f5cc4a1b7cf62c10a5760_Fletcher%20MacDonald.jpg",
+    sentence: ""
+  },
+  {
+    name: "Kyle Adnam",
+    surname: "Adnam",
+    available: true,
+    sponsor: "",
+    url: "",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6a922fe8176eadffbaea67bf_4bf9fdd54d8e3585cdde6ea71c9658b7_Kyle%20Adnam.jpg",
+    sentence: ""
+  },
+  {
+    name: "Makur Maker",
+    surname: "Maker",
+    available: true,
+    sponsor: "",
+    url: "",
+    image: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ac613de7129090cd690619e_Makur%20Maker.jpg",
+    sentence: ""
+  }
+];
+
+/* --------------------------------------------------------------------------
+   2. AVAILABLE SECTION - the divider, heading and intro above the open slots.
+      {count} is replaced with the live number of available players, so the
+      sentence never goes stale as slots are signed. The whole section hides
+      itself when no players are marked available.
+
+      AVAILABLE_CONTACTS takes as many people as you like. Each one gets its
+      own line under the intro sentence, name then address, so long email
+      addresses never break the paragraph rag. Empty the array and both the
+      list and the "get in touch" lead disappear.
+   -------------------------------------------------------------------------- */
+var AVAILABLE_HEADING   = "Available for NBL27";
+var AVAILABLE_INTRO_ONE = "{count} player is still open for partnership.";
+var AVAILABLE_INTRO_MANY= "{count} players are still open for partnership.";
+var AVAILABLE_LINK      = "https://hawks-corporate-hospitality.lovable.app/";
+var AVAILABLE_LINK_TEXT = "See what a partnership includes";
+var AVAILABLE_CONTACT_LEAD = "or get in touch:";
+var AVAILABLE_CONTACTS  = [
+  { name: "Craig Browne", email: "craig.browne@hawks.com.au" },
+  { name: "Kent Robson", email: "kent.robson@hawks.com.au" }
+];
+
+/* Screen reader label for the first grid, which has no visible heading. */
+var PARTNERED_LABEL = "Current NBL27 player partners";
+
+/* --------------------------------------------------------------------------
+   3. FOOTER - closing text only, no button. Set SHOW_FOOTER to false to
+      remove it entirely.
+   -------------------------------------------------------------------------- */
+var SHOW_FOOTER   = false;
+var FOOTER_TEXT   = "Want to back a Hawk for NBL27? Player partnerships put your business alongside the players our community turns out for.";
+
+/* --------------------------------------------------------------------------
+   4. LAYOUT - max page width, and the minimum card width that decides how
+      many columns fit. 250px gives 3 columns at 870px and 1 column at 400px.
+   -------------------------------------------------------------------------- */
+var MAX_WIDTH = 870;
+var MIN_CARD  = 250;
+</script>
+<!-- ============================ END OF EDITABLE ============================ -->
+
+<style>
+  .hpp { max-width: 870px; margin: 0 auto; background: #FFFFFF; box-sizing: border-box;
+         font-family: Poppins, Arial, 'Helvetica Neue', Helvetica, sans-serif; }
+  .hpp * { box-sizing: border-box; }
+  .hpp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 32px 24px; align-items: start; }
+  .hpp-card { display: flex; flex-direction: column; background: #FFFFFF; }
+  .hpp-tile { position: relative; width: 100%; aspect-ratio: 4 / 5; background: #FFFFFF; border: 1px solid #E2E2E2; overflow: hidden; }
+  .hpp-player { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hpp-body { padding: 14px 0 0; display: flex; flex-direction: column; gap: 6px; }
+  .hpp-name { font-family: Anton, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;
+              text-transform: uppercase; letter-spacing: 0.01em; line-height: 1; font-size: 24px; color: #000000; margin: 0; }
+  .hpp-sponsor { font-weight: 700; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+                 color: #FF0013; text-decoration: none; align-self: flex-start; transition: color 120ms cubic-bezier(0.22,1,0.36,1); }
+  a.hpp-sponsor:hover { color: #BF0000; text-decoration: underline; }
+  a.hpp-sponsor:focus-visible { outline: 2px solid #FF0013; outline-offset: 2px; }
+  .hpp-blurb { margin: 2px 0 0; font-size: 14px; line-height: 1.5; color: #373737; text-wrap: pretty; }
+  .hpp-section { margin-top: 48px; border-top: 1px solid #E2E2E2; padding-top: 24px; }
+  .hpp-section-head { margin-bottom: 24px; }
+  .hpp-section-title { font-family: Anton, Arial, 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;
+                       text-transform: uppercase; letter-spacing: 0.01em; line-height: 1; font-size: 24px;
+                       color: #000000; margin: 0 0 8px; }
+  .hpp-section-intro { margin: 0; font-size: 14px; line-height: 1.5; color: #373737; max-width: 560px; text-wrap: balance; }
+  .hpp-contacts { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .hpp-contacts li { font-size: 14px; line-height: 1.5; color: #373737; }
+  .hpp-contact-name { font-weight: 600; color: #000000; }
+  .hpp-link { color: #FF0013; text-decoration: none; font-weight: 600; transition: color 120ms cubic-bezier(0.22,1,0.36,1); }
+  .hpp-link:hover { color: #BF0000; text-decoration: underline; }
+  .hpp-link:focus-visible { outline: 2px solid #FF0013; outline-offset: 2px; }
+  .hpp-footer { margin-top: 48px; border-top: 1px solid #E2E2E2; padding-top: 24px; }
+  .hpp-footer p { margin: 0; font-size: 14px; line-height: 1.5; color: #373737; max-width: 560px; text-wrap: balance; }
+  @media (prefers-reduced-motion: reduce) {
+    .hpp-sponsor, .hpp-link { transition: none; }
+  }
+</style>
+
+<div id="hpp-root" class="hpp"></div>
+
+<script>
+(function () {
+  var esc = function (s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  };
+
+  /* Surname used for sorting. Explicit field wins. Fallback strips any
+     nickname in quotes and takes the last word of the name. */
+  var surnameOf = function (p) {
+    if (p.surname) { return String(p.surname); }
+    var parts = String(p.name || "").replace(/'[^']*'/g, " ").trim().split(/\s+/);
+    return parts.length ? parts[parts.length - 1] : "";
+  };
+
+  var bySurname = function (a, b) {
+    var r = surnameOf(a).localeCompare(surnameOf(b), "en-AU", { sensitivity: "base" });
+    if (r !== 0) { return r; }
+    return String(a.name || "").localeCompare(String(b.name || ""), "en-AU", { sensitivity: "base" });
+  };
+
+  var all = Array.isArray(PLAYERS) ? PLAYERS.slice() : [];
+  var partnered = all.filter(function (p) { return !p.available; }).sort(bySurname);
+  var available = all.filter(function (p) { return !!p.available; }).sort(bySurname);
+
+  /* Builds one line per contact, name then linked address. Keeping the long
+     addresses out of the running sentence stops them forcing bad line breaks.
+     Returns "" when no usable contacts are set. */
+  var contactsHtml = function () {
+    var list = (typeof AVAILABLE_CONTACTS !== "undefined" && Array.isArray(AVAILABLE_CONTACTS))
+      ? AVAILABLE_CONTACTS : [];
+    var rows = "";
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i];
+      if (!c || !c.email) { continue; }
+      rows += '<li>' +
+              (c.name ? '<span class="hpp-contact-name">' + esc(c.name) + '</span>, ' : '') +
+              '<a class="hpp-link" href="mailto:' + esc(c.email) +
+              '?subject=Player%20Partnerships">' + esc(c.email) + '</a>' +
+              '</li>';
+    }
+    return rows ? '<ul class="hpp-contacts">' + rows + '</ul>' : "";
+  };
+
+  var card = function (p) {
+    var alt = esc(p.name) + (p.sponsor ? " - partner " + esc(p.sponsor) : "");
+    var h = '<div class="hpp-card" role="listitem">';
+    h +=   '<div class="hpp-tile">';
+    h +=     '<img class="hpp-player" src="' + esc(p.image) + '" alt="' + alt + '" loading="lazy">';
+    h +=   '</div>';
+    h +=   '<div class="hpp-body">';
+    h +=     '<p class="hpp-name">' + esc(p.name) + '</p>';
+    if (p.sponsor) {
+      h += p.url
+        ? '<a class="hpp-sponsor" href="' + esc(p.url) + '" target="_blank" rel="noopener noreferrer">' + esc(p.sponsor) + '</a>'
+        : '<span class="hpp-sponsor">' + esc(p.sponsor) + '</span>';
+    }
+    if (p.sentence) { h += '<p class="hpp-blurb">' + esc(p.sentence) + '</p>'; }
+    h +=   '</div>';
+    h += '</div>';
+    return h;
+  };
+
+  var grid = function (list, label) {
+    var h = '<div class="hpp-grid" role="list"' + (label ? ' aria-label="' + esc(label) + '"' : '') +
+            ' style="grid-template-columns:repeat(auto-fill,minmax(' + MIN_CARD + 'px,1fr))">';
+    for (var i = 0; i < list.length; i++) { h += card(list[i]); }
+    return h + '</div>';
+  };
+
+  var html = "";
+  if (partnered.length) { html += grid(partnered, PARTNERED_LABEL); }
+
+  if (available.length) {
+    var lead = (available.length === 1 ? AVAILABLE_INTRO_ONE : AVAILABLE_INTRO_MANY)
+                 .replace("{count}", String(available.length));
+    var contacts = contactsHtml();
+    html += '<section class="hpp-section" aria-labelledby="hpp-available-heading">';
+    html +=   '<div class="hpp-section-head">';
+    html +=     '<h2 class="hpp-section-title" id="hpp-available-heading">' + esc(AVAILABLE_HEADING) + '</h2>';
+    html +=     '<p class="hpp-section-intro">' + esc(lead) + ' ' +
+                  '<a class="hpp-link" href="' + esc(AVAILABLE_LINK) + '" target="_blank" rel="noopener noreferrer">' +
+                    esc(AVAILABLE_LINK_TEXT) + '</a>' +
+                  (contacts ? ', ' + esc(AVAILABLE_CONTACT_LEAD) : '.') +
+                '</p>';
+    html +=     contacts;
+    html +=   '</div>';
+    html +=   grid(available, AVAILABLE_HEADING);
+    html += '</section>';
+  }
+
+  if (typeof SHOW_FOOTER !== "undefined" && SHOW_FOOTER) {
+    html += '<div class="hpp-footer"><p>' + esc(FOOTER_TEXT) + '</p></div>';
+  }
+
+  var root = document.getElementById("hpp-root");
+  root.style.maxWidth = MAX_WIDTH + "px";
+  root.innerHTML = html;
+})();
+</script>

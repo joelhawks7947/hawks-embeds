@@ -397,4 +397,4 @@ npm test
 | `tests/` | Automated browser tests (Playwright) |
 | `scripts/` | Dash check, data check, FAQ build, local server |
 | `reference/` | The original pasted embeds these modules were built from |
-| `standalone/` | One-off embeds pasted straight into a single Webflow page, not part of the hosted script (for example the NBL27 2-Game Bundle price cards). Copy one as a starting point for the next similar offer |
+| `standalone/` | One-off embeds pasted straight into a single Webflow page, not part of the hosted script (for example the NBL27 2-Game Bundle price cards and the Player Partnerships grid). Copy one as a starting point for the next similar offer |
