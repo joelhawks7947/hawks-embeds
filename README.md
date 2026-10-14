@@ -269,7 +269,9 @@ Notes:
 - **Related links** show as "More info: WIN Entertainment Centre transport". The text for each link address is in `LINK_TEXT` at the top of `scripts/build-faq.mjs`. To use different text for one question, add a column headed **Link text** to the spreadsheet.
 - Phone numbers (for example 02 4220 2884) and email addresses in answers become tap-to-call and email links automatically.
 - Line breaks in an answer become new paragraphs.
-- Webflow allows 50,000 characters per Code Embed. The build prints the size and warns from 45,000. With 37 questions it's about 32,000.
+- Webflow allows 50,000 characters per Code Embed. The build prints the size and warns from 45,000. Each question takes about 480 characters, so there's room for 100 or more.
+- The structured data for Google (`FAQPage`) isn't in the embed: `hawks.js` builds it from the questions on the page. AI tools that don't run scripts read the questions and answers straight from the page's HTML.
+- **Search analytics:** the FAQ sends three events to the site's Google Analytics: `search` (what was typed, after a pause), `faq_no_results` (searches with no exact match: the questions the FAQ doesn't answer yet) and `faq_open` (which question was opened, and whether from search, browsing, a link or the browser's find). Email addresses and long numbers are removed from searches first. In GA4: **Reports**, **Realtime** shows them as they happen; for a list of searches, **Explore**, a free form exploration with the dimension **Search term** and the metric **Event count**, filtered to the event name `faq_no_results`.
 - [`faq/faq.json`](faq/faq.json) holds the same questions and answers as data, for a future help bot: `https://joelhawks7947.github.io/hawks-embeds/faq/faq.json`
 
 ### Formats

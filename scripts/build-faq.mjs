@@ -8,7 +8,9 @@
 //
 // The questions and answers are written into the embed as plain HTML, not drawn by
 // the script, so search engines and AI crawlers that don't run JavaScript can read them.
-// hawks.js then adds the styling, accordion and search.
+// hawks.js then adds the styling, accordion and search, and writes the FAQPage structured
+// data for Google from those same questions (kept out of the embed, which would otherwise
+// pass Webflow's 50,000 character limit at around 50 questions).
 //
 // Only ID, Section, Question, Answer, Link (and an optional "Link text" column) are
 // published. Owners, notes and status never leave the spreadsheet.
@@ -119,13 +121,11 @@ const sections = [...new Set(items.map((q) => q.section))];
 
 function qUrl(q) { return PAGE + "#faq-" + q.id.toLowerCase(); }
 
-function answerHtml(q, forSchema) {
+function answerHtml(q) {
   let h = q.answer.map((p) => `<p>${linkify(esc(p))}</p>`).join("");
   if (q.link) {
-    h += forSchema
-      ? `<p>More info: <a href="${esc(q.link.url)}">${esc(q.link.text)}</a></p>`
-      : `<p class="hkfaq__more">More info: <a ${linkAttrs(q.link.url)}>${esc(q.link.text)}` +
-        (isHawks(q.link.url) ? "" : '<span class="hkfaq__nt"> (opens in a new tab)</span>') + "</a></p>";
+    h += `<p class="hkfaq__more">More info: <a ${linkAttrs(q.link.url)}>${esc(q.link.text)}` +
+      (isHawks(q.link.url) ? "" : '<span class="hkfaq__nt"> (opens in a new tab)</span>') + "</a></p>";
   }
   return h;
 }
@@ -137,14 +137,7 @@ function embed(src) {
       `<div class="hkfaq__item" id="faq-${q.id.toLowerCase()}">\n<h3 class="hkfaq__q">${esc(q.question)}</h3>\n<div class="hkfaq__a">${answerHtml(q)}</div>\n</div>`
     ).join("\n") + "\n</section>"
   ).join("\n");
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    url: PAGE,
-    mainEntity: items.map((q) => ({ "@type": "Question", url: qUrl(q), name: q.question, acceptedAnswer: { "@type": "Answer", text: answerHtml(q, true) } }))
-  };
-  return `<div data-hawks="faq"><div class="hkfaq__src">\n${body}\n</div></div>\n` +
-    `<script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>\n` +
+  return `<div data-hawks="faq" data-hawks-faq-page="${PAGE}"><div class="hkfaq__src">\n${body}\n</div></div>\n` +
     `<script src="${src}" defer></script>\n`;
 }
 

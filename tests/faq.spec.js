@@ -15,6 +15,9 @@ async function visibleIds(page) { return page.locator(".hkfaq__item:visible").ev
 test("the embed file: CDN script, under Webflow's limit, no internal columns", () => {
   expect(EMBED.length).toBeLessThan(50000);
   expect(EMBED).toContain('<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>');
+  expect(EMBED).toContain('<div data-hawks="faq" data-hawks-faq-page="https://www.hawks.com.au/pages/faqs">');
+  // The structured data is written by the script, keeping the embed small.
+  expect(EMBED).not.toContain("application/ld+json");
   expect(EMBED).not.toMatch(/Game day ops|Not started|Issue \/ notes|Draft from website/);
   for (const q of FAQ.questions) expect(q.answer).not.toMatch(/[​-‍﻿]/);
 });
@@ -142,6 +145,7 @@ test("related links: exact URL, link text, new tab only off hawks.com.au", async
 
 test("structured data matches the questions on the page", async ({ page }) => {
   await open(page);
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
   const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
   expect(ld["@type"]).toBe("FAQPage");
   expect(ld.url).toBe("https://www.hawks.com.au/pages/faqs");
@@ -268,4 +272,23 @@ test("a broken analytics function never breaks the FAQ", async ({ page }) => {
   await item(page, "KF-01").locator("button").click();
   await expect(item(page, "KF-01").locator("button")).toHaveAttribute("aria-expanded", "true");
   expect(log.errors).toEqual([]);
+});
+
+test("structured data: links kept, no screen reader text, never added twice", async ({ page }) => {
+  await open(page);
+  const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent());
+  const gd02 = ld.mainEntity.find((q) => q.url.endsWith("#faq-gd-02")).acceptedAnswer.text;
+  expect(gd02).toContain('<p>More info: <a href="https://www.wsec.com.au/transport">WIN Entertainment Centre transport</a></p>');
+  expect(JSON.stringify(ld)).not.toContain("opens in a new tab");
+  expect(ld.mainEntity.find((q) => q.url.endsWith("#faq-gn-01")).acceptedAnswer.text).toContain('<a href="tel:1300142957">1300 142 957</a>');
+  // An older embed that carries its own structured data: the script adds none.
+  const old = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: [] };
+  await page.addInitScript((o) => {
+    document.addEventListener("DOMContentLoaded", () => {
+      const sc = document.createElement("script"); sc.type = "application/ld+json"; sc.textContent = JSON.stringify(o); document.body.appendChild(sc);
+    });
+  }, old);
+  await page.reload(); await ready(page);
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  expect(JSON.parse(await page.locator('script[type="application/ld+json"]').textContent()).mainEntity).toEqual([]);
 });

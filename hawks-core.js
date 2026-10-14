@@ -1449,6 +1449,38 @@
   function faqTrack(name, params) { try { if (typeof W.gtag === "function") W.gtag("event", name, params); } catch (e) { /* analytics must never break the FAQ */ } }
   function faqRedact(s) { return s.replace(/\S+@\S+/g, "[email]").replace(/\d[\d\s.-]{3,}\d/g, "[number]").replace(/\s+/g, " ").trim().slice(0, 100); }
 
+  /* FAQPage structured data for Google, built from the questions in the embed (newer embeds leave it out
+     to stay under Webflow's 50,000 character limit). Skipped when the page already has it. Answers keep
+     their links; everything else is plain text. */
+  function faqLdHtml(p) {
+    return [].map.call(p.childNodes, function (n) {
+      if (n.nodeType === 3) return esc(n.nodeValue);
+      if (n.nodeType !== 1 || (n.classList && n.classList.contains("hkfaq__nt"))) return "";
+      var t = n.cloneNode(true);
+      [].forEach.call(t.querySelectorAll(".hkfaq__nt"), function (x) { x.parentNode.removeChild(x); });
+      return n.tagName === "A" ? '<a href="' + esc(n.getAttribute("href")) + '">' + esc(t.textContent) + "</a>" : esc(t.textContent);
+    }).join("");
+  }
+  function faqSchema(el) {
+    var has = [].some.call(D.querySelectorAll('script[type="application/ld+json"]'), function (x) { return /"FAQPage"/.test(x.textContent); });
+    if (has) return;
+    var page = el.getAttribute("data-hawks-faq-page") || "";
+    if (!/^https:\/\/[^\s"'<>#]+$/.test(page)) page = "";
+    var ld = { "@context": "https://schema.org", "@type": "FAQPage" };
+    if (page) ld.url = page;
+    ld.mainEntity = [].map.call(el.querySelectorAll(".hkfaq__item"), function (it) {
+      var q = { "@type": "Question" }, h = it.querySelector(".hkfaq__q"), a = it.querySelector(".hkfaq__a");
+      if (page && it.id) q.url = page + "#" + it.id;
+      q.name = h ? h.textContent.trim() : "";
+      q.acceptedAnswer = { "@type": "Answer", text: a ? [].map.call(a.querySelectorAll("p"), function (p) { return "<p>" + faqLdHtml(p) + "</p>"; }).join("") : "" };
+      return q;
+    }).filter(function (q) { return q.name && q.acceptedAnswer.text; });
+    var sc = D.createElement("script");
+    sc.type = "application/ld+json";
+    sc.textContent = JSON.stringify(ld);
+    D.head.appendChild(sc);
+  }
+
   /* Wrap matches of the search words in <mark>, inside text only (never inside tags). */
   function faqMark(node, terms) {
     if (!terms.length) return;
@@ -1525,9 +1557,10 @@
       "@media (prefers-reduced-motion:reduce){.hkfaq .hkfaq__cat,.hkfaq .hkfaq__clear,.hkfaq .hkfaq__btn,.hkfaq .hkfaq__ic::before,.hkfaq .hkfaq__ic::after{transition:none;}.hkfaq .hkfaq__cat:active,.hkfaq .hkfaq__clear:active{transform:none;}}"
     ].join("\n"),
 
-    render: function (el) {
+    render: function (el, ctx) {
       var src = el.querySelector(".hkfaq__src");
       if (!src || !src.querySelector(".hkfaq__item")) throw new Error("no questions found in the placeholder. Paste the whole of faq/faq-embed.html");
+      if (ctx.primary) { try { faqSchema(el); } catch (e) { warn("could not add the FAQ structured data: " + e.message); } }
       var inputId = uid("faq-search"), statusId = uid("faq-status");
       var secs = [].slice.call(src.querySelectorAll(".hkfaq__sec")).map(function (s) {
         var h = s.querySelector(".hkfaq__sh");
