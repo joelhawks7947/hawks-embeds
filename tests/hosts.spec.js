@@ -6,7 +6,7 @@ const { ROOT, watchConsole, ready } = require("./helpers");
 const CDN = "https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/";
 const PAGES = "https://joelhawks7947.github.io/hawks-embeds/";
 /* The last commit before the loader moved the core to Pages: browsers may hold this loader for 7 days. */
-const BEFORE = "6453c0e";
+const BEFORE = "1f52101";
 const old = (f) => execSync("git show " + BEFORE + ":" + f, { cwd: ROOT, encoding: "utf8" });
 const js = (f) => ({ contentType: "text/javascript", body: fs.readFileSync(path.join(ROOT, f), "utf8") });
 const file = (url) => new URL(url).pathname.split("/").pop();
