@@ -1729,6 +1729,62 @@
     }
   };
 
+
+  /* ---------------- faq-search (.hkfs) ----------------
+     A small search box that hands the fan's question to the FAQ page (links.faqPage?q=...),
+     which runs the search there. A plain GET form, so it works even if this script half-loads. */
+  M["faq-search"] = {
+    css: [
+      ".hkfs{--r:#FF0013;--dr:#BF0000;--k:#000000;--w:#FFFFFF;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:var(--k);color:var(--w);padding:48px 32px;margin:0;border-top:6px solid var(--r);text-align:center;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;}",
+      ".hkfs *,.hkfs *::before,.hkfs *::after{box-sizing:border-box;}",
+      ".hkfs[hidden],.hkfs [hidden]{display:none !important;}",
+      ".hkfs.hkfs--light{background:var(--w);color:var(--k);border-top-color:var(--k);}",
+      ".hkfs .hkfs__inner{max-width:640px;margin:0 auto;}",
+      ".hkfs .hkfs__over{font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin:0 0 12px;}",
+      ".hkfs .hkfs__head{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(28px,4.5cqw,40px);color:var(--w);margin:0 0 24px;padding:0;}",
+      ".hkfs.hkfs--light .hkfs__head{color:var(--k);}",
+      ".hkfs .hkfs__form{display:flex;gap:12px;margin:0;padding:0;}",
+      ".hkfs .hkfs__label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}",
+      ".hkfs .hkfs__input{flex:1 1 auto;min-width:0;height:56px;margin:0;padding:0 16px;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:17px;line-height:1.3;color:var(--k);background:var(--w);border:2px solid var(--w);border-radius:0;box-shadow:none;-webkit-appearance:none;appearance:none;text-align:left;}",
+      ".hkfs.hkfs--light .hkfs__input{border-color:var(--k);}",
+      ".hkfs .hkfs__input::placeholder{color:#6B6B6B;opacity:1;}",
+      ".hkfs .hkfs__input:focus{outline:none;}",
+      ".hkfs .hkfs__input:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
+      ".hkfs.hkfs--light .hkfs__input:focus-visible{outline-color:var(--k);}",
+      ".hkfs .hkfs__btn{flex:0 0 auto;height:56px;margin:0;padding:0 28px;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;border:2px solid var(--r);border-radius:0;cursor:pointer;transition:background-color 120ms var(--e),border-color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkfs .hkfs__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);}",
+      ".hkfs .hkfs__btn:active{transform:scale(0.98);}",
+      ".hkfs .hkfs__btn:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
+      ".hkfs.hkfs--light .hkfs__btn:focus-visible{outline-color:var(--k);}",
+      "@container (max-width:600px){.hkfs{padding:36px 16px;}}",
+      "@container (max-width:480px){.hkfs .hkfs__form{flex-direction:column;}.hkfs .hkfs__btn{width:100%;}}",
+      "@media (prefers-reduced-motion:reduce){.hkfs .hkfs__btn{transition:none;}.hkfs .hkfs__btn:active{transform:none;}}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var page = ctx.data.links.faqPage;
+      if (!page) throw new Error("links.faqPage is empty in data.js");
+      var id = uid("faq-search"), headId = uid("faq-search-head");
+      el.innerHTML =
+        '<section class="hkfs' + (ctx.theme === "light" ? " hkfs--light" : "") + '" aria-labelledby="' + headId + '"><div class="hkfs__inner">' +
+        '<p class="hkfs__over">Got a question?</p>' +
+        '<h2 class="hkfs__head" id="' + headId + '">Search our FAQs</h2>' +
+        '<form class="hkfs__form" role="search" method="get" action="' + esc(page) + '">' +
+        '<label class="hkfs__label" for="' + id + '">Search our FAQs</label>' +
+        '<input class="hkfs__input" id="' + id + '" name="q" type="search" autocomplete="off" maxlength="100" placeholder="Try parking, tickets or prams">' +
+        '<button class="hkfs__btn" type="submit">Search</button>' +
+        "</form></div></section>";
+      var form = el.querySelector("form"), input = el.querySelector("input");
+      /* Same tab (it's a hawks.com.au page). An empty search just opens the FAQ page. */
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var q = input.value.trim();
+        location.href = q ? page + (page.indexOf("?") < 0 ? "?" : "&") + "q=" + encodeURIComponent(q) : page;
+      });
+      return {};
+    }
+  };
+
   /* MODULES:END */
 
   /* ---------------- Load data.js (and module data files) ---------------- */

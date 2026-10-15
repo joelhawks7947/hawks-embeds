@@ -66,6 +66,10 @@ window.HAWKS_DATA = {
     /* The Game Day Guide page */
     gameDayGuide: "https://www.hawks.com.au/pages/gameday",
 
+    /* The FAQ page. The FAQ search box sends fans here with their search (?q=...),
+       and the "?" links in the game day embeds open answers on it. */
+    faqPage: "https://www.hawks.com.au/pages/faqs",
+
     /* Hawks mailing list (Newsletter and Girls in the Game embeds) */
     newsletter: "https://mailchi.mp/hawks/illawarra-hawks-newsletter"
   },
