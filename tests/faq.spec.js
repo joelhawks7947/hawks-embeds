@@ -129,13 +129,21 @@ test("related links: exact URL, link text, new tab only off hawks.com.au", async
   await open(page);
   for (const q of FAQ.questions) {
     const more = item(page, q.id).locator(".hkfaq__more a");
-    if (!q.link) { await expect(more).toHaveCount(0); continue; }
-    await expect(more).toHaveAttribute("href", q.link.url);
-    const hawks = /^https:\/\/(www\.)?hawks\.com\.au/.test(q.link.url);
-    expect(await more.getAttribute("target")).toBe(hawks ? null : "_blank");
-    expect(await more.getAttribute("rel")).toBe(hawks ? null : "noopener noreferrer");
-    expect(await more.textContent()).toBe(q.link.text + (hawks ? "" : " (opens in a new tab)"));
+    await expect(more).toHaveCount(q.links.length);
+    for (const [i, l] of q.links.entries()) {
+      const a = more.nth(i), hawks = /^https:\/\/(www\.)?hawks\.com\.au/.test(l.url);
+      await expect(a).toHaveAttribute("href", l.url);
+      expect(await a.getAttribute("target")).toBe(hawks ? null : "_blank");
+      expect(await a.getAttribute("rel")).toBe(hawks ? null : "noopener noreferrer");
+      expect(await a.textContent()).toBe(l.text + (hawks ? "" : " (opens in a new tab)"));
+    }
+    // The older single "link" field is the first link.
+    expect(q.link).toEqual(q.links.length ? { url: q.links[0].url, text: q.links[0].text } : null);
   }
+  // Several links in one cell, each with its label; a hyperlink cell's title becomes the link text.
+  await expect(item(page, "TK-02").locator(".hkfaq__more")).toHaveText("More info: Ticketmaster (opens in a new tab) (General Public), Hawks Membership website (opens in a new tab) (Hawks Members)");
+  await expect(item(page, "MB-03").locator(".hkfaq__more a")).toHaveText("Members Benefits (opens in a new tab)");
+  await expect(item(page, "MB-05").locator('a[href="mailto:membership@hawks.com.au"]')).toHaveText("membership@hawks.com.au");
   await expect(item(page, "GD-02").locator(".hkfaq__more")).toHaveText("More info: WIN Entertainment Centre transport (opens in a new tab)");
   // Phone numbers and email addresses are tap-to-call and email links in the same tab.
   await expect(item(page, "GN-01").locator('a[href="tel:1300142957"]')).toHaveText("1300 142 957");

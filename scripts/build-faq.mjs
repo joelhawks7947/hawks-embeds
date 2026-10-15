@@ -23,7 +23,14 @@ const PAGE = "https://www.hawks.com.au/pages/faqs"; // the FAQ page; each questi
 const LIMIT = 50000, WARN_AT = 45000; // Webflow's Code Embed limit, in characters
 
 // Link text for each related link, shown as "More info: <text>". A "Link text" column in
-// the sheet overrides this. A link with no text here and no column value stops the build.
+// the sheet overrides this, and a hyperlink cell's shown title is used when the address isn't
+// listed here ("Members Benefits | The Hawks" becomes "Members Benefits"). A link with no text
+// from any of these stops the build.
+//
+// The Link cell takes one address, or several on separate lines with a label before each:
+//   General Public: https://www.ticketmaster.com.au
+//   Hawks Members: https://am.ticketmaster.com/thehawks/
+// shows as "More info: Ticketmaster (General Public), Hawks Membership website (Hawks Members)".
 const LINK_TEXT = {
   "hawks.com.au/pages/gameday": "Game Day Guide",
   "hawks.com.au": "hawks.com.au",
@@ -34,7 +41,11 @@ const LINK_TEXT = {
   "nbl.com.au/how-to-watch": "How to watch on the NBL website",
   "illawarrahawks.typeform.com/to/ldprcjhi": "Group tickets form",
   "hawks-membership-picker.lovable.app": "Membership picker",
-  "shop-illawarrahawks.com": "Hawks shop"
+  "shop-illawarrahawks.com": "Hawks shop",
+  "ticketmaster.com.au": "Ticketmaster",
+  "am.ticketmaster.com/thehawks": "Hawks Membership website",
+  "am.ticketmaster.com/thehawks/members%20benefits": "Members Benefits",
+  "am.ticketmaster.com/thehawks/fleximembersticketredemptionguide": "Flexi Members Ticket Redemption Guide"
 };
 
 const file = process.argv[2];
@@ -60,6 +71,19 @@ function clean(s) {
 }
 function oneLine(s) { return clean(s).replace(/\s+/g, " ").trim(); }
 function paragraphs(s) { return clean(s).split(/\n+/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean); }
+// Answers: every paragraph ends with a full stop (or ?, !, :), added if missing.
+function sentences(s) { return paragraphs(s).map((p) => (/[\w)"']$/.test(p) ? p + "." : p)); }
+// The Link cell: a hyperlink, one address, or "Label: address" lines. Returns [{url, label}].
+function linkCell(v) {
+  if (v && typeof v === "object" && v.hyperlink) {
+    const shown = oneLine(cellText(v.text));
+    return [{ url: oneLine(String(v.hyperlink)), label: "", title: /^https?:/i.test(shown) ? "" : shown.replace(/\s*\|\s*(The|Illawarra) Hawks$/i, "") }];
+  }
+  return clean(cellText(v)).split(/\n+/).map((l) => l.trim()).filter(Boolean).map((l) => {
+    const m = /^(?:(.*?):\s*)?(https?:\/\/\S+)$/i.exec(l);
+    return m ? { url: m[2], label: (m[1] || "").trim(), title: "" } : { url: l, label: "", title: "" };
+  });
+}
 function esc(s) { return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]); }
 function urlKey(u) { return u.toLowerCase().replace(/^https?:\/\/(www\.)?/, "").replace(/[?#].*$/, "").replace(/\/+$/, ""); }
 function isHawks(u) { return /^https:\/\/(www\.)?hawks\.com\.au([\/?#]|$)/i.test(u); }
@@ -98,34 +122,43 @@ ws.eachRow((row, n) => {
   if (status !== "done") { skipped++; return; }
   const where = `Row ${n} (${id || "no ID"})`;
   const section = oneLine(get(row, "section")), question = oneLine(get(row, "question"));
-  const answer = paragraphs(get(row, "answer")), link = oneLine(get(row, "link"));
-  let linkText = oneLine(get(row, "link text"));
+  const answer = sentences(get(row, "answer")), links = col["link"] ? linkCell(row.getCell(col["link"]).value) : [];
+  const linkText = oneLine(get(row, "link text"));
   if (!/^[A-Z]{2}-\d{2,3}$/.test(id)) { errors.push(`${where}: the ID should look like GD-01. Done rows need an ID.`); return; }
   if (seen.has(id)) { errors.push(`${where}: ID ${id} is used twice.`); return; }
   seen.add(id);
   if (!section || !question || !answer.length) { errors.push(`${where}: a Done row needs a Section, Question and Answer.`); return; }
   for (const t of [section, question, linkText, ...answer]) if (DASH.test(t)) errors.push(`${where}: contains an em or en dash. Use a comma, colon or full stop instead.`);
-  if (link) {
-    if (!/^https:\/\/[^\s"'<>]+$/.test(link)) errors.push(`${where}: the Link should be a full web address starting https://`);
-    linkText = linkText || LINK_TEXT[urlKey(link)] || "";
-    if (!linkText) errors.push(`${where}: no link text for ${link}. Add it to LINK_TEXT in scripts/build-faq.mjs or a "Link text" column.`);
+  for (const t of answer) if (/\s-\s/.test(t)) warnings.push(`${where}: " - " reads as a dash. Use a comma or full stop instead.`);
+  for (const l of links) {
+    if (!/^https:\/\/[^\s"'<>]+$/.test(l.url)) errors.push(`${where}: the Link should be a full web address starting https://, or "Label: https://..." lines (found "${l.url}").`);
+    l.text = (links.length === 1 && linkText) || LINK_TEXT[urlKey(l.url)] || l.title || "";
+    if (!l.text) errors.push(`${where}: no link text for ${l.url}. Add it to LINK_TEXT in scripts/build-faq.mjs or a "Link text" column.`);
   }
   if (!/[?]$/.test(question)) warnings.push(`${where}: the question doesn't end with a question mark.`);
-  items.push({ id, section, question, answer, link: link ? { url: link, text: linkText } : null });
+  items.push({ id, section, question, answer, links: links.map((l) => ({ url: l.url, text: l.text, label: l.label })) });
 });
 if (errors.length) { console.error("FAQ not built. Fix these in the spreadsheet:\n" + errors.join("\n")); process.exit(1); }
 if (!items.length) { console.error("No rows marked Done, so there is nothing to publish."); process.exit(1); }
 
-// Sections in the order they first appear in the sheet.
-const sections = [...new Set(items.map((q) => q.section))];
+// Page order doesn't depend on where rows sit in the sheet: sections in this order (any other
+// section after these, in the order it first appears), questions by ID number within a section.
+const SECTION_ORDER = ["Game day", "Tickets", "Membership", "Accessibility", "Kids and families", "Merch", "Corporate, groups and community", "General"];
+const rank = (s) => { const i = SECTION_ORDER.indexOf(s); return i < 0 ? SECTION_ORDER.length : i; };
+const firstSeen = [...new Set(items.map((q) => q.section))];
+const sections = firstSeen.slice().sort((a, b) => rank(a) - rank(b) || firstSeen.indexOf(a) - firstSeen.indexOf(b));
+const [pre, num] = [(id) => id.slice(0, 2), (id) => +id.split("-")[1]];
+items.sort((a, b) => sections.indexOf(a.section) - sections.indexOf(b.section) || pre(a.id).localeCompare(pre(b.id)) || num(a.id) - num(b.id));
 
 function qUrl(q) { return PAGE + "#faq-" + q.id.toLowerCase(); }
 
 function answerHtml(q) {
   let h = q.answer.map((p) => `<p>${linkify(esc(p))}</p>`).join("");
-  if (q.link) {
-    h += `<p class="hkfaq__more">More info: <a ${linkAttrs(q.link.url)}>${esc(q.link.text)}` +
-      (isHawks(q.link.url) ? "" : '<span class="hkfaq__nt"> (opens in a new tab)</span>') + "</a></p>";
+  if (q.links.length) {
+    h += '<p class="hkfaq__more">More info: ' + q.links.map((l) =>
+      `<a ${linkAttrs(l.url)}>${esc(l.text)}` + (isHawks(l.url) ? "" : '<span class="hkfaq__nt"> (opens in a new tab)</span>') + "</a>" +
+      (l.label ? ` (${esc(l.label)})` : "")
+    ).join(", ") + "</p>";
   }
   return h;
 }
@@ -148,7 +181,9 @@ writeFileSync(ROOT + "faq/faq.json", JSON.stringify({
   about: "Illawarra Hawks fan FAQ. Generated from the FAQ tracker by scripts/build-faq.mjs; the same questions and answers as the FAQ page on hawks.com.au.",
   page: PAGE,
   sections,
-  questions: items.map((q) => ({ id: q.id, url: qUrl(q), section: q.section, question: q.question, answer: q.answer.join("\n\n"), link: q.link }))
+  questions: items.map((q) => ({ id: q.id, url: qUrl(q), section: q.section, question: q.question, answer: q.answer.join("\n\n"),
+    link: q.links.length ? { url: q.links[0].url, text: q.links[0].text } : null, // the first link, kept for older readers of this file
+    links: q.links.map((l) => (l.label ? { url: l.url, text: l.text, label: l.label } : { url: l.url, text: l.text })) }))
 }, null, 2) + "\n");
 writeFileSync(ROOT + "test/faq.html", `<!DOCTYPE html>
 <html lang="en-AU">

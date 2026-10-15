@@ -267,6 +267,9 @@ To publish changes:
 Notes:
 
 - **Related links** show as "More info: WIN Entertainment Centre transport". The text for each link address is in `LINK_TEXT` at the top of `scripts/build-faq.mjs`. To use different text for one question, add a column headed **Link text** to the spreadsheet.
+- **The Link cell** takes one web address, an Excel hyperlink (its shown title becomes the link text, without " | The Hawks"), or several links on separate lines, each with a label: `General Public: https://www.ticketmaster.com.au`. Don't put links in the Answer column: fans would see them as plain text.
+- **Order on the page** doesn't depend on where rows sit in the sheet: topics always show as Game day, Tickets, Membership, Accessibility, Kids and families, Merch, Corporate, groups and community, then General (a new topic goes last), and questions follow their ID numbers.
+- The build adds a missing full stop at the end of an answer, and warns about " - " used as a dash. It doesn't check spelling: proofread new answers before marking them Done.
 - Phone numbers (for example 02 4220 2884) and email addresses in answers become tap-to-call and email links automatically.
 - Line breaks in an answer become new paragraphs.
 - Webflow allows 50,000 characters per Code Embed. The build prints the size and warns from 45,000. Each question takes about 480 characters, so there's room for 100 or more.

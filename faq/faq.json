@@ -7,6 +7,7 @@
     "Membership",
     "Accessibility",
     "Kids and families",
+    "Merch",
     "Corporate, groups and community",
     "General"
   ],
@@ -20,7 +21,13 @@
       "link": {
         "url": "https://www.hawks.com.au/pages/gameday",
         "text": "Game Day Guide"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au/pages/gameday",
+          "text": "Game Day Guide"
+        }
+      ]
     },
     {
       "id": "GD-02",
@@ -31,7 +38,13 @@
       "link": {
         "url": "https://www.wsec.com.au/transport",
         "text": "WIN Entertainment Centre transport"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.wsec.com.au/transport",
+          "text": "WIN Entertainment Centre transport"
+        }
+      ]
     },
     {
       "id": "GD-03",
@@ -42,7 +55,13 @@
       "link": {
         "url": "https://www.wsec.com.au/transport",
         "text": "WIN Entertainment Centre transport"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.wsec.com.au/transport",
+          "text": "WIN Entertainment Centre transport"
+        }
+      ]
     },
     {
       "id": "GD-04",
@@ -53,7 +72,13 @@
       "link": {
         "url": "https://www.wsec.com.au/transport",
         "text": "WIN Entertainment Centre transport"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.wsec.com.au/transport",
+          "text": "WIN Entertainment Centre transport"
+        }
+      ]
     },
     {
       "id": "GD-05",
@@ -64,7 +89,13 @@
       "link": {
         "url": "https://www.wsec.com.au/plan-your-visit/conditions_of_entry",
         "text": "WIN Entertainment Centre conditions of entry"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.wsec.com.au/plan-your-visit/conditions_of_entry",
+          "text": "WIN Entertainment Centre conditions of entry"
+        }
+      ]
     },
     {
       "id": "GD-06",
@@ -75,7 +106,13 @@
       "link": {
         "url": "https://www.wsec.com.au/plan-your-visit/conditions_of_entry",
         "text": "WIN Entertainment Centre conditions of entry"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.wsec.com.au/plan-your-visit/conditions_of_entry",
+          "text": "WIN Entertainment Centre conditions of entry"
+        }
+      ]
     },
     {
       "id": "GD-07",
@@ -86,7 +123,13 @@
       "link": {
         "url": "https://www.hawks.com.au/pages/gameday",
         "text": "Game Day Guide"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au/pages/gameday",
+          "text": "Game Day Guide"
+        }
+      ]
     },
     {
       "id": "GD-08",
@@ -94,7 +137,8 @@
       "section": "Game day",
       "question": "Is the venue cashless?",
       "answer": "WIN Entertainment Centre and WIN Stadium are cashless venues. All transactions will be by contactless card. Cash cards will no longer be available for purchase at outlets.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "GD-09",
@@ -102,7 +146,8 @@
       "section": "Game day",
       "question": "Can I leave and come back in?",
       "answer": "Generally, no. Pass-outs for re-entry are not issued unless the specific event conditions expressly allow them.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "GD-10",
@@ -113,7 +158,13 @@
       "link": {
         "url": "https://www.hawks.com.au/pages/gameday",
         "text": "Game Day Guide"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au/pages/gameday",
+          "text": "Game Day Guide"
+        }
+      ]
     },
     {
       "id": "GD-11",
@@ -121,7 +172,8 @@
       "section": "Game day",
       "question": "What time does the game finish?",
       "answer": "The game will typically finish within 2-hours. Occasionally like the famous 4-overtime game a few years ago it will extend. But that's \"free basketball\" in basketball lingo.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "GD-12",
@@ -132,7 +184,13 @@
       "link": {
         "url": "https://shop-illawarrahawks.com/",
         "text": "Hawks shop"
-      }
+      },
+      "links": [
+        {
+          "url": "https://shop-illawarrahawks.com/",
+          "text": "Hawks shop"
+        }
+      ]
     },
     {
       "id": "GD-14",
@@ -143,7 +201,13 @@
       "link": {
         "url": "https://www.wsec.com.au/plan-your-visit/frequently_asked_questions",
         "text": "WIN Entertainment Centre FAQs"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.wsec.com.au/plan-your-visit/frequently_asked_questions",
+          "text": "WIN Entertainment Centre FAQs"
+        }
+      ]
     },
     {
       "id": "GD-15",
@@ -154,7 +218,13 @@
       "link": {
         "url": "https://nbl.com.au/pages/nbl-spectator-standards",
         "text": "NBL spectator standards"
-      }
+      },
+      "links": [
+        {
+          "url": "https://nbl.com.au/pages/nbl-spectator-standards",
+          "text": "NBL spectator standards"
+        }
+      ]
     },
     {
       "id": "TK-01",
@@ -165,7 +235,36 @@
       "link": {
         "url": "https://www.hawks.com.au/pages/gameday",
         "text": "Game Day Guide"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au/pages/gameday",
+          "text": "Game Day Guide"
+        }
+      ]
+    },
+    {
+      "id": "TK-02",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-tk-02",
+      "section": "Tickets",
+      "question": "Where do I find my tickets?",
+      "answer": "General public tickets are accessed via the Ticketmaster website where the purchase occurred. Members access their tickets via the Hawks Membership website.",
+      "link": {
+        "url": "https://www.ticketmaster.com.au",
+        "text": "Ticketmaster"
+      },
+      "links": [
+        {
+          "url": "https://www.ticketmaster.com.au",
+          "text": "Ticketmaster",
+          "label": "General Public"
+        },
+        {
+          "url": "https://am.ticketmaster.com/thehawks/",
+          "text": "Hawks Membership website",
+          "label": "Hawks Members"
+        }
+      ]
     },
     {
       "id": "TK-04",
@@ -176,7 +275,13 @@
       "link": {
         "url": "https://www.wsec.com.au/plan-your-visit/frequently_asked_questions",
         "text": "WIN Entertainment Centre FAQs"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.wsec.com.au/plan-your-visit/frequently_asked_questions",
+          "text": "WIN Entertainment Centre FAQs"
+        }
+      ]
     },
     {
       "id": "TK-05",
@@ -184,7 +289,8 @@
       "section": "Tickets",
       "question": "Do kids and babies need a ticket?",
       "answer": "Children under 4 years are admitted for free provided they do not occupy a seat.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "TK-06",
@@ -192,7 +298,8 @@
       "section": "Tickets",
       "question": "Are there concession prices?",
       "answer": "Yes. Government issued Pensioner Concession Card or Veteran Pensioner Concession Card. Seniors Card or Commonwealth Seniors Health Card (CSHC) or Veteran Healthcare Card. Full-Time secondary or tertiary Australian student cards.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "TK-07",
@@ -203,7 +310,13 @@
       "link": {
         "url": "https://illawarrahawks.typeform.com/to/ldprCJhI",
         "text": "Group tickets form"
-      }
+      },
+      "links": [
+        {
+          "url": "https://illawarrahawks.typeform.com/to/ldprCJhI",
+          "text": "Group tickets form"
+        }
+      ]
     },
     {
       "id": "TK-08",
@@ -211,15 +324,25 @@
       "section": "Tickets",
       "question": "Can I buy tickets at the door?",
       "answer": "Yes. Both WIN Entertainment Centre and WIN Stadium Box Offices operate in line with event times.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "TK-09",
       "url": "https://www.hawks.com.au/pages/faqs#faq-tk-09",
       "section": "Tickets",
       "question": "What's the best place to sit? Is there a seat map?",
-      "answer": "Seatmap is available via the Ticketmaster site for individual game tickets, or via our membership site.\n\nBoth available directly from www.hawks.com.au",
-      "link": null
+      "answer": "Seatmap is available via the Ticketmaster site for individual game tickets, or via our membership site.\n\nBoth are available directly from our website.",
+      "link": {
+        "url": "https://www.hawks.com.au",
+        "text": "hawks.com.au"
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au",
+          "text": "hawks.com.au"
+        }
+      ]
     },
     {
       "id": "TK-10",
@@ -230,7 +353,13 @@
       "link": {
         "url": "https://www.hawks.com.au/pages/gameday",
         "text": "Game Day Guide"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au/pages/gameday",
+          "text": "Game Day Guide"
+        }
+      ]
     },
     {
       "id": "TK-11",
@@ -238,7 +367,8 @@
       "section": "Tickets",
       "question": "What is the pre-game function?",
       "answer": "Upstairs in the Premiers Room. You will enjoy VIP access 90 mins before tip off, canapes and 2 drinks. Here from the guest speaker, and occasionally a player who is not suiting up for the game due to injury.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "MB-01",
@@ -249,7 +379,13 @@
       "link": {
         "url": "https://hawks-membership-picker.lovable.app/",
         "text": "Membership picker"
-      }
+      },
+      "links": [
+        {
+          "url": "https://hawks-membership-picker.lovable.app/",
+          "text": "Membership picker"
+        }
+      ]
     },
     {
       "id": "MB-02",
@@ -260,7 +396,92 @@
       "link": {
         "url": "https://hawks-membership-picker.lovable.app/",
         "text": "Membership picker"
-      }
+      },
+      "links": [
+        {
+          "url": "https://hawks-membership-picker.lovable.app/",
+          "text": "Membership picker"
+        }
+      ]
+    },
+    {
+      "id": "MB-03",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-03",
+      "section": "Membership",
+      "question": "What's included in my membership, and what member benefits do I get?",
+      "answer": "Members receive a range of exclusive benefits including discounts off normal ticket prices, exclusive merchandise, first chance at Finals tickets and opportunities to meet the players.",
+      "link": {
+        "url": "https://am.ticketmaster.com/thehawks/Members%20Benefits",
+        "text": "Members Benefits"
+      },
+      "links": [
+        {
+          "url": "https://am.ticketmaster.com/thehawks/Members%20Benefits",
+          "text": "Members Benefits"
+        }
+      ]
+    },
+    {
+      "id": "MB-04",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-04",
+      "section": "Membership",
+      "question": "How do I pick my games with a Flexi pack?",
+      "answer": "Follow the step-by-step guide to redeem your Flexi tickets.",
+      "link": {
+        "url": "https://am.ticketmaster.com/thehawks/Fleximembersticketredemptionguide",
+        "text": "Flexi Members Ticket Redemption Guide"
+      },
+      "links": [
+        {
+          "url": "https://am.ticketmaster.com/thehawks/Fleximembersticketredemptionguide",
+          "text": "Flexi Members Ticket Redemption Guide"
+        }
+      ]
+    },
+    {
+      "id": "MB-05",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-05",
+      "section": "Membership",
+      "question": "Can I change seats or upgrade my membership?",
+      "answer": "Yes, subject to availability. Please contact membership@hawks.com.au.",
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "MB-06",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-06",
+      "section": "Membership",
+      "question": "Can I pay in instalments?",
+      "answer": "Yes. Members are given the opportunity to purchase their membership in 6 monthly instalments at the time of purchase.",
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "MB-07",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-07",
+      "section": "Membership",
+      "question": "Can someone else use my membership if I can't make a game?",
+      "answer": "Yes. All membership tickets are transferable.",
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "MB-08",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-08",
+      "section": "Membership",
+      "question": "Where do I find my membership card or digital pass?",
+      "answer": "Membership cards are included in the exclusive members pack. Digital Members cards are sent to members via SMS.",
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "MB-09",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mb-09",
+      "section": "Membership",
+      "question": "When do memberships renew for next season?",
+      "answer": "Membership renewal dates for NBL28 will be communicated to Members in due course.",
+      "link": null,
+      "links": []
     },
     {
       "id": "AC-01",
@@ -268,7 +489,8 @@
       "section": "Accessibility",
       "question": "How do I book wheelchair or accessible seating?",
       "answer": "Easy-access and wheelchair seating is limited and must be booked before the event. Call the WSEC Ticketmaster Box Office on 02 4220 2884 during business hours to book.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "AC-02",
@@ -276,7 +498,8 @@
       "section": "Accessibility",
       "question": "Do you accept the Companion Card?",
       "answer": "Yes. Wheelchair-accessible and Companion Card seating is available for Illawarra Hawks games through Ticketmaster's interactive section map. Select Accessible Seating from the price categories. Your Companion Card number may be required when booking; for help, contact the WSEC Ticketmaster Box Office on 02 4220 2884.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "AC-03",
@@ -284,7 +507,8 @@
       "section": "Accessibility",
       "question": "Is there accessible parking and drop-off?",
       "answer": "Limited reserved accessible parking is available in the WSEC car park area and Quilkey Place and must be booked in advance. Call the WSEC Ticketmaster Box Office on 02 4220 2884; barrier-free entry is available from the Crown Street and Harbour Street entrances.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "AC-04",
@@ -292,7 +516,17 @@
       "section": "Accessibility",
       "question": "Is there lift access to all seating levels?",
       "answer": "WIN Entertainment Centre is equipped with lifts and ramps where required, with accessible seating available on both main seating levels. Because venue configurations vary and accessible spaces are limited, book easy-access seating in advance through the WSEC Ticketmaster Box Office on 02 4220 2884.",
-      "link": null
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "AC-05",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-ac-05",
+      "section": "Accessibility",
+      "question": "Is there a quiet or sensory-friendly space?",
+      "answer": "Unfortunately this is not available for our home games at the WIN Entertainment Centre.",
+      "link": null,
+      "links": []
     },
     {
       "id": "AC-06",
@@ -300,7 +534,8 @@
       "section": "Accessibility",
       "question": "Are assistance animals allowed?",
       "answer": "Yes. Certified service animals are allowed; other animals and pets are prohibited.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "KF-01",
@@ -308,7 +543,8 @@
       "section": "Kids and families",
       "question": "Can I bring a pram?",
       "answer": "Prams and strollers cannot be taken into WIN Entertainment Centre for safety reasons. They may be left in the venue's designated stroller bays; the venue is not responsible for loss, theft or damage.",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "KF-02",
@@ -316,7 +552,70 @@
       "section": "Kids and families",
       "question": "What's on for kids before the game?",
       "answer": "Plenty. The i98FM Street Fleet is onsite at every home game with games and prizes before the doors open, so come early. Inside, the free Activation Zone has Greater Bank mini hoops, the vertical jump tester and our measure-up wall. TomaHawk is out before every home game for photos.",
-      "link": null
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "KF-03",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-kf-03",
+      "section": "Kids and families",
+      "question": "Is there a baby change room?",
+      "answer": "Yes, baby change room facilities are available within the venue within the accessible amenities.",
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "KF-04",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-kf-04",
+      "section": "Kids and families",
+      "question": "Is there a junior or family membership?",
+      "answer": "Yes, junior and family packages are available across most membership categories.",
+      "link": {
+        "url": "https://am.ticketmaster.com/thehawks/",
+        "text": "Hawks Membership website"
+      },
+      "links": [
+        {
+          "url": "https://am.ticketmaster.com/thehawks/",
+          "text": "Hawks Membership website"
+        }
+      ]
+    },
+    {
+      "id": "MR-01",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mr-01",
+      "section": "Merch",
+      "question": "How do I track my online order?",
+      "answer": "Once your order has been shipped, an email notification will be sent with tracking details.",
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "MR-02",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mr-02",
+      "section": "Merch",
+      "question": "How do returns and exchanges work?",
+      "answer": "All queries regarding returns and exchanges should be sent to merchandise@hawks.com.au.",
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "MR-04",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mr-04",
+      "section": "Merch",
+      "question": "Is there a merch stand at the game?",
+      "answer": "Yes. Merchandise is available at every home game. It is located in the main foyer adjacent to the Main doors off Crown Street.",
+      "link": null,
+      "links": []
+    },
+    {
+      "id": "MR-05",
+      "url": "https://www.hawks.com.au/pages/faqs#faq-mr-05",
+      "section": "Merch",
+      "question": "How long does shipping take?",
+      "answer": "Orders usually arrive in 3 to 5 business days.",
+      "link": null,
+      "links": []
     },
     {
       "id": "CG-04",
@@ -327,7 +626,13 @@
       "link": {
         "url": "https://www.hawks.com.au/",
         "text": "hawks.com.au"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au/",
+          "text": "hawks.com.au"
+        }
+      ]
     },
     {
       "id": "GN-01",
@@ -335,7 +640,8 @@
       "section": "General",
       "question": "How do I contact the club?",
       "answer": "Call 1300 142 957 or email info@hawks.com.au. Our office is Hawks HQ, Foley St, Gwynneville NSW 2500 (The Snakepit).",
-      "link": null
+      "link": null,
+      "links": []
     },
     {
       "id": "GN-02",
@@ -346,7 +652,13 @@
       "link": {
         "url": "https://www.hawks.com.au/pages/gameday",
         "text": "Game Day Guide"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au/pages/gameday",
+          "text": "Game Day Guide"
+        }
+      ]
     },
     {
       "id": "GN-03",
@@ -357,18 +669,30 @@
       "link": {
         "url": "https://www.hawks.com.au/",
         "text": "hawks.com.au"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.hawks.com.au/",
+          "text": "hawks.com.au"
+        }
+      ]
     },
     {
       "id": "GN-04",
       "url": "https://www.hawks.com.au/pages/faqs#faq-gn-04",
       "section": "General",
       "question": "How can I watch the game if I can't be there?",
-      "answer": "Every NBL match is live on ESPN / Disney.\n\nSee the NBL's website for latest details",
+      "answer": "Every NBL match is live on ESPN / Disney.\n\nSee the NBL's website for latest details.",
       "link": {
         "url": "https://www.nbl.com.au/how-to-watch",
         "text": "How to watch on the NBL website"
-      }
+      },
+      "links": [
+        {
+          "url": "https://www.nbl.com.au/how-to-watch",
+          "text": "How to watch on the NBL website"
+        }
+      ]
     }
   ]
 }
