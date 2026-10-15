@@ -300,3 +300,31 @@ test("structured data: links kept, no screen reader text, never added twice", as
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
   expect(JSON.parse(await page.locator('script[type="application/ld+json"]').textContent()).mainEntity).toEqual([]);
 });
+
+test("?q= from another page: fills the box, runs the search, scrolls to it, reports it", async ({ page }) => {
+  await withGtag(page, "/test/faq.html?q=prams");
+  await expect(page.locator(".hkfaq__input")).toHaveValue("prams");
+  expect(await visibleIds(page)).toContain("faq-kf-01");
+  await expect(item(page, "KF-01").locator("mark.hkfaq__mk").first()).toBeVisible();
+  await expect(page.locator(".hkfaq__input")).toBeInViewport();
+  // Not focused, so a phone keyboard doesn't pop up over the results.
+  expect(await page.evaluate(() => document.activeElement && document.activeElement.className)).not.toBe("hkfaq__input");
+  await page.waitForTimeout(1700);
+  expect(await events(page)).toEqual([["search", { search_term: "prams", faq_results: (await visibleIds(page)).length, faq_match: "exact", faq_topic: "All" }]]);
+});
+
+test("?q= handles spaces, odd characters and an empty value", async ({ page }) => {
+  await open(page, "/test/faq.html?q=where+do+I%20park%3F");
+  await expect(page.locator(".hkfaq__input")).toHaveValue("where do I park?");
+  expect(await visibleIds(page)).toEqual(["faq-gd-02", "faq-ac-03"]);
+  await open(page, "/test/faq.html?q=%E0%A4%A");   // broken encoding: ignored, nothing breaks
+  await expect(page.locator(".hkfaq__input")).toHaveValue("");
+  expect((await visibleIds(page)).length).toBe(FAQ.questions.length);
+  await open(page, "/test/faq.html?q=");
+  await expect(page.locator(".hkfaq__input")).toHaveValue("");
+});
+
+test("?q= with a #faq link: the link wins and opens that question", async ({ page }) => {
+  await open(page, "/test/faq.html?q=prams#faq-gd-01");
+  await expect(item(page, "GD-01").locator(".hkfaq__btn")).toHaveAttribute("aria-expanded", "true");
+});

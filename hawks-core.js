@@ -1714,6 +1714,15 @@
       cats.forEach(function (b) { b.addEventListener("click", function () { cat = +b.getAttribute("data-i"); apply(); }); });
       root.querySelector(".hkfaq__clear").addEventListener("click", function () { report(); clear(); input.focus(); });
 
+      /* A search handed over from another page (the faq-search box): /pages/faqs?q=prams fills the
+         box, runs the search and scrolls to the results. Not focused, so phones don't pop the keyboard. */
+      var handed = /[?&]q=([^&#]*)/.exec(location.search);
+      if (ctx.primary && handed) {
+        var hq = "";
+        try { hq = decodeURIComponent(handed[1].replace(/\+/g, " ")).trim().slice(0, 100); } catch (e) { hq = ""; }
+        if (hq) { input.value = hq; apply(); if (!location.hash) root.scrollIntoView({ block: "start" }); }
+      }
+
       return {
         onHash: function (h) { var m = /^#(faq-[a-z]{2}-\d{2,3})$/i.exec(h); if (m) go(m[1].toLowerCase()); }
       };
