@@ -117,6 +117,15 @@ Paste the **whole** of [`faq/faq-embed.html`](faq/faq-embed.html) into one Code 
 
 Each question has a link that opens it, from its ID in the spreadsheet: https://www.hawks.com.au/pages/faqs#faq-gd-02 opens "Where do I park?". Use these in EDMs and social replies. Don't renumber IDs once they're live.
 
+### FAQ search box
+
+A "Got a question? / Search our FAQs" box for the Game Day page (or anywhere else). Fans type a question and land on the FAQ page with their search already run, in the same tab. Searching for "prams" opens https://www.hawks.com.au/pages/faqs?q=prams. You can use links like that in EDMs too.
+
+```html
+<div data-hawks="faq-search"><a href="https://www.hawks.com.au/pages/faqs">Search our FAQs</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
 ### On other websites (Lovable and plain HTML pages)
 
 **Plain HTML page:** paste this where the events should appear (white version):
@@ -160,7 +169,7 @@ Do not restyle it, change its code, or put it inside a dark background. It sets 
 
 ### White (light) version
 
-Girls in the Game, Newsletter, Top 10 and Hawks in Business are black by default. For the white version, add `data-hawks-theme="light"` to the placeholder:
+Girls in the Game, Newsletter, Top 10, Hawks in Business and the FAQ search box are black by default. For the white version, add `data-hawks-theme="light"` to the placeholder:
 
 ```html
 <div data-hawks="newsletter" data-hawks-theme="light"><a href="https://mailchi.mp/hawks/illawarra-hawks-newsletter">Join the Hawks mailing list</a></div>
@@ -194,6 +203,7 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 | Hide a key time everywhere (for example the pre-game function) | Delete that whole line from the `times` list |
 | Change a ticket, MVP or venue link | Edit it in the `links` section |
 | Change or hide the pre-game function "Buy ticket" link (next game and upcoming games) | `functionTickets` in the `links` section (`""` hides it) |
+| Change or hide a small FAQ link ("What's a Court Walk?", "What's included?", "When does it finish?", "compare memberships", "Accessible parking and drop-off") | The `faqLinks` section: put a different question ID from the FAQ spreadsheet (for example `"GD-02"`), or `""` to hide that link |
 | Add the next Girls in the Game camp | Add a line to `girlsInTheGame` (see below) |
 
 ### Girls in the Game camps

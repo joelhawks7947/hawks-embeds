@@ -173,6 +173,13 @@
     var sorted = out.games.slice().sort(function (a, b) { return a._tip - b._tip; });
     if (sorted.some(function (g, i) { return g !== out.games[i]; })) { warn("games are not in date order in data.js; sorting them by tip-off"); out.games = sorted; }
     if (!out.games.length) warn("no valid games in data.js");
+    out.faqLinks = {};
+    var FL = raw.faqLinks && typeof raw.faqLinks === "object" ? raw.faqLinks : {};
+    Object.keys(FL).forEach(function (k) {
+      var v = FL[k];
+      if (v && /^[A-Za-z]{2}-\d{2,3}$/.test(v)) out.faqLinks[k] = v.toLowerCase();
+      else { out.faqLinks[k] = ""; if (v) warn("faqLinks." + k + " ignored: \"" + v + "\" is not a question ID like TK-10"); }
+    });
     out.girlsInTheGame = { camps: camps(raw.girlsInTheGame) };
     out.mvpVote = mvpVote(raw.mvpVote);
     out.hawksInBusiness = biz(raw.hawksInBusiness, out.games);
@@ -425,7 +432,25 @@
      a "Buy ticket" link under that time, or null if there's no link. */
   function fnTickets(g, cls) {
     var fn = H.data.links.functionTickets;
-    return fn ? { func: '<a class="' + cls + '"' + ext(fn) + ' aria-label="Buy ticket: pre-game function, Hawks v ' + esc(g.opp) + '">Buy ticket</a>' } : null;
+    return fn ? '<a class="' + cls + '"' + ext(fn) + ' aria-label="Buy ticket: pre-game function, Hawks v ' + esc(g.opp) + '">Buy ticket</a>' : "";
+  }
+
+  /* A small link to one FAQ answer (data.js faqLinks + links.faqPage), or "" if either is missing. */
+  function faqUrl(key) {
+    var id = H.data.faqLinks && H.data.faqLinks[key], page = H.data.links.faqPage;
+    return id && page ? page + "#faq-" + id : "";
+  }
+  function faqLink(key, cls, text, label) {
+    var u = faqUrl(key);
+    return u ? '<a class="' + cls + '"' + ext(u) + (label ? ' aria-label="' + esc(label) + '"' : "") + ">" + esc(text) + "</a>" : "";
+  }
+  /* Extra links under key times: Buy ticket and "What's included?" under the pre-game function,
+     "When does it finish?" under tip-off. p is the module's class prefix. */
+  function timeExtras(g, p) {
+    return {
+      func: fnTickets(g, p + "__tbuy") + faqLink("preGame", p + "__tfaq", "What's included?", "What's included? Pre-game function FAQ"),
+      tip: faqLink("finish", p + "__tfaq", "When does it finish?", "When does it finish? Game finish time FAQ")
+    };
   }
 
   /* extra (optional): HTML to add under a time's label, keyed by time field, e.g. { func: "<a ...>" }. */
@@ -464,6 +489,11 @@
       ".hkng .hkng__tbuy,.hkng .hkng__tbuy:link,.hkng .hkng__tbuy:visited{display:inline-block;margin-top:6px;font-weight:700;font-size:13px;line-height:1.3;color:var(--w);text-decoration:underline;text-underline-offset:3px;}",
       ".hkng .hkng__tbuy:hover{color:var(--r);text-decoration:underline;}",
       ".hkng .hkng__tbuy:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
+      /* FAQ links: quieter than Buy ticket (regular weight, body colour), same tab. */
+      ".hkng .hkng__tfaq,.hkng .hkng__tfaq:link,.hkng .hkng__tfaq:visited{display:block;width:max-content;max-width:100%;margin:6px auto 0;font-weight:400;font-size:13px;line-height:1.3;color:#D8D8D8;text-decoration:underline;text-underline-offset:3px;}",
+      ".hkng .hkng__tfaq:hover{color:var(--w);text-decoration:underline;}",
+      ".hkng .hkng__tfaq:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
+      ".hkng .hkng__cwq{margin:10px 0 0;font-size:13px;line-height:1.3;}",
       ".hkng .hkng__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;padding:16px 28px;margin:0;border:2px solid var(--r);border-radius:0;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
       ".hkng .hkng__btn:link,.hkng .hkng__btn:visited{color:var(--w);text-decoration:none;}",
       ".hkng .hkng__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
@@ -519,7 +549,8 @@
         "</ul>" +
         '<p class="hkng__status" data-k="status" hidden></p>' +
         '<ul class="hkng__times" data-k="times"></ul>' +
-        '<div class="hkng__cw" data-k="cw" hidden><a class="hkng__btn hkng__btn--cw" data-k="cwa" href="#">Court Walk tickets</a></div>' +
+        '<div class="hkng__cw" data-k="cw" hidden><a class="hkng__btn hkng__btn--cw" data-k="cwa" href="#">Court Walk tickets</a>' +
+        (faqUrl("courtWalk") ? '<p class="hkng__cwq">' + faqLink("courtWalk", "hkng__tfaq", "What's a Court Walk?") + "</p>" : "") + "</div>" +
         '<div data-k="tix">' +
         '<div class="hkng__tix">' +
         '<div class="hkng__opt hkng__opt--r"><h3 class="hkng__oh">Single game ticket</h3>' +
@@ -529,7 +560,8 @@
         '<div class="hkng__opt hkng__opt--k"><h3 class="hkng__oh">Season membership</h3>' +
         '<a class="hkng__btn hkng__btn--inv" data-k="member"' + ext(L.member) + ' aria-label="Join now: season membership"' + hide(L.member) + '>Join now</a></div>' +
         "</div>" +
-        '<p class="hkng__pk"' + hide(L.picker) + '>Not sure which option suits you? <a class="hkng__pick" data-k="picker"' + ext(L.picker) + ">Try our membership picker</a></p>" +
+        '<p class="hkng__pk"' + hide(L.picker) + '>Not sure which option suits you? <a class="hkng__pick" data-k="picker"' + ext(L.picker) + ">Try our membership picker</a>" +
+        (faqUrl("memberships") ? " or " + faqLink("memberships", "hkng__pick", "compare memberships") : "") + "</p>" +
         "</div></div></section>";
 
       var root = el.firstChild, k = {};
@@ -539,7 +571,7 @@
       function fill(g) {
         k.head.textContent = "Hawks v " + g.opp;
         k.meta.textContent = U.longDate(g.date) + ", " + ctx.data.venue;
-        k.times.innerHTML = keyTimes(g, "hkng", fnTickets(g, "hkng__tbuy"));
+        k.times.innerHTML = keyTimes(g, "hkng", timeExtras(g, "hkng"));
         k.times.hidden = false;
         k.tix.hidden = false;
         var t = U.tickets(g);
@@ -625,6 +657,11 @@
       ".hksl .hksl__tbuy,.hksl .hksl__tbuy:link,.hksl .hksl__tbuy:visited{display:inline-block;margin-top:6px;font-weight:700;font-size:13px;line-height:1.3;color:var(--k);text-decoration:underline;text-underline-offset:3px;}",
       ".hksl .hksl__tbuy:hover{color:var(--dr);text-decoration:underline;}",
       ".hksl .hksl__tbuy:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      /* FAQ links: quieter than Buy ticket (regular weight, body colour), same tab. */
+      ".hksl .hksl__tfaq,.hksl .hksl__tfaq:link,.hksl .hksl__tfaq:visited{display:block;width:max-content;max-width:100%;margin:6px 0 0;font-weight:400;font-size:13px;line-height:1.3;color:#373737;text-decoration:underline;text-underline-offset:3px;}",
+      ".hksl .hksl__tfaq:hover{color:var(--k);text-decoration:underline;}",
+      ".hksl .hksl__tfaq:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hksl .hksl__pfaq{margin:12px 0 0;font-size:13px;line-height:1.3;}",
       ".hksl .hksl__panel .hksl__btn{margin-top:16px;}",
       /* Rows with a Court Walk have three buttons: below 860px they move under the game,
          Tickets and Key times side by side, Court Walk full width underneath. */
@@ -673,7 +710,8 @@
           (cw ? '<a class="hksl__btn hksl__btn--cw" data-off="' + g._cwOff + '"' + ext(cw) + ' aria-label="' + esc(courtWalkLabel(g)) + '">Court Walk tickets</a>' : "") +
           '<button class="hksl__btn hksl__btn--sec" type="button" aria-expanded="false" aria-controls="' + pid + '" aria-label="Key times for Hawks v ' + esc(g.opp) + '">Key times</button>' +
           "</div></div>" +
-          '<div class="hksl__panel" id="' + pid + '" hidden><ul class="hksl__times">' + keyTimes(g, "hksl", fnTickets(g, "hksl__tbuy")) + "</ul>" +
+          '<div class="hksl__panel" id="' + pid + '" hidden><ul class="hksl__times">' + keyTimes(g, "hksl", timeExtras(g, "hksl")) + "</ul>" +
+          (cw ? '<p class="hksl__pfaq">' + faqLink("courtWalk", "hksl__tfaq", "What's a Court Walk?") + "</p>" : "") +
           (previewFor(g) ? '<a class="hksl__btn hksl__btn--sec"' + ext(previewFor(g)) + ' aria-label="Read the game preview: Hawks v ' + esc(g.opp) + '">Read the game preview</a>' : "") +
           "</div>";
         var tog = li.querySelector("button"), panel = li.querySelector(".hksl__panel");
@@ -761,6 +799,10 @@
       ".hkpn .hkpn__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hkpn .hkpn__btn--sec,.hkpn .hkpn__btn--sec:link,.hkpn .hkpn__btn--sec:visited{background:transparent;border-color:var(--k);color:var(--k);}",
       ".hkpn .hkpn__btn--sec:hover{background:var(--k);border-color:var(--k);color:var(--w);}",
+      ".hkpn .hkpn__faq{margin:16px 0 0;font-size:15px;line-height:1.5;}",
+      ".hkpn .hkpn__faql,.hkpn .hkpn__faql:link,.hkpn .hkpn__faql:visited{font-weight:700;color:var(--k);text-decoration:underline;text-underline-offset:3px;}",
+      ".hkpn .hkpn__faql:hover{color:var(--dr);text-decoration:underline;}",
+      ".hkpn .hkpn__faql:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       "@container (max-width:700px){",
       ".hkpn{padding:36px 16px;}",
       ".hkpn .hkpn__tab{padding:14px 6px;font-size:12px;letter-spacing:0.02em;}",
@@ -807,7 +849,8 @@
           '<h3 class="hkpn__h3 hkpn__h3--gap">Taxis and drop-off</h3>' +
           '<p class="hkpn__p">The venue has taxi ranks and a drop-off zone. Find the details on the venue\'s transport page.</p>' +
           "</div></div>" +
-          '<div class="hkpn__btns">' + btn(L.map, "", "Open in Google Maps") + btn(L.transport, "hkpn__btn--sec", "Full venue transport info") + "</div>") +
+          '<div class="hkpn__btns">' + btn(L.map, "", "Open in Google Maps") + btn(L.transport, "hkpn__btn--sec", "Full venue transport info") + "</div>" +
+          (faqUrl("accessible") ? '<p class="hkpn__faq">' + faqLink("accessible", "hkpn__faql", "Accessible parking and drop-off") + "</p>" : "")) +
 
         panel(1,
           '<p class="hkpn__lead">Game night starts long before tip-off. Everything sits inside the Lower Crown Quarter, with the ocean at the end of the street and food and drinks a few minutes from your seat.</p>' +

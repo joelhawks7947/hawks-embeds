@@ -38,8 +38,8 @@ test("bar opens and closes; key times toggle reveals that game's times", async (
   await expect(r3.locator(".hksl__panel")).toBeHidden();
   await kt.click();
   await expect(kt).toHaveAttribute("aria-expanded", "true");
-  await expect(r3.locator(".hksl__times li")).toHaveText(["3:30pmPre-game functionBuy ticket", "4:00pmMain doors open", "4:30pmShow starts", "5:00pmTip-off"]);
-  const buy = r3.locator(".hksl__times a");
+  await expect(r3.locator(".hksl__times li")).toHaveText(["3:30pmPre-game functionBuy ticketWhat's included?", "4:00pmMain doors open", "4:30pmShow starts", "5:00pmTip-offWhen does it finish?"]);
+  const buy = r3.locator(".hksl__tbuy");
   await expect(buy).toHaveCount(1);
   await expect(buy).toHaveText("Buy ticket");
   await expect(buy).toHaveAttribute("href", "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353");

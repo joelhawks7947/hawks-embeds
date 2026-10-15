@@ -82,6 +82,8 @@ test("every link: exact URL, target and rel; phone link has no target", async ({
   expect(links).toEqual([
     ["Open in Google Maps", "https://maps.app.goo.gl/s4uVZdA6nZJxCpTA8", ...ext()],
     ["Full venue transport info", "https://www.wsec.com.au/transport", ...ext()],
+    // FAQ answer on hawks.com.au: same tab.
+    ["Accessible parking and drop-off", "https://www.hawks.com.au/pages/faqs#faq-ac-03", null, null],
     ["Explore Lower Crown Quarter", "https://www.instagram.com/lowercrownquarter/", ...ext()],
     ["Explore hospitality", "https://hawks-corporate-hospitality.lovable.app/", ...ext()],
     ["Call 1300 1HAWKS", "tel:1300142957", null, null]

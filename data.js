@@ -74,6 +74,17 @@ window.HAWKS_DATA = {
     newsletter: "https://mailchi.mp/hawks/illawarra-hawks-newsletter"
   },
 
+  /* Small links in the game day embeds that open one answer on the FAQ page.
+     Use the question ID from the FAQ spreadsheet, for example "TK-10".
+     Leave "" to hide that link. */
+  faqLinks: {
+    courtWalk:   "TK-10",   /* "What's a Court Walk?" with the Court Walk tickets button */
+    preGame:     "TK-11",   /* "What's included?" under Buy ticket for the pre-game function */
+    finish:      "GD-11",   /* "When does it finish?" under Tip-off in the key times */
+    memberships: "MB-01",   /* "or compare memberships" after the membership picker link */
+    accessible:  "AC-03"    /* "Accessible parking and drop-off" in Plan your night, Getting here */
+  },
+
   /* GIRLS IN THE GAME
      One line per camp. The embed shows the next camp until 6 hours after it
      starts, then the next one. With no camp to show, it says to check back
