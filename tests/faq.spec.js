@@ -328,3 +328,53 @@ test("?q= with a #faq link: the link wins and opens that question", async ({ pag
   await open(page, "/test/faq.html?q=prams#faq-gd-01");
   await expect(item(page, "GD-01").locator(".hkfaq__btn")).toHaveAttribute("aria-expanded", "true");
 });
+
+/* ---------------- Search button ---------------- */
+
+test("a clear Search button sits in a search form beside the box", async ({ page }) => {
+  await open(page);
+  await expect(page.locator('form.hkfaq__form[role="search"]')).toHaveCount(1);
+  const btn = page.locator(".hkfaq__go");
+  await expect(btn).toHaveText("Search");
+  await expect(btn).toHaveAttribute("type", "submit");
+  const [b, i] = await Promise.all([btn.boundingBox(), page.locator(".hkfaq__input").boundingBox()]);
+  expect(Math.abs(b.y - i.y)).toBeLessThan(2);         // same row, same height
+  expect(b.height).toBe(i.height);
+  expect(b.x).toBeGreaterThan(i.x + i.width - 1);       // to the right of the box
+  await expect(page.locator(".hkfaq__label")).toHaveText("Search our FAQs");
+  // Still searches as you type.
+  await page.fill(".hkfaq__input", "park");
+  expect(await visibleIds(page)).toContain("faq-gd-02");
+});
+
+test("pressing Search (or Enter) searches at once, announces and reports it", async ({ page }) => {
+  await withGtag(page);
+  await page.fill(".hkfaq__input", "parkng");
+  await page.click(".hkfaq__go");
+  await expect(page.locator(".hkfaq__status")).toHaveText("2 questions match “parkng”", { timeout: 300 }); // no 500ms wait
+  expect((await events(page)).map((e) => e[0])).toEqual(["search"]);                                              // no 1.5s wait
+  expect(await page.evaluate(() => location.hash)).toBe("");                                                      // no navigation
+  await page.fill(".hkfaq__input", "pram");
+  await page.press(".hkfaq__input", "Enter");
+  await expect(page.locator(".hkfaq__status")).toHaveText("1 question matches “pram”");
+  expect(await visibleIds(page)).toEqual(["faq-kf-01"]);
+});
+
+test("pressing Search with an empty box asks for a word and keeps focus there", async ({ page }) => {
+  await open(page);
+  await page.click(".hkfaq__go");
+  await expect(page.locator(".hkfaq__status")).toHaveText("Type a word or two, then search.");
+  await expect(page.locator(".hkfaq__input")).toBeFocused();
+  expect((await visibleIds(page)).length).toBe(FAQ.questions.length);
+});
+
+test("Search button: full width under the box on a phone, visible focus", async ({ page }) => {
+  await open(page);
+  await page.setViewportSize({ width: 360, height: 800 });
+  const [b, i] = await Promise.all([page.locator(".hkfaq__go").boundingBox(), page.locator(".hkfaq__input").boundingBox()]);
+  expect(b.y).toBeGreaterThan(i.y + i.height - 1);
+  expect(Math.abs(b.width - i.width)).toBeLessThan(2);
+  await page.locator(".hkfaq__go").focus();
+  expect(await page.locator(".hkfaq__go").evaluate((el) => getComputedStyle(el).outlineStyle)).toBe("solid");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

@@ -1554,9 +1554,13 @@
       ".hkfaq[hidden],.hkfaq [hidden]:not([hidden=\"until-found\"]){display:none !important;}",
       ".hkfaq .hkfaq__sr,.hkfaq .hkfaq__nt{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}",
       ".hkfaq .hkfaq__label{display:block;font-weight:700;font-size:13px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--k);margin:0 0 8px;padding:0;}",
-      ".hkfaq .hkfaq__field{position:relative;margin:0;padding:0;}",
-      ".hkfaq .hkfaq__field svg{position:absolute;left:16px;top:50%;width:20px;height:20px;margin:-10px 0 0;fill:none;stroke:var(--k);stroke-width:2.5;pointer-events:none;}",
-      ".hkfaq .hkfaq__input{display:block;width:100%;height:56px;margin:0;padding:0 16px 0 48px;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:17px;line-height:1.3;color:var(--k);background:var(--w);border:2px solid var(--k);border-radius:0;box-shadow:none;-webkit-appearance:none;appearance:none;}",
+      ".hkfaq .hkfaq__form{display:flex;gap:12px;margin:0;padding:0;}",
+      ".hkfaq .hkfaq__field{position:relative;flex:1 1 auto;min-width:0;margin:0;padding:0;}",
+      ".hkfaq .hkfaq__go{flex:0 0 auto;height:56px;margin:0;padding:0 28px;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;border:2px solid var(--r);border-radius:0;cursor:pointer;transition:background-color 120ms var(--e),border-color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkfaq .hkfaq__go:hover{background:var(--dr);border-color:var(--dr);color:var(--w);}",
+      ".hkfaq .hkfaq__go:active{transform:scale(0.98);}",
+      ".hkfaq .hkfaq__go:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkfaq .hkfaq__input{display:block;width:100%;height:56px;margin:0;padding:0 16px;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:17px;line-height:1.3;color:var(--k);background:var(--w);border:2px solid var(--k);border-radius:0;box-shadow:none;-webkit-appearance:none;appearance:none;}",
       ".hkfaq .hkfaq__input::placeholder{color:var(--muted);opacity:1;}",
       ".hkfaq .hkfaq__input:focus{outline:none;}",
       ".hkfaq .hkfaq__input:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
@@ -1596,8 +1600,9 @@
       ".hkfaq .hkfaq__a a[target=\"_blank\"]::after{content:\"\";display:inline-block;width:0.75em;height:0.75em;margin:0 0 0 0.3em;vertical-align:0;background:currentColor;-webkit-mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4 1h7v7M11 1 1 11' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E\") center/contain no-repeat;mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4 1h7v7M11 1 1 11' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E\") center/contain no-repeat;}",
       ".hkfaq .hkfaq__a .hkfaq__more{font-weight:400;color:var(--k);}",
       ".hkfaq mark.hkfaq__mk{background:var(--line);color:inherit;font-weight:700;padding:0;}",
-      "@container (max-width:480px){.hkfaq .hkfaq__a:not([hidden]){padding-right:0;}.hkfaq .hkfaq__q{font-size:16px;}}",
-      "@media (prefers-reduced-motion:reduce){.hkfaq .hkfaq__cat,.hkfaq .hkfaq__clear,.hkfaq .hkfaq__btn,.hkfaq .hkfaq__ic::before,.hkfaq .hkfaq__ic::after{transition:none;}.hkfaq .hkfaq__cat:active,.hkfaq .hkfaq__clear:active{transform:none;}}"
+      ".hkfaq .hkfaq__status{scroll-margin-top:120px;}",
+      "@container (max-width:480px){.hkfaq .hkfaq__a:not([hidden]){padding-right:0;}.hkfaq .hkfaq__q{font-size:16px;}.hkfaq .hkfaq__form{flex-direction:column;}.hkfaq .hkfaq__go{width:100%;}}",
+      "@media (prefers-reduced-motion:reduce){.hkfaq .hkfaq__cat,.hkfaq .hkfaq__clear,.hkfaq .hkfaq__go,.hkfaq .hkfaq__btn,.hkfaq .hkfaq__ic::before,.hkfaq .hkfaq__ic::after{transition:none;}.hkfaq .hkfaq__cat:active,.hkfaq .hkfaq__clear:active,.hkfaq .hkfaq__go:active{transform:none;}}"
     ].join("\n"),
 
     render: function (el, ctx) {
@@ -1644,8 +1649,10 @@
       root.className = "hkfaq";
       root.innerHTML =
         '<label class="hkfaq__label" for="' + inputId + '">Search our FAQs</label>' +
-        '<div class="hkfaq__field"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="7"/><path d="M15.5 15.5 21 21"/></svg>' +
+        '<form class="hkfaq__form" role="search">' +
+        '<div class="hkfaq__field">' +
         '<input class="hkfaq__input" id="' + inputId + '" type="search" autocomplete="off" spellcheck="false" placeholder="Try parking, tickets or prams" aria-describedby="' + statusId + '"></div>' +
+        '<button class="hkfaq__go" type="submit">Search</button></form>' +
         '<div class="hkfaq__cats" role="group" aria-label="Filter by topic">' +
         '<button class="hkfaq__cat" type="button" aria-pressed="true" data-i="-1">All</button>' +
         secs.map(function (s, i) { return '<button class="hkfaq__cat" type="button" aria-pressed="false" data-i="' + i + '">' + esc(s.name) + "</button>"; }).join("") +
@@ -1658,7 +1665,7 @@
 
       var input = root.querySelector(".hkfaq__input"), status = root.querySelector(".hkfaq__status");
       var none = root.querySelector(".hkfaq__none"), cats = [].slice.call(root.querySelectorAll(".hkfaq__cat"));
-      var cat = -1, said = null;
+      var cat = -1, said = null, lastMsg = "";
 
       function set(x, open) {
         x.btn.setAttribute("aria-expanded", String(open));
@@ -1716,6 +1723,7 @@
           n ? plural(n) + where + (q ? (n === 1 ? " matches" : " match") + " “" + q + "”" : "") : "No questions" + where + " match “" + q + "”";
         /* Wait for a pause in typing so screen readers don't hear every keystroke. */
         clearTimeout(said);
+        lastMsg = msg;
         said = setTimeout(function () { status.textContent = msg; }, q ? 500 : 0);
         result = { q: q, n: close ? 0 : n, match: !q ? "" : close ? "closest" : n ? "exact" : "none" };
         clearTimeout(pend);
@@ -1753,6 +1761,19 @@
 
       input.addEventListener("input", apply);
       input.addEventListener("blur", report);
+      /* The Search button (and Enter): the search already runs as the fan types, so this makes it
+         explicit. It runs at once, reports the search, announces the result straight away, puts the
+         results in view and, on phones, puts the keyboard away. An empty box asks for a word. */
+      root.querySelector(".hkfaq__form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        apply(); report();
+        clearTimeout(said);
+        if (!input.value.trim()) { status.textContent = "Type a word or two, then search."; input.focus(); return; }
+        status.textContent = lastMsg;
+        if (W.matchMedia && W.matchMedia("(pointer:coarse)").matches) input.blur();
+        var top = status.getBoundingClientRect().top;
+        if (top < 0 || top > W.innerHeight * 0.6) status.scrollIntoView({ block: "start" });
+      });
       input.addEventListener("keydown", function (e) { if (e.key === "Escape" && input.value) { e.preventDefault(); report(); input.value = ""; apply(); } });
       cats.forEach(function (b) { b.addEventListener("click", function () { cat = +b.getAttribute("data-i"); apply(); }); });
       root.querySelector(".hkfaq__clear").addEventListener("click", function () { report(); clear(); input.focus(); });
