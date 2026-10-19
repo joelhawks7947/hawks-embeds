@@ -182,14 +182,14 @@ If `next-game` is on the same page, you only need the script line once. A second
 
 ### Game countdown (for the premium seating page)
 
-The next game with a live countdown, then the next few home games, and **no ticket links at all**, so a page that sells one thing isn't diluted. Light and transparent, to sit under an offer page.
+The next game with a live countdown, then the next few home games, and **no ticket links at all** (the only control is the Show all button), so a page that sells one thing isn't diluted. Light and transparent, to sit under an offer page.
 
 ```html
 <div data-hawks="game-countdown"><a href="https://hawks-corporate-hospitality.lovable.app/#contact">Enquire about premium courtside seats</a></div>
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
-At a game's cutoff the **whole block disappears** until the game has finished (2 hours after tip-off), then it comes back showing the next game. The cutoff is **6 hours before tip-off** for a Monday to Friday game, and **12pm on the Friday before** for a Saturday or Sunday game. After the last game's cutoff the block stays hidden. The cutoffs and the number of games listed are in `data.js` under `gameCountdown`. To list more games on one page, add `data-count="8"` to the `<div>`.
+At a game's cutoff the **whole block disappears** until the game has finished (2 hours after tip-off), then it comes back showing the next game. The cutoff is **6 hours before tip-off** for a Monday to Friday game, and **12pm on the Friday before** for a Saturday or Sunday game. After the last game's cutoff the block stays hidden. The first 5 games after the next one are listed, and a **Show all remaining games** button reveals the rest (and folds them away again). The cutoffs and that number are in `data.js` under `gameCountdown`. To start with more showing on one page, add `data-count="8"` to the `<div>`.
 
 ### FAQ (one page only)
 

@@ -2016,7 +2016,8 @@
      (data.js gameCountdown: weekdayHours before tip-off on a weekday, weekendTime on the Friday
      before a Saturday or Sunday game) the whole block is hidden until the game ends (2 hours after
      tip-off), then it shows the next game.
-     Optional data-count="N" on the placeholder sets how many games follow (default from data.js).
+     The first few games after it show (data.js count, or data-count="N" on the placeholder); the rest
+     wait behind a "Show all remaining games" button.
      Light and transparent. Hidden for good after the last game's cutoff. */
   M["game-countdown"] = {
     css: [
@@ -2039,7 +2040,12 @@
       ".hkgc .hkgc__dm{display:block;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:20px;line-height:1;text-transform:uppercase;color:var(--k);margin-top:2px;white-space:nowrap;}",
       ".hkgc .hkgc__opp{font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(18px,3cqw,22px);line-height:1;text-transform:uppercase;color:var(--k);margin:0;padding:0;}",
       ".hkgc .hkgc__sub{font-size:14px;line-height:1.4;color:var(--g);margin:4px 0 0;padding:0;}",
-      "@container (max-width:480px){.hkgc{padding:32px 0 40px;}.hkgc .hkgc__timer{gap:8px;}.hkgc .hkgc__unit{padding:12px 2px 10px;}.hkgc .hkgc__lbl{font-size:11px;}.hkgc .hkgc__row{grid-template-columns:68px minmax(0,1fr);gap:12px;}}"
+      ".hkgc .hkgc__btn{display:inline-block;margin:16px 0 0;padding:14px 22px;background:transparent;color:var(--k);border:2px solid var(--k);border-radius:0;cursor:pointer;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:15px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-align:center;transition:background-color 120ms cubic-bezier(0.22,1,0.36,1),color 120ms cubic-bezier(0.22,1,0.36,1),transform 100ms cubic-bezier(0.22,1,0.36,1);}",
+      ".hkgc .hkgc__btn:hover{background:var(--k);color:var(--w);}",
+      ".hkgc .hkgc__btn:active{transform:scale(0.98);}",
+      ".hkgc .hkgc__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      "@media (prefers-reduced-motion:reduce){.hkgc .hkgc__btn{transition:none;}.hkgc .hkgc__btn:active{transform:none;}}",
+      "@container (max-width:480px){.hkgc .hkgc__btn{display:block;width:100%;}.hkgc{padding:32px 0 40px;}.hkgc .hkgc__timer{gap:8px;}.hkgc .hkgc__unit{padding:12px 2px 10px;}.hkgc .hkgc__lbl{font-size:11px;}.hkgc .hkgc__row{grid-template-columns:68px minmax(0,1fr);gap:12px;}}"
     ].join("\n"),
     render: function (el, ctx) {
       var cfg = ctx.data.gameCountdown, n = parseInt(el.getAttribute("data-count"), 10);
@@ -2057,8 +2063,8 @@
       [].forEach.call(root.querySelectorAll("[data-k]"), function (x) { k[x.getAttribute("data-k")] = x; });
       var head = root.querySelector(".hkgc__head"), meta = root.querySelector(".hkgc__meta"), more = root.querySelector(".hkgc__more");
       function pad(v) { return (v < 10 ? "0" : "") + v; }
-      function row(g) {
-        return '<li class="hkgc__row"><p class="hkgc__date"><span class="hkgc__dow">' + esc(U.dow(g.date)) + '</span><span class="hkgc__dm">' + esc(U.dm(g.date)) + "</span></p>" +
+      function row(g, extra) {
+        return '<li class="hkgc__row"' + (extra ? " data-more hidden" : "") + '><p class="hkgc__date"><span class="hkgc__dow">' + esc(U.dow(g.date)) + '</span><span class="hkgc__dm">' + esc(U.dm(g.date)) + "</span></p>" +
           '<div><p class="hkgc__opp">v ' + esc(g.opp) + '</p><p class="hkgc__sub">Game ' + g.n + ", " + esc(U.time(g.tip)) + " tip-off</p></div></li>";
       }
       return {
@@ -2073,8 +2079,18 @@
             shown = g.n;
             head.textContent = "Hawks v " + g.opp;
             meta.textContent = U.longDate(g.date) + ", " + U.time(g.tip) + " tip-off, " + ctx.data.venue;
-            var next = G.slice(i + 1, i + 1 + count);
-            more.innerHTML = next.length ? '<h3 class="hkgc__lh">More home games</h3><ul class="hkgc__rows">' + next.map(row).join("") + "</ul>" : "";
+            /* The first `count` games show; any others wait behind a "Show all" button. */
+            var next = count > 0 ? G.slice(i + 1) : [], extra = next.length - count, listId = lid + "-list";
+            more.innerHTML = next.length ? '<h3 class="hkgc__lh">More home games</h3><ul class="hkgc__rows" id="' + listId + '">' +
+              next.map(function (x, n) { return row(x, n >= count); }).join("") + "</ul>" +
+              (extra > 0 ? '<button type="button" class="hkgc__btn" aria-expanded="false" aria-controls="' + listId + '">Show all remaining games (' + extra + " more)</button>" : "") : "";
+            var btn = more.querySelector(".hkgc__btn");
+            if (btn) btn.addEventListener("click", function () {
+              var open = btn.getAttribute("aria-expanded") !== "true";
+              btn.setAttribute("aria-expanded", String(open));
+              btn.textContent = open ? "Show fewer games" : "Show all remaining games (" + extra + " more)";
+              [].forEach.call(more.querySelectorAll(".hkgc__row[data-more]"), function (r) { r.hidden = !open; });
+            });
           }
           var t = Math.floor((g._tip - s.now) / 1000);
           k.d.textContent = pad(Math.floor(t / 86400)); k.h.textContent = pad(Math.floor(t % 86400 / 3600));

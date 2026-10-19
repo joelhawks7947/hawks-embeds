@@ -108,7 +108,8 @@ window.HAWKS_DATA = {
      ends (2 hours after tip-off), then it shows the next game.
      weekdayHours: for a Monday to Friday game, hours before tip-off
      weekendTime:  for a Saturday or Sunday game, this time (24-hour, Sydney) on the Friday before
-     count:        how many games to list after the next game (a page can override it with
+     count:        how many games to list after the next game; the rest sit behind a
+                   "Show all remaining games" button (a page can override it with
                    data-count="8" on its placeholder) */
   gameCountdown: {weekdayHours: 6, weekendTime: "12:00", count: 5},
 
