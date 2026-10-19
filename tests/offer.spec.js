@@ -19,7 +19,7 @@ test("every offer page renders its copy, picture and button, with the right link
   for (const [k, p] of Object.entries(PAGES)) {
     const root = page.locator(sel(k));
     await expect(root.locator("h2")).toHaveText(p.heading);
-    const b = root.locator(".hkoff__btn");
+    const b = root.locator(".hkoff__text .hkoff__btn");
     await expect(b).toHaveText(p.button);
     await expect(b).toHaveAttribute("href", p.href);
     await expect(b).toHaveAttribute("target", "_blank");
@@ -70,15 +70,46 @@ test("court walk: lists every Court Walk on sale, with its own link, and drops e
   await expect(page.locator(sel("court-walk") + " .hkoff__none")).toContainText("no Court Walks on sale");
 });
 
-test("vip function: lists each remaining game's function time and rolls on after each game", async ({ page }) => {
-  await open(page);
+test("vip function: future functions only, each with its own Buy ticket link, dropping off when the function starts", async ({ page }) => {
+  await open(page, "/test/?hk_now=2026-10-19T12:00");
   const rows = page.locator(sel("vip-function") + " .hkoff__row");
-  expect(await rows.count()).toBe(loadData().games.length);
-  await expect(rows.first().locator(".hkoff__rt")).toHaveText("Friday 2nd October, Hawks v Adelaide 36ers");
+  const games = loadData().games.filter((g) => g.n >= 4);
+  expect(games.length).toBe(13);
+  await expect(rows).toHaveCount(13);
+  await expect(rows.first().locator(".hkoff__rt")).toHaveText("Thursday 22nd October, Hawks v Sydney Kings");
   await expect(rows.first().locator(".hkoff__rs")).toHaveText("Pre-game function 6:00pm");
-  await page.goto("/test/?hk_now=2027-02-05T12:00"); await ready(page);
+  const hrefs = await rows.locator("a.hkoff__btn").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+  expect(hrefs).toEqual(games.map((g) => g.functionTickets));
+  hrefs.forEach((h) => expect(h).toMatch(/^https:\/\/www\.eventbrite\.com\.au\/e\/illawarra-hawks-v-.*pre-game-function-tickets-\d+$/));
+  const b = rows.first().locator("a.hkoff__btn");
+  await expect(b).toHaveText("Buy ticket");
+  await expect(b).toHaveAttribute("target", "_blank");
+  await expect(b).toHaveAttribute("aria-label", "Buy ticket: pre-game function, Hawks v Sydney Kings, Thursday 22nd October");
+  // Nothing from the past: played games are not listed, and a game goes when its function starts.
+  expect(await page.locator(sel("vip-function")).innerText()).not.toContain("Adelaide 36ers, Pre");
+  await page.goto("/test/?hk_now=2026-10-22T17:59"); await ready(page);
+  await expect(page.locator(sel("vip-function") + " .hkoff__row")).toHaveCount(13);
+  await page.goto("/test/?hk_now=2026-10-22T18:00"); await ready(page);
+  await expect(page.locator(sel("vip-function") + " .hkoff__row")).toHaveCount(12);
+  await page.goto("/test/?hk_now=2027-02-04T18:00"); await ready(page);
   await expect(page.locator(sel("vip-function") + " .hkoff__row")).toHaveCount(0);
-  await expect(page.locator(sel("vip-function") + " .hkoff__none")).toBeVisible();
+  await expect(page.locator(sel("vip-function") + " .hkoff__none")).toContainText("no more pre-game functions");
+});
+
+test("vip function: a game without its own link uses the organiser page", async ({ page }) => {
+  await useData(page, (d) => { d.games.find((g) => g.n === 4).functionTickets = ""; });
+  await open(page, "/test/?hk_now=2026-10-19T12:00");
+  await expect(page.locator(sel("vip-function") + " .hkoff__row").first().locator("a.hkoff__btn")).toHaveAttribute("href", "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353");
+});
+
+test("court walk: future only, nothing played or already off sale", async ({ page }) => {
+  await open(page, "/test/?hk_now=2026-10-19T12:00");
+  const rows = page.locator(sel("court-walk") + " .hkoff__row");
+  await expect(rows).toHaveCount(8);
+  await open(page, "/test/?hk_now=2026-12-11T12:00");
+  expect(await page.locator(sel("court-walk") + " .hkoff__rt").allInnerTexts()).toEqual([
+    "Sunday 20th December, Hawks v Melbourne United", "Saturday 2nd January, Hawks v Cairns Taipans", "Wednesday 6th January, Hawks v Perth Wildcats",
+    "Wednesday 20th January, Hawks v New Zealand Breakers", "Saturday 30th January, Hawks v Perth Wildcats"]);
 });
 
 test("a video ID adds a play button; clicking it loads the YouTube player, nothing loads before", async ({ page }) => {

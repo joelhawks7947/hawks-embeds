@@ -155,7 +155,7 @@
       if (why.length) { warn(who + " skipped: " + why.join("; ")); return; }
       var c = {};
       Object.keys(g).forEach(function (k) { c[k] = g[k]; });
-      ["tickets", "preview", "courtWalk"].forEach(function (k) {
+      ["tickets", "preview", "courtWalk", "functionTickets"].forEach(function (k) {
         if (c[k] && !okUrl(c[k])) { warn("game " + g.n + " " + k + " ignored: not an https:// link"); c[k] = ""; }
         c[k] = c[k] || "";
       });
@@ -166,6 +166,7 @@
       /* Court Walk tickets come off sale 4 hours before the Court Walk, which starts at the
          pre-game function time (or tip-off if a game has no function time). */
       c._cwOff = toUtc(c.date, c.func || c.tip) - CW_HOURS_BEFORE * 3600000;
+      c._fnStart = toUtc(c.date, c.func || c.tip);
       seen[g.n] = true;
       out.games.push(c);
     });
@@ -1905,6 +1906,7 @@
       ".hkoff .hkoff__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
       ".hkoff .hkoff__btn:active{transform:scale(0.98);}",
       ".hkoff .hkoff__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkoff .hkoff__btn.hkoff__btn--row{font-size:15px;padding:14px 22px;margin:0;}",
       ".hkoff .hkoff__faq{display:block;font-size:14px;line-height:1.4;font-weight:400;margin:14px 0 0;}",
       ".hkoff .hkoff__faq:link,.hkoff .hkoff__faq:visited{color:var(--k);text-decoration:underline;}",
       ".hkoff .hkoff__faq:hover{color:var(--dr);}",
@@ -1922,7 +1924,7 @@
       ".hkoff .hkoff__cw:active{transform:scale(0.98);}",
       ".hkoff .hkoff__cw:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hkoff .hkoff__none{font-size:16px;line-height:1.5;color:var(--g);margin:0;padding:0;}",
-      "@container (max-width:600px){.hkoff{padding:32px 0 40px;}.hkoff .hkoff__btn,.hkoff .hkoff__cw{display:block;width:100%;}.hkoff .hkoff__row{display:block;}.hkoff .hkoff__cw{margin:12px 0 0;}}",
+      "@container (max-width:600px){.hkoff{padding:32px 0 40px;}.hkoff .hkoff__btn,.hkoff .hkoff__cw{display:block;width:100%;}.hkoff .hkoff__btn.hkoff__btn--row{margin:12px 0 0;}.hkoff .hkoff__row{display:block;}.hkoff .hkoff__cw{margin:12px 0 0;}}",
       "@media (prefers-reduced-motion:reduce){.hkoff .hkoff__btn,.hkoff .hkoff__play,.hkoff .hkoff__cw{transition:none;}.hkoff .hkoff__btn:active,.hkoff .hkoff__cw:active{transform:none;}.hkoff .hkoff__play:active{transform:translate(-50%,-50%);}}"
     ].join("\n"),
     render: function (el, ctx) {
@@ -1960,22 +1962,24 @@
         var sub = key === "vip-function"
           ? (g.func ? "Pre-game function " + U.time(g.func) : "")
           : "Game " + g.n;
+        var fn = g.functionTickets || H.data.links.functionTickets;
         var btn = key === "court-walk"
-          ? '<a class="hkoff__cw"' + ext(g.courtWalk) + ' aria-label="' + esc(courtWalkLabel(g)) + '">Court Walk tickets</a>' : "";
+          ? '<a class="hkoff__cw"' + ext(g.courtWalk) + ' aria-label="' + esc(courtWalkLabel(g)) + '">Court Walk tickets</a>'
+          : fn ? '<a class="hkoff__btn hkoff__btn--row"' + ext(fn) + ' aria-label="Buy ticket: pre-game function, Hawks v ' + esc(g.opp) + ", " + esc(U.longDate(g.date)) + '">Buy ticket</a>' : "";
         return '<li class="hkoff__row"><p class="hkoff__rd"><span class="hkoff__rt">' + esc(U.longDate(g.date)) + ", Hawks v " + esc(g.opp) + "</span>" +
           (sub ? '<span class="hkoff__rs">' + esc(sub) + "</span>" : "") + "</p>" + btn + "</li>";
       }
       return {
         update: function (s) {
           var games = ctx.data.games.filter(function (g) {
-            return key === "court-walk" ? !!courtWalkFor(g, s.now) : g._end > s.now && !!g.func;
+            return key === "court-walk" ? !!courtWalkFor(g, s.now) : !!g.func && g._fnStart > s.now;
           });
           var sig = games.map(function (g) { return g.n; }).join(",");
           if (sig === shown) return;
           shown = sig;
           live.innerHTML = games.length
             ? '<ul class="hkoff__rows">' + games.map(rowHtml).join("") + "</ul>"
-            : '<p class="hkoff__none">' + (key === "court-walk" ? "There are no Court Walks on sale right now. Check back soon." : "The season has finished. Thanks for backing the Hawks.") + "</p>";
+            : '<p class="hkoff__none">' + (key === "court-walk" ? "There are no Court Walks on sale right now. Check back soon." : "There are no more pre-game functions to book this season. Thanks for backing the Hawks.") + "</p>";
         }
       };
     }
