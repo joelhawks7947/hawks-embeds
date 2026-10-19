@@ -111,23 +111,74 @@ The NBL27 events, grouped by month. Finished events move to a collapsed **Past e
 
 ### Offer landing pages
 
-One snippet for every offer page. Only `data-offer` changes. Each page is a light, transparent block with the picture, headline, copy and button. Put a `next-game` embed under it if you want the countdown and tickets on the same page.
+One embed for each offer page. Paste it into a Webflow Code Embed on that page. Only `data-offer` and the fallback link change; the script line is the same every time. Each page is a light, transparent block with the picture, headline, copy and button. The copy, pictures and links are in `data.js` under `offers`.
 
-| `data-offer` | Page | Button goes to |
-|---|---|---|
-| `flexi` | Flexi Memberships | Flexi link |
-| `family` | Family of 4 for $99 | Single game tickets |
-| `tickets-from-30` | Tickets from $30 | Single game tickets |
-| `courtside` | Premium courtside seats (mentions Hollywood seats) | Hospitality enquiry form |
-| `vip-function` | VIP pre-game function (lists each game's function time) | Eventbrite page |
-| `court-walk` | Hawks Court Walk (lists every Court Walk on sale, each with its own link) | Each game's Court Walk link |
+The fallback link is what readers see if the script is blocked, so always keep it.
+
+**Flexi Memberships**
+
+Button goes to the Flexi link.
 
 ```html
 <div data-hawks="offer" data-offer="flexi"><a href="https://am.ticketmaster.com/thehawks/FLeximemberships">Explore Flexi Memberships</a></div>
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
-Use the same fallback link as the button. Copy, picture, alt text and links are in `data.js` under `offers`. To add a video, upload a YouTube Short and paste its 11 character ID into that offer's `video` (the part after `youtube.com/shorts/`). It only loads when someone clicks the play button.
+**Family of 4 for $99**
+
+Button goes to single game tickets (Ticketmaster).
+
+```html
+<div data-hawks="offer" data-offer="family"><a href="https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493">Get your family tickets</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+**Tickets from $30**
+
+Button goes to single game tickets (Ticketmaster).
+
+```html
+<div data-hawks="offer" data-offer="tickets-from-30"><a href="https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493">Get tickets to a Hawks game</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+**Premium courtside seats**
+
+Button goes to the hospitality enquiry form. The page mentions Hollywood seats.
+
+```html
+<div data-hawks="offer" data-offer="courtside"><a href="https://hawks-corporate-hospitality.lovable.app/#contact">Enquire about courtside seats</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+**VIP pre-game function**
+
+Lists the pre-game functions still to come (nothing past), each with its own Buy ticket button. The main button goes to the next function's tickets and moves on by itself.
+
+```html
+<div data-hawks="offer" data-offer="vip-function"><a href="https://www.eventbrite.com.au/o/illawarra-hawks-56775142353">Book the VIP pre-game function</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+**Hawks Court Walk**
+
+Lists every Court Walk still on sale, each with its own ticket button. A Court Walk drops off 4 hours before it starts.
+
+```html
+<div data-hawks="offer" data-offer="court-walk"><a href="https://www.hawks.com.au/pages/gameday">Hawks Court Walk tickets</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+**Optional: next game countdown and tickets, under any of the above**
+
+```html
+<div data-hawks="next-game"><a href="https://www.hawks.com.au/pages/gameday">Next home game and tickets</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+If `next-game` is on the same page, you only need the script line once. A second copy does no harm.
+
+**Adding a video:** upload a YouTube Short and paste its 11 character ID (the part after `youtube.com/shorts/`) into that offer's `video` in `data.js`. The video only loads when someone clicks the play button.
 
 ### FAQ (one page only)
 
