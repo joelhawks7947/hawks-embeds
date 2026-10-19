@@ -1924,10 +1924,6 @@
       ".hkoff .hkoff__btn:active{transform:scale(0.98);}",
       ".hkoff .hkoff__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hkoff .hkoff__btn.hkoff__btn--row{font-size:15px;padding:14px 22px;margin:0;}",
-      ".hkoff .hkoff__faq{display:block;font-size:14px;line-height:1.4;font-weight:400;margin:14px 0 0;}",
-      ".hkoff .hkoff__faq:link,.hkoff .hkoff__faq:visited{color:var(--k);text-decoration:underline;}",
-      ".hkoff .hkoff__faq:hover{color:var(--dr);}",
-      ".hkoff .hkoff__faq:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hkoff .hkoff__list{max-width:960px;margin:40px auto 0;padding:0;}",
       ".hkoff .hkoff__lh{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(24px,4cqw,32px);color:var(--k);margin:0 0 12px;padding:0;}",
       ".hkoff .hkoff__rows{list-style:none;margin:0;padding:0;border-bottom:1px solid #D8D8D8;}",
@@ -1953,8 +1949,6 @@
         fig = '<figure class="hkoff__fig"><img class="hkoff__img" src="' + esc(o.image) + '" alt="' + esc(o.alt) + '" width="1080" height="1350" loading="lazy" decoding="async">' +
           (o.video ? '<button type="button" class="hkoff__play" aria-label="Play video: ' + esc(o.heading) + '">Play video</button>' : "") + "</figure>";
       }
-      /* Only the VIP function page has an FAQ link; the Court Walk page spells out what's included itself. */
-      var faq = key === "vip-function" ? faqLink("preGame", "hkoff__faq", "What's included?", "What's included? Pre-game function FAQ") : "";
       var lid = uid("offer-list");
       el.innerHTML =
         '<section class="hkoff" aria-labelledby="' + lid + '-h"><div class="hkoff__main' + (fig ? "" : " hkoff__main--solo") + '">' + fig + '<div class="hkoff__text">' +
@@ -1963,7 +1957,7 @@
         (o.body ? '<p class="hkoff__body">' + esc(o.body) + "</p>" : "") +
         (o.note ? '<p class="hkoff__note">' + esc(o.note) + "</p>" : "") +
         (url && o.button ? '<a class="hkoff__btn"' + ext(url) + ">" + esc(o.button) + "</a>" : "") +
-        faq + "</div></div>" +
+        "</div></div>" +
         (list ? '<div class="hkoff__list">' + (o.listHeading ? '<h3 class="hkoff__lh">' + esc(o.listHeading) + "</h3>" : "") + '<div class="hkoff__live"></div></div>' : "") +
         "</section>";
       var root = el.firstChild;

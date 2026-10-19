@@ -70,11 +70,10 @@ test("court walk: lists every Court Walk on sale, with its own link, and drops e
   await expect(page.locator(sel("court-walk") + " .hkoff__none")).toContainText("no Court Walks on sale");
 });
 
-test("FAQ links: the VIP function page has its What's included link, the Court Walk page has none", async ({ page }) => {
+test("no offer page has an FAQ link", async ({ page }) => {
   await open(page, "/test/?hk_now=2026-10-19T12:00");
-  await expect(page.locator(sel("court-walk") + " .hkoff__faq")).toHaveCount(0);
-  await expect(page.locator(sel("court-walk") + " a[href*='faq']")).toHaveCount(0);
-  await expect(page.locator(sel("vip-function") + " .hkoff__faq")).toHaveText("What's included?");
+  await expect(page.locator('[data-hawks="offer"] .hkoff__faq')).toHaveCount(0);
+  await expect(page.locator('[data-hawks="offer"] a[href*="faq"]')).toHaveCount(0);
 });
 
 test("vip function: future functions only, each with its own Buy ticket link, dropping off when the function starts", async ({ page }) => {
