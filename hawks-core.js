@@ -1957,7 +1957,7 @@
       });
       if (!list) return {};
 
-      var live = root.querySelector(".hkoff__live"), shown = null;
+      var live = root.querySelector(".hkoff__live"), shown = null, mainBtn = root.querySelector(".hkoff__text .hkoff__btn");
       function rowHtml(g) {
         var sub = key === "vip-function"
           ? (g.func ? "Pre-game function " + U.time(g.func) : "")
@@ -1977,6 +1977,13 @@
           var sig = games.map(function (g) { return g.n; }).join(",");
           if (sig === shown) return;
           shown = sig;
+          /* The main button goes to the next function's tickets (its own link, else the organiser page). */
+          if (key === "vip-function" && mainBtn) {
+            var nx = games[0], nl = nx ? (nx.functionTickets || offerLink(o.link)) : offerLink(o.link);
+            setLink(mainBtn, nl);
+            if (nx) mainBtn.setAttribute("aria-label", o.button + ": Hawks v " + nx.opp + ", " + U.longDate(nx.date));
+            else mainBtn.removeAttribute("aria-label");
+          }
           live.innerHTML = games.length
             ? '<ul class="hkoff__rows">' + games.map(rowHtml).join("") + "</ul>"
             : '<p class="hkoff__none">' + (key === "court-walk" ? "There are no Court Walks on sale right now. Check back soon." : "There are no more pre-game functions to book this season. Thanks for backing the Hawks.") + "</p>";

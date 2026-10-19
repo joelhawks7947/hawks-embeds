@@ -85,15 +85,23 @@ test("vip function: future functions only, each with its own Buy ticket link, dr
   await expect(b).toHaveText("Buy ticket");
   await expect(b).toHaveAttribute("target", "_blank");
   await expect(b).toHaveAttribute("aria-label", "Buy ticket: pre-game function, Hawks v Sydney Kings, Thursday 22nd October");
+  // The main button follows the next function.
+  const main = page.locator(sel("vip-function") + " .hkoff__text .hkoff__btn");
+  await expect(main).toHaveAttribute("href", games[0].functionTickets);
+  await expect(main).toHaveAttribute("aria-label", "Secure your place in the VIP experience 🥂: Hawks v Sydney Kings, Thursday 22nd October");
   // Nothing from the past: played games are not listed, and a game goes when its function starts.
   expect(await page.locator(sel("vip-function")).innerText()).not.toContain("Adelaide 36ers, Pre");
   await page.goto("/test/?hk_now=2026-10-22T17:59"); await ready(page);
   await expect(page.locator(sel("vip-function") + " .hkoff__row")).toHaveCount(13);
   await page.goto("/test/?hk_now=2026-10-22T18:00"); await ready(page);
   await expect(page.locator(sel("vip-function") + " .hkoff__row")).toHaveCount(12);
+  await expect(main).toHaveAttribute("href", games[1].functionTickets);
+  await expect(main).toHaveAttribute("aria-label", /Hawks v Brisbane Bullets, Saturday 24th October$/);
   await page.goto("/test/?hk_now=2027-02-04T18:00"); await ready(page);
   await expect(page.locator(sel("vip-function") + " .hkoff__row")).toHaveCount(0);
   await expect(page.locator(sel("vip-function") + " .hkoff__none")).toContainText("no more pre-game functions");
+  await expect(main).toHaveAttribute("href", "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353");
+  await expect(main).not.toHaveAttribute("aria-label", /.+/);
 });
 
 test("vip function: a game without its own link uses the organiser page", async ({ page }) => {
