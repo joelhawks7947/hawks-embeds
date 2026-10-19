@@ -35,40 +35,50 @@ test("no ticket links or buttons anywhere in it", async ({ page }) => {
   expect(await page.locator(GC + " a, " + GC + " button").count()).toBe(0);
 });
 
-test("weekday game: stops being the next game 6 hours before tip-off, then the next game takes over", async ({ page }) => {
+test("weekday game: the whole panel is hidden from 6 hours before tip-off until the game ends, then the next game shows", async ({ page }) => {
   await freeze(page);
   await open(page, "2026-10-22T13:29:59");
   await expect(head(page)).toHaveText("Hawks v Sydney Kings");
   await open(page, "2026-10-22T13:30:00");
+  await expect(page.locator(GC).first()).toBeHidden();
+  await open(page, "2026-10-22T21:29:59"); // 1:59 after the 7:30pm tip-off
+  await expect(page.locator(GC).first()).toBeHidden();
+  await open(page, "2026-10-22T21:30:00"); // 2 hours after tip-off
   await expect(head(page)).toHaveText("Hawks v Brisbane Bullets");
   // Game 6 is a Thursday: 7:30pm tip-off, so 1:30pm cutoff.
-  await open(page, "2026-11-19T13:29:59");
-  await expect(head(page)).toHaveText("Hawks v Adelaide 36ers");
   await open(page, "2026-11-19T13:30:00");
+  await expect(page.locator(GC).first()).toBeHidden();
+  await open(page, "2026-11-19T21:30:00");
   await expect(head(page)).toHaveText("Hawks v Sydney Kings");
 });
 
-test("weekend games: stop at 12pm on the Friday before (Saturday and Sunday)", async ({ page }) => {
+test("weekend games: hidden from 12pm on the Friday before until the game ends (Saturday and Sunday)", async ({ page }) => {
   await freeze(page);
-  // Game 5, Saturday 24 October: cutoff Friday 23 October 12:00.
+  // Game 5, Saturday 24 October, 5:30pm tip-off: hidden from Friday 23 October 12:00 until 7:30pm Saturday.
   await open(page, "2026-10-23T11:59:59");
   await expect(head(page)).toHaveText("Hawks v Brisbane Bullets");
   await open(page, "2026-10-23T12:00:00");
+  await expect(page.locator(GC).first()).toBeHidden();
+  await open(page, "2026-10-24T19:29:59");
+  await expect(page.locator(GC).first()).toBeHidden();
+  await open(page, "2026-10-24T19:30:00");
   await expect(head(page)).toHaveText("Hawks v Adelaide 36ers");
-  // Game 9, Sunday 20 December: cutoff Friday 18 December 12:00.
+  // Game 9, Sunday 20 December, 3pm tip-off: hidden from Friday 18 December 12:00 until 5pm Sunday.
   await open(page, "2026-12-18T11:59:59");
   await expect(head(page)).toHaveText("Hawks v Melbourne United");
   await open(page, "2026-12-18T12:00:00");
+  await expect(page.locator(GC).first()).toBeHidden();
+  await open(page, "2026-12-20T17:00:00");
   await expect(head(page)).toHaveText("Hawks v New Zealand Breakers");
 });
 
 test("daylight saving (AEDT): the countdown lands on the right tip-off in January", async ({ page }) => {
   await freeze(page);
-  // Game 12, Saturday 2 January 2027 (AEDT, UTC+11), 5:30pm tip-off; Friday 1 January 12:00 cutoff.
-  await open(page, "2026-12-31T17:30:00");
+  // Game 12, Saturday 2 January 2027 (AEDT, UTC+11), 5:30pm tip-off. Game 11 (31 December) ends at 7:30pm.
+  await open(page, "2026-12-31T19:30:00");
   await expect(head(page)).toHaveText("Hawks v Cairns Taipans");
   const nums = await page.locator(GC + " .hkgc__num").evaluateAll((e) => e.slice(0, 4).map((x) => x.textContent));
-  expect(nums).toEqual(["02", "00", "00", "00"]);
+  expect(nums).toEqual(["01", "22", "00", "00"]);
 });
 
 test("hidden after the last game's cutoff", async ({ page }) => {
@@ -79,6 +89,8 @@ test("hidden after the last game's cutoff", async ({ page }) => {
   await expect(page.locator(GC + " .hkgc__more").first()).toHaveText("");
   await open(page, "2027-02-04T13:30:00");
   await expect(page.locator(GC).first()).toBeHidden();
+  await open(page, "2027-02-05T12:00:00"); // stays hidden after the game
+  await expect(page.locator(GC).first()).toBeHidden();
 });
 
 test("the cutoffs and list length come from data.js; data-count overrides the length", async ({ page }) => {
@@ -87,7 +99,7 @@ test("the cutoffs and list length come from data.js; data-count overrides the le
   await expect(head(page)).toHaveText("Hawks v Sydney Kings");
   await expect(page.locator(GC + " .hkgc__row").first().locator("xpath=ancestor::ul").locator(".hkgc__row")).toHaveCount(2);
   await open(page, "2026-10-22T17:30:00");
-  await expect(head(page)).toHaveText("Hawks v Brisbane Bullets");
+  await expect(page.locator(GC).first()).toBeHidden();
 });
 
 test("data-count on the placeholder sets the list length", async ({ page }) => {

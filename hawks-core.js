@@ -2012,11 +2012,12 @@
 
   /* ---------------- game-countdown (.hkgc) ----------------
      For pages that sell one thing (the premium seating page), so it has no ticket links at all:
-     the next game with a countdown to tip-off, then the games after it. A game stops being the
-     next game at its cutoff (data.js gameCountdown): weekdayHours before tip-off on a weekday,
-     weekendTime on the Friday before a Saturday or Sunday game. Then the next game takes over.
+     the next game with a countdown to tip-off, then the games after it. At a game's cutoff
+     (data.js gameCountdown: weekdayHours before tip-off on a weekday, weekendTime on the Friday
+     before a Saturday or Sunday game) the whole block is hidden until the game ends (2 hours after
+     tip-off), then it shows the next game.
      Optional data-count="N" on the placeholder sets how many games follow (default from data.js).
-     Light and transparent. Hidden after the last game's cutoff. */
+     Light and transparent. Hidden for good after the last game's cutoff. */
   M["game-countdown"] = {
     css: [
       ".hkgc{--r:#FF0013;--k:#000;--w:#FFF;--g:#373737;box-sizing:border-box;display:block;background:transparent;color:var(--k);margin:0;padding:40px 0 48px;border-top:6px solid var(--k);text-align:left;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;}",
@@ -2063,8 +2064,9 @@
       return {
         update: function (s) {
           var G = ctx.data.games, i = -1;
-          for (var j = 0; j < G.length; j++) if (G[j]._gcOff > s.now) { i = j; break; }
-          if (i < 0) { root.hidden = true; shown = "none"; return; }
+          for (var j = 0; j < G.length; j++) if (G[j]._end > s.now) { i = j; break; }
+          /* The whole block is hidden from the game's cutoff until the game ends, then the next game shows. */
+          if (i < 0 || s.now >= G[i]._gcOff) { root.hidden = true; return; }
           root.hidden = false;
           var g = G[i];
           if (shown !== g.n) {

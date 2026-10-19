@@ -104,8 +104,8 @@ window.HAWKS_DATA = {
   },
 
   /* GAME COUNTDOWN (data-hawks="game-countdown": the countdown and game list with no ticket links,
-     for the premium seating page). A game stops being the "next game" at its cutoff, and the
-     following game takes over.
+     for the premium seating page). At a game's cutoff the whole block is hidden until the game
+     ends (2 hours after tip-off), then it shows the next game.
      weekdayHours: for a Monday to Friday game, hours before tip-off
      weekendTime:  for a Saturday or Sunday game, this time (24-hour, Sydney) on the Friday before
      count:        how many games to list after the next game (a page can override it with

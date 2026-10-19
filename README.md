@@ -189,7 +189,7 @@ The next game with a live countdown, then the next few home games, and **no tick
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
-A game stops being the "next game" at its cutoff, and the following game takes over: **6 hours before tip-off** for a Monday to Friday game, and **12pm on the Friday before** for a Saturday or Sunday game. After the last game's cutoff the block disappears. The cutoffs and the number of games listed are in `data.js` under `gameCountdown`. To list more games on one page, add `data-count="8"` to the `<div>`.
+At a game's cutoff the **whole block disappears** until the game has finished (2 hours after tip-off), then it comes back showing the next game. The cutoff is **6 hours before tip-off** for a Monday to Friday game, and **12pm on the Friday before** for a Saturday or Sunday game. After the last game's cutoff the block stays hidden. The cutoffs and the number of games listed are in `data.js` under `gameCountdown`. To list more games on one page, add `data-count="8"` to the `<div>`.
 
 ### FAQ (one page only)
 
