@@ -185,9 +185,26 @@
     out.mvpVote = mvpVote(raw.mvpVote);
     out.hawksInBusiness = biz(raw.hawksInBusiness, out.games);
     out.offers = offers(raw.offers);
+    out.gameCountdown = gameCountdown(raw.gameCountdown);
+    /* game-countdown: when each game stops being the "next game" (see gameCountdown below). */
+    out.games.forEach(function (g) {
+      var p = g.date.split("-").map(Number), dow = new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay();
+      if (dow === 6 || dow === 0) g._gcOff = toUtc(ymd(p[0], p[1], p[2] - (dow === 6 ? 1 : 2)), out.gameCountdown.weekendTime);
+      else g._gcOff = g._tip - out.gameCountdown.weekdayHours * 3600000;
+    });
     return out;
   }
   H.validate = validate;
+
+  /* game-countdown settings (data.js gameCountdown). A weekday game stops being the next game
+     weekdayHours before tip-off; a Saturday or Sunday game stops at weekendTime on the Friday before. */
+  function gameCountdown(raw) {
+    var o = raw && typeof raw === "object" ? raw : {}, out = { weekdayHours: 6, weekendTime: "12:00", count: 5 };
+    if (o.weekdayHours != null) { if (typeof o.weekdayHours === "number" && o.weekdayHours >= 0 && o.weekdayHours <= 72) out.weekdayHours = o.weekdayHours; else warn("gameCountdown.weekdayHours ignored: expected a number of hours from 0 to 72"); }
+    if (o.weekendTime != null) { if (TIME.test(o.weekendTime)) out.weekendTime = o.weekendTime; else warn("gameCountdown.weekendTime ignored: \"" + o.weekendTime + "\" is not HH:MM"); }
+    if (o.count != null) { if (typeof o.count === "number" && o.count >= 0 && Math.floor(o.count) === o.count) out.count = o.count; else warn("gameCountdown.count ignored: expected a whole number"); }
+    return out;
+  }
 
   /* Offer landing pages (data.js offers). A bad offer is skipped with a warning. */
   function offers(raw) {
@@ -1987,6 +2004,79 @@
           live.innerHTML = games.length
             ? '<ul class="hkoff__rows">' + games.map(rowHtml).join("") + "</ul>"
             : '<p class="hkoff__none">' + (key === "court-walk" ? "There are no Court Walks on sale right now. Check back soon." : "There are no more pre-game functions to book this season. Thanks for backing the Hawks.") + "</p>";
+        }
+      };
+    }
+  };
+
+
+  /* ---------------- game-countdown (.hkgc) ----------------
+     For pages that sell one thing (the premium seating page), so it has no ticket links at all:
+     the next game with a countdown to tip-off, then the games after it. A game stops being the
+     next game at its cutoff (data.js gameCountdown): weekdayHours before tip-off on a weekday,
+     weekendTime on the Friday before a Saturday or Sunday game. Then the next game takes over.
+     Optional data-count="N" on the placeholder sets how many games follow (default from data.js).
+     Light and transparent. Hidden after the last game's cutoff. */
+  M["game-countdown"] = {
+    css: [
+      ".hkgc{--r:#FF0013;--k:#000;--w:#FFF;--g:#373737;box-sizing:border-box;display:block;background:transparent;color:var(--k);margin:0;padding:40px 0 48px;border-top:6px solid var(--k);text-align:left;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;}",
+      ".hkgc *,.hkgc *::before,.hkgc *::after{box-sizing:border-box;}",
+      ".hkgc[hidden],.hkgc [hidden]{display:none !important;}",
+      ".hkgc .hkgc__inner{max-width:880px;margin:0 auto;}",
+      ".hkgc .hkgc__over{font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--k);margin:0 0 10px;padding:0;}",
+      ".hkgc .hkgc__head{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(32px,6cqw,52px);color:var(--k);margin:0 0 10px;padding:0;}",
+      ".hkgc .hkgc__meta{font-size:16px;line-height:1.5;color:var(--g);margin:0 0 24px;padding:0;}",
+      ".hkgc .hkgc__timer{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;list-style:none;margin:0;padding:0;max-width:520px;}",
+      ".hkgc .hkgc__unit{margin:0;padding:14px 4px 12px;border:2px solid var(--k);text-align:center;list-style:none;line-height:1;}",
+      ".hkgc .hkgc__num{display:block;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(32px,7cqw,52px);line-height:1;color:var(--k);}",
+      ".hkgc .hkgc__lbl{display:block;font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);margin-top:6px;}",
+      ".hkgc .hkgc__lh{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(22px,4cqw,30px);color:var(--k);margin:40px 0 12px;padding:0;}",
+      ".hkgc .hkgc__rows{list-style:none;margin:0;padding:0;border-bottom:1px solid #D8D8D8;}",
+      ".hkgc .hkgc__row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:16px;align-items:center;margin:0;padding:12px 0;border-top:1px solid #D8D8D8;list-style:none;}",
+      ".hkgc .hkgc__date{border:2px solid var(--k);padding:6px 4px;text-align:center;margin:0;}",
+      ".hkgc .hkgc__dow{display:block;font-weight:700;font-size:12px;line-height:1.3;letter-spacing:0.06em;text-transform:uppercase;color:var(--r);}",
+      ".hkgc .hkgc__dm{display:block;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:20px;line-height:1;text-transform:uppercase;color:var(--k);margin-top:2px;white-space:nowrap;}",
+      ".hkgc .hkgc__opp{font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(18px,3cqw,22px);line-height:1;text-transform:uppercase;color:var(--k);margin:0;padding:0;}",
+      ".hkgc .hkgc__sub{font-size:14px;line-height:1.4;color:var(--g);margin:4px 0 0;padding:0;}",
+      "@container (max-width:480px){.hkgc{padding:32px 0 40px;}.hkgc .hkgc__timer{gap:8px;}.hkgc .hkgc__unit{padding:12px 2px 10px;}.hkgc .hkgc__lbl{font-size:11px;}.hkgc .hkgc__row{grid-template-columns:68px minmax(0,1fr);gap:12px;}}"
+    ].join("\n"),
+    render: function (el, ctx) {
+      var cfg = ctx.data.gameCountdown, n = parseInt(el.getAttribute("data-count"), 10);
+      var count = n >= 0 && isFinite(n) ? n : cfg.count, lid = uid("countdown");
+      el.innerHTML =
+        '<section class="hkgc" aria-labelledby="' + lid + '-h"><div class="hkgc__inner">' +
+        '<p class="hkgc__over">Next home game</p><h2 class="hkgc__head" id="' + lid + '-h"></h2><p class="hkgc__meta"></p>' +
+        '<ul class="hkgc__timer" role="timer" aria-live="off" aria-label="Time until tip-off">' +
+        '<li class="hkgc__unit"><span class="hkgc__num" data-k="d">00</span><span class="hkgc__lbl">Days</span></li>' +
+        '<li class="hkgc__unit"><span class="hkgc__num" data-k="h">00</span><span class="hkgc__lbl">Hours</span></li>' +
+        '<li class="hkgc__unit"><span class="hkgc__num" data-k="m">00</span><span class="hkgc__lbl">Mins</span></li>' +
+        '<li class="hkgc__unit"><span class="hkgc__num" data-k="s">00</span><span class="hkgc__lbl">Secs</span></li></ul>' +
+        '<div class="hkgc__more"></div></div></section>';
+      var root = el.firstChild, k = {}, shown = null;
+      [].forEach.call(root.querySelectorAll("[data-k]"), function (x) { k[x.getAttribute("data-k")] = x; });
+      var head = root.querySelector(".hkgc__head"), meta = root.querySelector(".hkgc__meta"), more = root.querySelector(".hkgc__more");
+      function pad(v) { return (v < 10 ? "0" : "") + v; }
+      function row(g) {
+        return '<li class="hkgc__row"><p class="hkgc__date"><span class="hkgc__dow">' + esc(U.dow(g.date)) + '</span><span class="hkgc__dm">' + esc(U.dm(g.date)) + "</span></p>" +
+          '<div><p class="hkgc__opp">v ' + esc(g.opp) + '</p><p class="hkgc__sub">Game ' + g.n + ", " + esc(U.time(g.tip)) + " tip-off</p></div></li>";
+      }
+      return {
+        update: function (s) {
+          var G = ctx.data.games, i = -1;
+          for (var j = 0; j < G.length; j++) if (G[j]._gcOff > s.now) { i = j; break; }
+          if (i < 0) { root.hidden = true; shown = "none"; return; }
+          root.hidden = false;
+          var g = G[i];
+          if (shown !== g.n) {
+            shown = g.n;
+            head.textContent = "Hawks v " + g.opp;
+            meta.textContent = U.longDate(g.date) + ", " + U.time(g.tip) + " tip-off, " + ctx.data.venue;
+            var next = G.slice(i + 1, i + 1 + count);
+            more.innerHTML = next.length ? '<h3 class="hkgc__lh">More home games</h3><ul class="hkgc__rows">' + next.map(row).join("") + "</ul>" : "";
+          }
+          var t = Math.floor((g._tip - s.now) / 1000);
+          k.d.textContent = pad(Math.floor(t / 86400)); k.h.textContent = pad(Math.floor(t % 86400 / 3600));
+          k.m.textContent = pad(Math.floor(t % 3600 / 60)); k.s.textContent = pad(t % 60);
         }
       };
     }

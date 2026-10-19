@@ -19,8 +19,8 @@ test("every placeholder renders exactly once; no duplicate IDs; no console error
       };
     });
     expect(r.dupes, t).toEqual([]);
-    expect(r.hosts, t).toEqual(Array(29).fill("1:true"));
-    expect(r.instances, t).toBe(29);
+    expect(r.hosts, t).toEqual(Array(30).fill("1:true"));
+    expect(r.instances, t).toBe(30);
     expect(log.errors, t).toEqual([]);
   }
 });
@@ -56,6 +56,7 @@ test("script blocked: every fallback link is visible, readable and correct", asy
     ["offer", "VIP pre-game function", "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353", true],
     ["offer", "Hawks Court Walk", "https://www.hawks.com.au/pages/gameday", true],
     ["next-game", "Next home game and tickets", "https://www.hawks.com.au/pages/gameday", true],
+    ["game-countdown", "Enquire about premium courtside seats", "https://hawks-corporate-hospitality.lovable.app/#contact", true],
     ["next-game", "Next home game, key times and tickets", "https://www.hawks.com.au/pages/gameday", true],
     ["game-preview", "Hawks news and game previews", "https://www.hawks.com.au/news", true],
     ["upcoming-games", "Tickets to all Hawks home games", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493", true],

@@ -103,6 +103,15 @@ window.HAWKS_DATA = {
     ]
   },
 
+  /* GAME COUNTDOWN (data-hawks="game-countdown": the countdown and game list with no ticket links,
+     for the premium seating page). A game stops being the "next game" at its cutoff, and the
+     following game takes over.
+     weekdayHours: for a Monday to Friday game, hours before tip-off
+     weekendTime:  for a Saturday or Sunday game, this time (24-hour, Sydney) on the Friday before
+     count:        how many games to list after the next game (a page can override it with
+                   data-count="8" on its placeholder) */
+  gameCountdown: {weekdayHours: 6, weekendTime: "12:00", count: 5},
+
   /* OFFER LANDING PAGES (data-hawks="offer" data-offer="flexi" and so on)
      One entry per page. The embed shows the image, headline, copy and button,
      and some pages add a list underneath.

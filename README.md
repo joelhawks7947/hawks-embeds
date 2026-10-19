@@ -180,6 +180,17 @@ If `next-game` is on the same page, you only need the script line once. A second
 
 **Adding a video:** upload a YouTube Short and paste its 11 character ID (the part after `youtube.com/shorts/`) into that offer's `video` in `data.js`. The video only loads when someone clicks the play button.
 
+### Game countdown (for the premium seating page)
+
+The next game with a live countdown, then the next few home games, and **no ticket links at all**, so a page that sells one thing isn't diluted. Light and transparent, to sit under an offer page.
+
+```html
+<div data-hawks="game-countdown"><a href="https://hawks-corporate-hospitality.lovable.app/#contact">Enquire about premium courtside seats</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+A game stops being the "next game" at its cutoff, and the following game takes over: **6 hours before tip-off** for a Monday to Friday game, and **12pm on the Friday before** for a Saturday or Sunday game. After the last game's cutoff the block disappears. The cutoffs and the number of games listed are in `data.js` under `gameCountdown`. To list more games on one page, add `data-count="8"` to the `<div>`.
+
 ### FAQ (one page only)
 
 This embed is different: it isn't a short snippet. The questions and answers are written into the embed itself as plain HTML, so Google and AI search tools (which often don't run scripts) can read them. `hawks.js` then adds the look, the open and close accordion, search and the topic buttons.
