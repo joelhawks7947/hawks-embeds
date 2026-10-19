@@ -1953,8 +1953,8 @@
         fig = '<figure class="hkoff__fig"><img class="hkoff__img" src="' + esc(o.image) + '" alt="' + esc(o.alt) + '" width="1080" height="1350" loading="lazy" decoding="async">' +
           (o.video ? '<button type="button" class="hkoff__play" aria-label="Play video: ' + esc(o.heading) + '">Play video</button>' : "") + "</figure>";
       }
-      var faqKey = key === "court-walk" ? "courtWalk" : key === "vip-function" ? "preGame" : "";
-      var faq = faqKey ? faqLink(faqKey, "hkoff__faq", key === "court-walk" ? "What's a Court Walk?" : "What's included?", key === "court-walk" ? "What's a Court Walk? Court Walk FAQ" : "What's included? Pre-game function FAQ") : "";
+      /* Only the VIP function page has an FAQ link; the Court Walk page spells out what's included itself. */
+      var faq = key === "vip-function" ? faqLink("preGame", "hkoff__faq", "What's included?", "What's included? Pre-game function FAQ") : "";
       var lid = uid("offer-list");
       el.innerHTML =
         '<section class="hkoff" aria-labelledby="' + lid + '-h"><div class="hkoff__main' + (fig ? "" : " hkoff__main--solo") + '">' + fig + '<div class="hkoff__text">' +
