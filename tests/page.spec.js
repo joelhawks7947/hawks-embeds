@@ -19,8 +19,8 @@ test("every placeholder renders exactly once; no duplicate IDs; no console error
       };
     });
     expect(r.dupes, t).toEqual([]);
-    expect(r.hosts, t).toEqual(Array(22).fill("1:true"));
-    expect(r.instances, t).toBe(22);
+    expect(r.hosts, t).toEqual(Array(29).fill("1:true"));
+    expect(r.instances, t).toBe(29);
     expect(log.errors, t).toEqual([]);
   }
 });
@@ -49,6 +49,13 @@ test("script blocked: every fallback link is visible, readable and correct", asy
     ["newsletter", "Join the Hawks mailing list", "https://mailchi.mp/hawks/illawarra-hawks-newsletter", true],
     ["top-10", "Hawks history: all-time top 10 single-game feats", "https://www.hawks.com.au/pages/illawarra-hawks-history", true],
     ["hawks-in-business", "Hawks in Business events", "https://www.hawks.com.au/", true],
+    ["offer", "Flexi Memberships", "https://am.ticketmaster.com/thehawks/FLeximemberships", true],
+    ["offer", "Family of 4 tickets", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493", true],
+    ["offer", "Tickets from $30", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493", true],
+    ["offer", "Premium courtside seats", "https://hawks-corporate-hospitality.lovable.app/#contact", true],
+    ["offer", "VIP pre-game function", "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353", true],
+    ["offer", "Hawks Court Walk", "https://www.hawks.com.au/pages/gameday", true],
+    ["next-game", "Next home game and tickets", "https://www.hawks.com.au/pages/gameday", true],
     ["next-game", "Next home game, key times and tickets", "https://www.hawks.com.au/pages/gameday", true],
     ["game-preview", "Hawks news and game previews", "https://www.hawks.com.au/news", true],
     ["upcoming-games", "Tickets to all Hawks home games", "https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493", true],

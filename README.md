@@ -109,6 +109,26 @@ Shows the next camp from `data.js`, with a Register button. After the last camp 
 
 The NBL27 events, grouped by month. Finished events move to a collapsed **Past events** bar at the bottom (grey, most recent first). The events are in `data.js` (see section 2).
 
+### Offer landing pages
+
+One snippet for every offer page. Only `data-offer` changes. Each page is a light, transparent block with the picture, headline, copy and button. Put a `next-game` embed under it if you want the countdown and tickets on the same page.
+
+| `data-offer` | Page | Button goes to |
+|---|---|---|
+| `flexi` | Flexi Memberships | Flexi link |
+| `family` | Family of 4 for $99 | Single game tickets |
+| `tickets-from-30` | Tickets from $30 | Single game tickets |
+| `courtside` | Premium courtside seats (mentions Hollywood seats) | Hospitality enquiry form |
+| `vip-function` | VIP pre-game function (lists each game's function time) | Eventbrite page |
+| `court-walk` | Hawks Court Walk (lists every Court Walk on sale, each with its own link) | Each game's Court Walk link |
+
+```html
+<div data-hawks="offer" data-offer="flexi"><a href="https://am.ticketmaster.com/thehawks/FLeximemberships">Explore Flexi Memberships</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+Use the same fallback link as the button. Copy, picture, alt text and links are in `data.js` under `offers`. To add a video, upload a YouTube Short and paste its 11 character ID into that offer's `video` (the part after `youtube.com/shorts/`). It only loads when someone clicks the play button.
+
 ### FAQ (one page only)
 
 This embed is different: it isn't a short snippet. The questions and answers are written into the embed itself as plain HTML, so Google and AI search tools (which often don't run scripts) can read them. `hawks.js` then adds the look, the open and close accordion, search and the topic buttons.

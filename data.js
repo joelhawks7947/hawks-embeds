@@ -58,6 +58,8 @@ window.HAWKS_DATA = {
     transport:   "https://www.wsec.com.au/transport",
     instagram:   "https://www.instagram.com/lowercrownquarter/",
     hospitality: "https://hawks-corporate-hospitality.lovable.app/",
+    /* The enquiry form on the hospitality site (it has a Hollywood seat dropdown) */
+    hospitalityContact: "https://hawks-corporate-hospitality.lovable.app/#contact",
     phone:       "tel:1300142957",
 
     /* Where the game preview button goes when a game has no preview yet */
@@ -99,6 +101,68 @@ window.HAWKS_DATA = {
        rego:"https://www.eventbrite.com.au/e/illawarra-hawks-girls-in-the-game-tickets-1995414633885",
        details:"Two hours of basketball and teamwork with our crew, for girls aged 5 to 12."},
     ]
+  },
+
+  /* OFFER LANDING PAGES (data-hawks="offer" data-offer="flexi" and so on)
+     One entry per page. The embed shows the image, headline, copy and button,
+     and some pages add a list underneath.
+     overline:  small line above the headline
+     heading:   the headline
+     note:      optional second line of copy under the main copy ("" for none)
+     body:      the main copy
+     button:    button text; link: where it goes. link is either a full https://
+                address or the name of a link above (for example "flexi") or
+                "defaultTickets". "" hides the button.
+     image:     the 4x5 picture (a full https:// address, uploaded to Webflow Assets)
+     alt:       a short description of the picture for screen readers
+     video:     the 11 character YouTube video ID (from youtube.com/shorts/<ID>);
+                "" for no video. Plays only when the picture's play button is clicked.
+     listHeading: only for "court-walk" and "vip-function", the line above the list. */
+  offers: {
+    "flexi": {
+      overline:"3 and 5 game packages", heading:"More Hawks, your way 🏀", note:"",
+      body:"Choose a 3-game or 5-game Flexi Membership and lock in your next game day at the WIN Entertainment Centre.",
+      button:"Explore Flexi Memberships 🎟️", link:"flexi",
+      image:"https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ad579860211ce1645a91468_Flexi%20Memberships_4x5.jpg",
+      alt:"The opening tip-off at a Hawks home game under the big scoreboard", video:""
+    },
+    "family": {
+      overline:"Family of 4 for $99", heading:"Make game day a family day ❤️", note:"Available for every home game. Tickets are through Ticketmaster.",
+      body:"Bring the whole family to the Hawks for just $99 with our Family of 4 package.",
+      button:"Get your family tickets now 🎟️", link:"defaultTickets",
+      image:"https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ad5798cc34497c2eb3b4e05_GP%20Sales%201_4x5.jpg",
+      alt:"A Hawks player dunks while teammates celebrate", video:""
+    },
+    "tickets-from-30": {
+      overline:"Tickets from $30", heading:"Grab a mate and get to a Hawks game 🔴⚫", note:"",
+      body:"There's nothing like experiencing the action live. Get your tickets from just $30 and be part of it.",
+      button:"Get tickets now 🎟️", link:"defaultTickets",
+      image:"https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ad5798c2e57b218a807bad6_GP%20Sales%202_4x5.jpg",
+      alt:"Two Hawks players high five as they run out", video:""
+    },
+    "courtside": {
+      overline:"Premium courtside seats", heading:"Get closer to the action.", note:"Choose Hollywood seats from the dropdown on the enquiry form.",
+      body:"Experience Hawks basketball from premium courtside seats, where you're right on the edge of every play.",
+      button:"Secure your courtside seats now 🏀", link:"hospitalityContact",
+      image:"https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ad57992c677397c9b2f569a_Premium%20Seating_4x5.jpg",
+      alt:"A fan cheers from a courtside seat at the edge of the court", video:""
+    },
+    "vip-function": {
+      overline:"VIP pre-game function", heading:"Your game night starts before tip-off.", note:"",
+      body:"Enjoy food, drinks and guest speakers at our VIP Pre-Game Function before taking in the action live.",
+      button:"Secure your place in the VIP experience 🥂", link:"functionTickets",
+      image:"https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ad57980b3e3cd3cf9f3590d_Pre-Game%20Function_4x5.jpg",
+      alt:"Guests at a table in the VIP pre-game function", video:"",
+      listHeading:"Pre-game function times"
+    },
+    "court-walk": {
+      overline:"Warm-up Court Walk", heading:"Ever wondered what it's like to step onto the court before a game?", note:"",
+      body:"Get a closer look at the action with our Warm-Up Court Walk experience and see game day from a different perspective.",
+      button:"", link:"",
+      image:"https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ad579802e57b218a807b921_Court%20Walk_4x5.jpg",
+      alt:"Fans on the court during warm-ups holding a We Rise Together sign", video:"",
+      listHeading:"Book your Court Walk now 🏀"
+    }
   },
 
   /* HAWKS IN BUSINESS

@@ -183,9 +183,30 @@
     out.girlsInTheGame = { camps: camps(raw.girlsInTheGame) };
     out.mvpVote = mvpVote(raw.mvpVote);
     out.hawksInBusiness = biz(raw.hawksInBusiness, out.games);
+    out.offers = offers(raw.offers);
     return out;
   }
   H.validate = validate;
+
+  /* Offer landing pages (data.js offers). A bad offer is skipped with a warning. */
+  function offers(raw) {
+    var out = {};
+    if (!raw || typeof raw !== "object") return out;
+    Object.keys(raw).forEach(function (k) {
+      var o = raw[k], why = [];
+      if (!o || typeof o !== "object") { warn("offers." + k + " skipped: not an offer"); return; }
+      function txt(v) { return typeof v === "string" ? v.trim() : ""; }
+      var c = { overline: txt(o.overline), heading: txt(o.heading), note: txt(o.note), body: txt(o.body), button: txt(o.button), link: txt(o.link),
+        image: txt(o.image), alt: txt(o.alt), video: txt(o.video), listHeading: txt(o.listHeading) };
+      if (!c.heading) why.push("heading is empty");
+      if (c.image && !okUrl(c.image)) why.push("image is not an https:// link");
+      if (c.video && !/^[A-Za-z0-9_-]{11}$/.test(c.video)) { warn("offers." + k + ".video ignored: \"" + c.video + "\" is not an 11 character YouTube video ID"); c.video = ""; }
+      if (c.link && !okUrl(c.link) && !/^[A-Za-z][A-Za-z0-9]*$/.test(c.link)) why.push("link is neither an https:// link nor a link name");
+      if (why.length) { warn("offers." + k + " skipped: " + why.join("; ")); return; }
+      out[k] = c;
+    });
+    return out;
+  }
 
   /* Girls in the Game camps. A camp stays up until 6 hours after its start time. */
   var CAMP_HOURS = 6;
@@ -1846,6 +1867,117 @@
         location.href = q ? page + (page.indexOf("?") < 0 ? "?" : "&") + "q=" + encodeURIComponent(q) : page;
       });
       return {};
+    }
+  };
+
+
+  /* ---------------- offer (.hkoff) ----------------
+     Landing page block for an offer (data-offer="flexi", "family", "tickets-from-30", "courtside",
+     "vip-function" or "court-walk"; copy, picture and links in data.js offers). Light and
+     transparent, so it takes the page's own background. Court Walk lists every Court Walk on
+     sale; the VIP function lists each game's function time. */
+  function offerLink(v) {
+    if (!v) return "";
+    if (okUrl(v)) return v;
+    return v === "defaultTickets" ? H.data.defaultTickets : (H.data.links[v] || "");
+  }
+  M["offer"] = {
+    css: [
+      ".hkoff{--r:#FF0013;--dr:#BF0000;--k:#000;--w:#FFF;--t:#4FC3BE;--g:#373737;--e:cubic-bezier(0.22,1,0.36,1);box-sizing:border-box;display:block;background:transparent;color:var(--k);margin:0;padding:40px 0 48px;border-top:6px solid var(--k);text-align:left;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;}",
+      ".hkoff *,.hkoff *::before,.hkoff *::after{box-sizing:border-box;}",
+      ".hkoff[hidden],.hkoff [hidden]{display:none !important;}",
+      ".hkoff .hkoff__main{display:grid;grid-template-columns:1fr;gap:28px;align-items:start;max-width:960px;margin:0 auto;}",
+      "@container (min-width:640px){.hkoff .hkoff__main{grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:40px;}.hkoff .hkoff__main--solo{grid-template-columns:1fr;}}",
+      ".hkoff .hkoff__fig{position:relative;margin:0;padding:0;max-width:420px;width:100%;line-height:0;background:#D8D8D8;}",
+      ".hkoff .hkoff__img{display:block;width:100%;height:auto;aspect-ratio:4 / 5;object-fit:cover;margin:0;border:0;border-radius:0;}",
+      ".hkoff .hkoff__play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;margin:0;padding:14px 22px;background:var(--r);color:var(--w);border:2px solid var(--r);border-radius:0;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:15px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;transition:background-color 120ms var(--e),border-color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkoff .hkoff__play:hover{background:var(--dr);border-color:var(--dr);}",
+      ".hkoff .hkoff__play:active{transform:translate(-50%,-50%) scale(0.98);}",
+      ".hkoff .hkoff__play:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkoff .hkoff__vid{display:block;width:100%;aspect-ratio:9 / 16;border:0;margin:0;background:var(--k);}",
+      ".hkoff .hkoff__text{min-width:0;}",
+      ".hkoff .hkoff__over{font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(24px,5cqw,34px);line-height:1;letter-spacing:0.01em;text-transform:uppercase;color:var(--r);margin:0 0 14px;padding:0;}",
+      ".hkoff .hkoff__heading{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(30px,6cqw,48px);color:var(--k);margin:0 0 16px;padding:0;}",
+      ".hkoff .hkoff__body{font-size:17px;line-height:1.55;color:var(--g);margin:0 0 14px;padding:0;}",
+      ".hkoff .hkoff__note{font-size:15px;line-height:1.5;font-weight:700;color:var(--k);margin:0 0 14px;padding:0;}",
+      ".hkoff .hkoff__btn{display:inline-block;background:var(--r);color:var(--w);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:17px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;text-align:center;padding:18px 32px;margin:10px 0 0;border:2px solid var(--r);border-radius:0;transition:background-color 120ms var(--e),border-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkoff .hkoff__btn:link,.hkoff .hkoff__btn:visited{color:var(--w);text-decoration:none;}",
+      ".hkoff .hkoff__btn:hover{background:var(--dr);border-color:var(--dr);color:var(--w);text-decoration:none;}",
+      ".hkoff .hkoff__btn:active{transform:scale(0.98);}",
+      ".hkoff .hkoff__btn:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkoff .hkoff__faq{display:block;font-size:14px;line-height:1.4;font-weight:400;margin:14px 0 0;}",
+      ".hkoff .hkoff__faq:link,.hkoff .hkoff__faq:visited{color:var(--k);text-decoration:underline;}",
+      ".hkoff .hkoff__faq:hover{color:var(--dr);}",
+      ".hkoff .hkoff__faq:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkoff .hkoff__list{max-width:960px;margin:40px auto 0;padding:0;}",
+      ".hkoff .hkoff__lh{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(24px,4cqw,32px);color:var(--k);margin:0 0 12px;padding:0;}",
+      ".hkoff .hkoff__rows{list-style:none;margin:0;padding:0;border-bottom:1px solid #D8D8D8;}",
+      ".hkoff .hkoff__row{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;margin:0;padding:14px 0;border-top:1px solid #D8D8D8;}",
+      ".hkoff .hkoff__rd{margin:0;padding:0;min-width:0;}",
+      ".hkoff .hkoff__rt{display:block;font-weight:700;font-size:16px;line-height:1.35;color:var(--k);margin:0;}",
+      ".hkoff .hkoff__rs{display:block;font-size:14px;line-height:1.4;color:var(--g);margin:2px 0 0;}",
+      ".hkoff .hkoff__cw{display:inline-block;background:var(--t);color:var(--k);font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:15px;line-height:1.2;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;text-align:center;padding:14px 22px;margin:0;border:2px solid var(--t);border-radius:0;transition:background-color 120ms var(--e),color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkoff .hkoff__cw:link,.hkoff .hkoff__cw:visited{color:var(--k);text-decoration:none;}",
+      ".hkoff .hkoff__cw:hover{background:var(--k);border-color:var(--k);color:var(--w);}",
+      ".hkoff .hkoff__cw:active{transform:scale(0.98);}",
+      ".hkoff .hkoff__cw:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkoff .hkoff__none{font-size:16px;line-height:1.5;color:var(--g);margin:0;padding:0;}",
+      "@container (max-width:600px){.hkoff{padding:32px 0 40px;}.hkoff .hkoff__btn,.hkoff .hkoff__cw{display:block;width:100%;}.hkoff .hkoff__row{display:block;}.hkoff .hkoff__cw{margin:12px 0 0;}}",
+      "@media (prefers-reduced-motion:reduce){.hkoff .hkoff__btn,.hkoff .hkoff__play,.hkoff .hkoff__cw{transition:none;}.hkoff .hkoff__btn:active,.hkoff .hkoff__cw:active{transform:none;}.hkoff .hkoff__play:active{transform:translate(-50%,-50%);}}"
+    ].join("\n"),
+    render: function (el, ctx) {
+      var key = el.getAttribute("data-offer"), o = ctx.data.offers[key];
+      if (!o) throw new Error("no offer called \"" + key + "\" in data.js (check data-offer in the placeholder)");
+      var url = offerLink(o.link), list = key === "court-walk" || key === "vip-function";
+      var fig = "";
+      if (o.image) {
+        fig = '<figure class="hkoff__fig"><img class="hkoff__img" src="' + esc(o.image) + '" alt="' + esc(o.alt) + '" width="1080" height="1350" loading="lazy" decoding="async">' +
+          (o.video ? '<button type="button" class="hkoff__play" aria-label="Play video: ' + esc(o.heading) + '">Play video</button>' : "") + "</figure>";
+      }
+      var faqKey = key === "court-walk" ? "courtWalk" : key === "vip-function" ? "preGame" : "";
+      var faq = faqKey ? faqLink(faqKey, "hkoff__faq", key === "court-walk" ? "What's a Court Walk?" : "What's included?", key === "court-walk" ? "What's a Court Walk? Court Walk FAQ" : "What's included? Pre-game function FAQ") : "";
+      var lid = uid("offer-list");
+      el.innerHTML =
+        '<section class="hkoff" aria-labelledby="' + lid + '-h"><div class="hkoff__main' + (fig ? "" : " hkoff__main--solo") + '">' + fig + '<div class="hkoff__text">' +
+        (o.overline ? '<p class="hkoff__over">' + esc(o.overline) + "</p>" : "") +
+        '<h2 class="hkoff__heading" id="' + lid + '-h">' + esc(o.heading) + "</h2>" +
+        (o.body ? '<p class="hkoff__body">' + esc(o.body) + "</p>" : "") +
+        (o.note ? '<p class="hkoff__note">' + esc(o.note) + "</p>" : "") +
+        (url && o.button ? '<a class="hkoff__btn"' + ext(url) + ">" + esc(o.button) + "</a>" : "") +
+        faq + "</div></div>" +
+        (list ? '<div class="hkoff__list">' + (o.listHeading ? '<h3 class="hkoff__lh">' + esc(o.listHeading) + "</h3>" : "") + '<div class="hkoff__live"></div></div>' : "") +
+        "</section>";
+      var root = el.firstChild;
+      var play = root.querySelector(".hkoff__play");
+      if (play) play.addEventListener("click", function () {
+        var f = root.querySelector(".hkoff__fig");
+        f.innerHTML = '<iframe class="hkoff__vid" src="https://www.youtube-nocookie.com/embed/' + o.video + '?autoplay=1&rel=0&playsinline=1" title="' + esc(o.heading) + '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>';
+      });
+      if (!list) return {};
+
+      var live = root.querySelector(".hkoff__live"), shown = null;
+      function rowHtml(g) {
+        var sub = key === "vip-function"
+          ? (g.func ? "Pre-game function " + U.time(g.func) : "")
+          : "Game " + g.n;
+        var btn = key === "court-walk"
+          ? '<a class="hkoff__cw"' + ext(g.courtWalk) + ' aria-label="' + esc(courtWalkLabel(g)) + '">Court Walk tickets</a>' : "";
+        return '<li class="hkoff__row"><p class="hkoff__rd"><span class="hkoff__rt">' + esc(U.longDate(g.date)) + ", Hawks v " + esc(g.opp) + "</span>" +
+          (sub ? '<span class="hkoff__rs">' + esc(sub) + "</span>" : "") + "</p>" + btn + "</li>";
+      }
+      return {
+        update: function (s) {
+          var games = ctx.data.games.filter(function (g) {
+            return key === "court-walk" ? !!courtWalkFor(g, s.now) : g._end > s.now && !!g.func;
+          });
+          var sig = games.map(function (g) { return g.n; }).join(",");
+          if (sig === shown) return;
+          shown = sig;
+          live.innerHTML = games.length
+            ? '<ul class="hkoff__rows">' + games.map(rowHtml).join("") + "</ul>"
+            : '<p class="hkoff__none">' + (key === "court-walk" ? "There are no Court Walks on sale right now. Check back soon." : "The season has finished. Thanks for backing the Hawks.") + "</p>";
+        }
+      };
     }
   };
 
