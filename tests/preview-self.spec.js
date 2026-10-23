@@ -1,24 +1,17 @@
 // A preview link is hidden when the embed sits on that preview article itself.
 const { test, expect } = require("@playwright/test");
-const fs = require("fs"), path = require("path");
-const { ROOT, useData, watchConsole, ready } = require("./helpers");
+const { fakeHawksPage, useData, watchConsole, ready } = require("./helpers");
 
 const G1 = "https://www.hawks.com.au/news/game-preview-hawks-vs-adelaide-36ers-rd3-nbl27";
 const G2 = "https://www.hawks.com.au/news/game-preview-hawks-vs-tasmania-jackjumpers-rd4-nbl27";
 
-/* Serve a fake hawks.com.au News article that loads our script from its real jsDelivr address,
-   with jsDelivr requests answered from the local files. */
+/* A fake hawks.com.au News article loading the script from its real addresses (local files behind them). */
 async function fakeArticle(page) {
-  await page.route(/https:\/\/cdn\.jsdelivr\.net\/gh\/joelhawks7947\/hawks-embeds@main\/([^?]+)/, (r) => {
-    const file = /hawks-embeds@main\/([^?]+)/.exec(r.request().url())[1];
-    r.fulfill({ contentType: "text/javascript", body: fs.readFileSync(path.join(ROOT, file), "utf8") });
-  });
-  await page.route(/https:\/\/(www\.)?hawks\.com\.au\/news\/.*/, (r) => r.fulfill({ contentType: "text/html", body:
-    '<!DOCTYPE html><html><head></head><body><div class="w-richtext">' +
+  await fakeHawksPage(page, /https:\/\/(www\.)?hawks\.com\.au\/news\/.*/, '<div class="w-richtext">' +
     '<div data-hawks="next-game"><a href="https://www.hawks.com.au/pages/gameday">Next home game</a></div>' +
     '<div data-hawks="game-preview"><a href="https://www.hawks.com.au/news">News</a></div>' +
     '<div data-hawks="upcoming-games"><a href="https://www.hawks.com.au/pages/gameday">Upcoming</a></div>' +
-    '<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script></div></body></html>' }));
+    '<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script></div>');
   await useData(page, (d) => { d.games[0].preview = G1; d.games[1].preview = G2; });
 }
 

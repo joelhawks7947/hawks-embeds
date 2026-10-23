@@ -542,6 +542,10 @@
       ".hkng .hkng__btn:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
       ".hkng .hkng__btn--inv,.hkng .hkng__btn--inv:link,.hkng .hkng__btn--inv:visited{background:var(--w);border-color:var(--w);color:var(--k);}",
       ".hkng .hkng__btn--inv:hover{background:var(--k);border-color:var(--k);color:var(--w);}",
+      /* Secondary outline button (white on black); hover fills white. */
+      ".hkng .hkng__btn--sec,.hkng .hkng__btn--sec:link,.hkng .hkng__btn--sec:visited{background:transparent;border-color:var(--w);color:var(--w);}",
+      ".hkng .hkng__btn--sec:hover{background:var(--w);border-color:var(--w);color:var(--k);}",
+      ".hkng .hkng__gd{margin:24px 0 0;}",
       /* Court Walk: teal with black text (white on teal fails contrast); hover goes white. */
       ".hkng .hkng__cw{margin:28px 0 0;}",
       ".hkng .hkng__btn--cw,.hkng .hkng__btn--cw:link,.hkng .hkng__btn--cw:visited{background:var(--t);border-color:var(--t);color:var(--k);}",
@@ -590,6 +594,9 @@
         '<li class="hkng__unit"><span class="hkng__num" data-k="s">00</span><span class="hkng__lbl">Secs</span></li>' +
         "</ul>" +
         '<p class="hkng__status" data-k="status" hidden></p>' +
+        /* Game Day Guide button, on every page except the guide itself (links.gameDayGuide). */
+        (L.gameDayGuide && pageKey(L.gameDayGuide) !== pageKey(location.href)
+          ? '<div class="hkng__gd" data-k="gd"><a class="hkng__btn hkng__btn--sec"' + ext(L.gameDayGuide) + ">Game Day Guide</a></div>" : "") +
         '<ul class="hkng__times" data-k="times"></ul>' +
         '<div class="hkng__cw" data-k="cw" hidden><a class="hkng__btn hkng__btn--cw" data-k="cwa" href="#">Court Walk tickets</a>' +
         (faqUrl("courtWalk") ? '<p class="hkng__cwq">' + faqLink("courtWalk", "hkng__tfaq", "What's a Court Walk?") + "</p>" : "") + "</div>" +
@@ -631,6 +638,7 @@
         k.head.textContent = "That's a wrap on the home season";
         k.meta.textContent = "Thanks for every minute of noise, Hawkheads.";
         k.timer.hidden = k.status.hidden = k.times.hidden = k.tix.hidden = k.pv.hidden = k.cw.hidden = true;
+        if (k.gd) k.gd.hidden = true;
         k.meta.classList.remove("hkng__meta--tight");
       }
 

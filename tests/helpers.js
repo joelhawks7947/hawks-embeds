@@ -44,4 +44,15 @@ async function ready(page) {
   await page.waitForFunction(() => document.querySelectorAll("[data-hawks]:not([data-hawks-ready])").length === 0);
 }
 
-module.exports = { ROOT, loadData, referenceGames, useData, watchConsole, ready };
+/* A pretend hawks.com.au page for URLs matching `pattern`, holding `body` (HTML). Its script tags use
+   the real addresses: jsDelivr and GitHub Pages requests are both answered from the local files, as
+   UTF-8 like the real hosts, so the test runs the local code end to end. */
+async function fakeHawksPage(page, pattern, body) {
+  await page.route(/https:\/\/(cdn\.jsdelivr\.net\/gh\/joelhawks7947\/hawks-embeds@main|joelhawks7947\.github\.io\/hawks-embeds)\/([^?#]+)/, (r) => {
+    const file = /(?:@main|github\.io\/hawks-embeds)\/([^?#]+)/.exec(r.request().url())[1];
+    r.fulfill({ contentType: "application/javascript; charset=utf-8", body: fs.readFileSync(path.join(ROOT, file), "utf8") });
+  });
+  await page.route(pattern, (r) => r.fulfill({ contentType: "text/html; charset=utf-8", body: "<!DOCTYPE html><html><head></head><body>" + body + "</body></html>" }));
+}
+
+module.exports = { fakeHawksPage, ROOT, loadData, referenceGames, useData, watchConsole, ready };
