@@ -80,6 +80,8 @@
   /* ---------------- Small helpers for modules ---------------- */
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]; }); }
+  /* Look up a name an editor typed (data-offer, a link name) only among a table's own entries, so a name like "constructor" finds nothing. */
+  function own(o, k) { return Object.prototype.hasOwnProperty.call(o, k) ? o[k] : undefined; }
   var uidN = 0;
   function uid(stem) { var id; do { id = "hk" + (++uidN) + "-" + stem; } while (D.getElementById(id)); return id; }
   /* External link attributes, or "" when the link is missing (caller hides the element). */
@@ -208,7 +210,7 @@
 
   /* Offer landing pages (data.js offers). A bad offer is skipped with a warning. */
   function offers(raw) {
-    var out = {};
+    var out = Object.create(null);
     if (!raw || typeof raw !== "object") return out;
     Object.keys(raw).forEach(function (k) {
       var o = raw[k], why = [];
@@ -385,7 +387,7 @@
     pickPrimaries();
     var s = state(), added = false;
     [].forEach.call(D.querySelectorAll("[data-hawks]:not([data-hawks-ready])"), function (el) {
-      var name = el.getAttribute("data-hawks"), mod = H.modules[name], extra;
+      var name = el.getAttribute("data-hawks"), mod = own(H.modules, name), extra;
       if (mod && mod.extra) {
         /* This module has its own data file: load it the first time it's needed, render when it arrives. */
         extra = loadExtra(mod.extra);
@@ -1897,7 +1899,7 @@
   function offerLink(v) {
     if (!v) return "";
     if (okUrl(v)) return v;
-    return v === "defaultTickets" ? H.data.defaultTickets : (H.data.links[v] || "");
+    return v === "defaultTickets" ? H.data.defaultTickets : (own(H.data.links, v) || "");
   }
   M["offer"] = {
     css: [
@@ -1941,7 +1943,7 @@
       "@media (prefers-reduced-motion:reduce){.hkoff .hkoff__btn,.hkoff .hkoff__play,.hkoff .hkoff__cw{transition:none;}.hkoff .hkoff__btn:active,.hkoff .hkoff__cw:active{transform:none;}.hkoff .hkoff__play:active{transform:translate(-50%,-50%);}}"
     ].join("\n"),
     render: function (el, ctx) {
-      var key = el.getAttribute("data-offer"), o = ctx.data.offers[key];
+      var key = el.getAttribute("data-offer"), o = own(ctx.data.offers, key);
       if (!o) throw new Error("no offer called \"" + key + "\" in data.js (check data-offer in the placeholder)");
       var url = offerLink(o.link), list = key === "court-walk" || key === "vip-function";
       var fig = "";

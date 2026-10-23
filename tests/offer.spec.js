@@ -146,6 +146,21 @@ test("a bad data-offer name leaves the fallback link and logs an error", async (
   expect(log.errors.join(" ")).toContain('no offer called "nope"');
 });
 
+test("names like constructor or __proto__ find nothing: no broken button, the fallback link stays", async ({ page }) => {
+  await useData(page, (d) => { d.offers.flexi.link = "constructor"; d.offers.family.link = "toString"; });
+  await page.route((u) => /^\/test\/(index\.html)?$/.test(u.pathname), async (route) => {
+    const r = await route.fetch();
+    await route.fulfill({ response: r, body: (await r.text()).replace('data-offer="court-walk"', 'data-offer="constructor"').replace('data-hawks="faq-search"', 'data-hawks="__proto__"') });
+  });
+  const log = await open(page);
+  await expect(page.locator(sel("flexi") + " .hkoff__btn")).toHaveCount(0);
+  await expect(page.locator(sel("family") + " .hkoff__btn")).toHaveCount(0);
+  await expect(page.locator('[data-offer="constructor"] a')).toBeVisible();
+  await expect(page.locator('[data-hawks="__proto__"] a').first()).toBeVisible();
+  expect(log.errors.join(" ")).toContain('no offer called "constructor"');
+  expect(log.warnings.join(" ")).toContain('unknown embed "__proto__"');
+});
+
 test("bad offer data (empty heading, non-https image, bad video ID) is skipped or ignored with a warning, nothing else breaks", async ({ page }) => {
   await useData(page, (d) => { d.offers.flexi.heading = ""; d.offers.family.image = "http://x"; d.offers.courtside.video = "short"; });
   const log = await open(page);
