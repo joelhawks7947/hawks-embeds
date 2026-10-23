@@ -13,6 +13,7 @@ async function sameTab(loc, href, text) {
 }
 
 test("next game: what's included, when it finishes, compare memberships", async ({ page }) => {
+  await useData(page, (d) => { d.links.member = "https://am.ticketmaster.com/thehawks/"; });   // membership line only shows while memberships are on sale
   const log = await open(page, "/test/?hk_now=2026-10-15T12:00");
   const ng = page.locator(NG).first();
   const func = ng.locator(".hkng__times li").first(), tip = ng.locator(".hkng__times li").last();
@@ -61,7 +62,7 @@ test("a link set to \"\" disappears; a bad ID is ignored with a warning; no FAQ 
   expect(log.warnings.join("\n")).toContain("faqLinks.preGame ignored");
   await expect(ng.locator(".hkng__tbuy")).toHaveCount(1);   // Buy ticket unaffected
   await page.unrouteAll();
-  await useData(page, (d) => { d.links.faqPage = ""; });
+  await useData(page, (d) => { d.links.faqPage = ""; d.links.member = "https://am.ticketmaster.com/thehawks/"; });
   await page.goto("/test/?hk_now=2026-10-15T12:00");
   await ready(page);
   await expect(page.locator(".hkng__tfaq, .hksl__tfaq, .hkpn__faql")).toHaveCount(0);

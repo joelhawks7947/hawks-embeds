@@ -92,6 +92,7 @@ test("final game night still counts down to game 16", async ({ page }) => {
 
 test("ticket panels and preview button: exact links, target, rel, labels", async ({ page }) => {
   await useData(page, (d) => {
+    d.links.member = "https://am.ticketmaster.com/thehawks/";   // as when memberships are on sale
     d.games[0].preview = "https://www.hawks.com.au/news/test-preview";
     d.games[1].tickets = "https://www.ticketmaster.com.au/test-game-2";
   });
@@ -168,4 +169,27 @@ test("no Buy ticket link when the link is empty or a game has no function time",
   await open(page, "/test/?hk_now=2026-09-27T12:00");
   await expect(page.locator(NG).first().locator(".hkng__tbuy")).toHaveCount(0);
   await expect(page.locator(NG).first().locator(".hkng__times li")).toHaveCount(4);
+});
+
+test("season membership link empty: that panel and the membership line are gone, two panels share the row", async ({ page }) => {
+  const log = await open(page, "/test/?hk_now=2026-10-23T12:00");
+  for (const i of [0, 1]) {
+    const ng = page.locator(NG).nth(i);
+    await expect(ng.locator(".hkng__oh")).toHaveText(["Single game ticket", "3 & 5 game Flexi pack"]);
+    await expect(ng.locator('[data-k="member"]')).toHaveCount(0);
+    await expect(ng.locator(".hkng__pk")).toHaveCount(0);
+    await expect(ng).not.toContainText("Season membership");
+    await expect(ng).not.toContainText("membership picker");
+  }
+  // Desktop: side by side, equal width, filling the row.
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const [a, b] = await page.locator(NG).first().locator(".hkng__opt").evaluateAll((els) => els.map((e) => e.getBoundingClientRect()).map((r) => [Math.round(r.top), Math.round(r.width)]));
+  expect(a[0]).toBe(b[0]);
+  expect(Math.abs(a[1] - b[1])).toBeLessThan(2);
+  // Phones: stacked.
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.waitForTimeout(100);
+  const [c, d] = await page.locator(NG).first().locator(".hkng__opt").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+  expect(d).toBeGreaterThan(c);
+  expect(log.errors).toEqual([]);
 });

@@ -39,7 +39,10 @@ window.HAWKS_DATA = {
 
     /* Ticket options under the next game */
     flexi:  "https://am.ticketmaster.com/thehawks/FLeximemberships",
-    member: "https://am.ticketmaster.com/thehawks/",
+    /* Season membership: "" hides the Season membership panel and the "Not sure which option
+       suits you?" line under the next game. Paste the link back when NBL28 memberships open
+       (it was https://am.ticketmaster.com/thehawks/). */
+    member: "",
     picker: "https://hawks-membership-picker.lovable.app/",
 
     /* Fan Engagement Hub: the red panel next to the MVP vote says "Your move, Hawkheads"

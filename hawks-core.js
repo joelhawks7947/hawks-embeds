@@ -547,6 +547,7 @@
       ".hkng .hkng__btn--cw,.hkng .hkng__btn--cw:link,.hkng .hkng__btn--cw:visited{background:var(--t);border-color:var(--t);color:var(--k);}",
       ".hkng .hkng__btn--cw:hover{background:var(--w);border-color:var(--w);color:var(--k);}",
       ".hkng .hkng__tix{display:grid;grid-template-columns:repeat(3,1fr);margin-top:32px;}",
+      ".hkng .hkng__tix--two{grid-template-columns:repeat(2,1fr);}",
       ".hkng .hkng__opt{display:flex;flex-direction:column;align-items:center;gap:18px;padding:32px 16px;border:2px solid transparent;margin:0;}",
       ".hkng .hkng__opt--r{background:var(--r);}",
       ".hkng .hkng__opt--w{background:var(--w);}",
@@ -593,16 +594,18 @@
         '<div class="hkng__cw" data-k="cw" hidden><a class="hkng__btn hkng__btn--cw" data-k="cwa" href="#">Court Walk tickets</a>' +
         (faqUrl("courtWalk") ? '<p class="hkng__cwq">' + faqLink("courtWalk", "hkng__tfaq", "What's a Court Walk?") + "</p>" : "") + "</div>" +
         '<div data-k="tix">' +
-        '<div class="hkng__tix">' +
+        /* Season membership: with links.member empty (between seasons), the panel and the
+           membership line underneath are left out, and the other two panels share the row. */
+        '<div class="hkng__tix' + (L.member ? "" : " hkng__tix--two") + '">' +
         '<div class="hkng__opt hkng__opt--r"><h3 class="hkng__oh">Single game ticket</h3>' +
         '<a class="hkng__btn hkng__btn--inv" data-k="single" href="#">Buy tickets</a></div>' +
         '<div class="hkng__opt hkng__opt--w"><h3 class="hkng__oh">3 &amp; 5 game Flexi pack</h3>' +
         '<a class="hkng__btn" data-k="flexi"' + ext(L.flexi) + ' aria-label="Pick your games: 3 and 5 game Flexi pack"' + hide(L.flexi) + '>Pick your games</a></div>' +
-        '<div class="hkng__opt hkng__opt--k"><h3 class="hkng__oh">Season membership</h3>' +
-        '<a class="hkng__btn hkng__btn--inv" data-k="member"' + ext(L.member) + ' aria-label="Join now: season membership"' + hide(L.member) + '>Join now</a></div>' +
+        (L.member ? '<div class="hkng__opt hkng__opt--k"><h3 class="hkng__oh">Season membership</h3>' +
+          '<a class="hkng__btn hkng__btn--inv" data-k="member"' + ext(L.member) + ' aria-label="Join now: season membership">Join now</a></div>' : "") +
         "</div>" +
-        '<p class="hkng__pk"' + hide(L.picker) + '>Not sure which option suits you? <a class="hkng__pick" data-k="picker"' + ext(L.picker) + ">Try our membership picker</a>" +
-        (faqUrl("memberships") ? " or " + faqLink("memberships", "hkng__pick", "compare memberships") : "") + "</p>" +
+        (L.member ? '<p class="hkng__pk"' + hide(L.picker) + '>Not sure which option suits you? <a class="hkng__pick" data-k="picker"' + ext(L.picker) + ">Try our membership picker</a>" +
+          (faqUrl("memberships") ? " or " + faqLink("memberships", "hkng__pick", "compare memberships") : "") + "</p>" : "") +
         "</div></div></section>";
 
       var root = el.firstChild, k = {};

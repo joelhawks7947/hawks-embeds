@@ -25,7 +25,7 @@ test("data.js links match the reference and CLAUDE.md canonical links", () => {
   expect(d.defaultTickets).toBe("https://www.ticketmaster.com.au/illawarra-hawks-tickets/artist/1055493");
   expect(d.links).toMatchObject({
     flexi: "https://am.ticketmaster.com/thehawks/FLeximemberships",
-    member: "https://am.ticketmaster.com/thehawks/",
+    member: "",   // season membership hidden until NBL28 memberships open (23 October 2026)
     picker: "https://hawks-membership-picker.lovable.app/",
     mvpVote: "https://hawks-mvp-vote.lovable.app/",
     mvpImage: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ab73bbbf4abbf2c6fdda107_MVP%20Vote_1080x1080_.jpg",
