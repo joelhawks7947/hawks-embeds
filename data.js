@@ -319,7 +319,8 @@ window.HAWKS_DATA = {
        layout    "full" = wide row with the picture beside the words
                  "column" = one of the three small cards under "More Hawks games"
                  Moving a card between the two is just changing this word.
-       order     lowest number shows first within its layout
+       order     lowest number shows first, down the whole page. Neighbouring cards with the same
+                 layout sit together, so to put a wide card at the bottom give it the highest number
        status    "live" shows it. "soon" shows it with "Coming soon" and no link.
                  "hidden" leaves it off the page.
        theme     "dark" gives a full row a black panel (optional)
@@ -349,36 +350,36 @@ window.HAWKS_DATA = {
     quizApi: "https://quiz.illawarra-hawks.com.au/api/public/current-quiz",
     utm: { source: "hawks.com.au", medium: "referral", campaign: "engagement-page" },
     cards: [
-      {id:"membership-finder", layout:"full", order:1, status:"live", theme:"dark",
+      {id:"membership-finder", layout:"full", order:6, status:"live", theme:"dark",
         kicker:"Memberships for the NBL27 season", title:"Membership Finder",
         body:"Answer a few quick questions and we'll match you with the Hawks membership that suits how you follow the club.",
         ctaLabel:"Find my membership", url:"https://hawks-membership-picker.lovable.app/",
         image:"https://video.illawarra-hawks.com.au/image/membership.jpg", alt:"Membership Finder question screen", imagePos:"center 45%"},
-      {id:"greater-bank-mvp", kind:"mvp", layout:"full", order:2, status:"live",
+      {id:"greater-bank-mvp", kind:"mvp", layout:"full", order:1, status:"live",
         badge:"Voting open", badgeClosed:"Voting opens at tip-off", title:"Greater Bank MVP", sponsor:"Presented by Greater Bank",
         body:"Pick your standout Hawk after every home game.",
         meta:"Now voting: {round}, {game}.", metaClosed:"Next vote: {game}.",
         ctaLabel:"Vote now", ctaLabelClosed:"See past winners", url:"https://hawks-mvp-vote.lovable.app/",
         image:"https://video.illawarra-hawks.com.au/image/mvp.jpg", alt:"Greater Bank MVP voting screen", imagePos:"center 20%"},
-      {id:"cmg-midcourt-mayhem", layout:"full", order:3, status:"live",
+      {id:"cmg-midcourt-mayhem", layout:"full", order:2, status:"live",
         badge:"Entries open", title:"CMG Midcourt Mayhem", sponsor:"Presented by CMG",
         body:"Four shots, 30 seconds, one run. Choose your shooter type and register for your shot at a home game.",
         meta:"One fan is drawn about 48 hours before each home game.",
         ctaLabel:"Enter the draw", url:"https://cmg-midcourt-mayhem.lovable.app/",
         image:"https://video.illawarra-hawks.com.au/image/mayhem.jpg", alt:"CMG Midcourt Mayhem entry screen", imagePos:"center 35%"},
-      {id:"hawks-grid", kind:"grid", layout:"column", order:1, status:"live",
+      {id:"hawks-grid", kind:"grid", layout:"column", order:3, status:"live",
         kicker:"Daily", title:"Hawks Grid",
         body:"Fill the grid with Hawks players who fit both categories. Nine guesses, each player once.",
         meta:"A new grid every night at midnight.",
         ctaLabel:"Play", url:"https://grid.illawarra-hawks.com.au/",
         image:"https://video.illawarra-hawks.com.au/image/grid.png", alt:"Hawks Grid game screen", imagePos:"center top"},
-      {id:"hawks-trivia", kind:"quiz", layout:"column", order:2, status:"live",
+      {id:"hawks-trivia", kind:"quiz", layout:"column", order:4, status:"live",
         kicker:"Weekly", title:"Hawks Trivia",
         body:"This week: {title}", bodyFallback:"This week's Hawks quiz",
         meta:"Sign in with a magic link to go in the prize draw.",
         ctaLabel:"Start quiz", url:"https://quiz.illawarra-hawks.com.au/",
         image:"https://video.illawarra-hawks.com.au/image/trivia.jpg", alt:"Hawks Trivia quiz screen", imagePos:"center 62%"},
-      {id:"hawks-pecking-order", layout:"column", order:3, status:"live",
+      {id:"hawks-pecking-order", layout:"column", order:5, status:"live",
         kicker:"Ongoing", title:"Pecking Order",
         body:"Settle Hawks debates bracket by bracket. Pick your favourites and crown the winners.",
         meta:"Featured: best uniform, 1979 to 2008.",

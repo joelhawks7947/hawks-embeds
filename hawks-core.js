@@ -2369,10 +2369,14 @@
       var P = ctx.data.gamesPortal, cards = P.cards;
       if (!cards.length) throw new Error("gamesPortal has no cards in data.js");
       if (cards.some(function (c) { return c.kind === "quiz" && c.status === "live"; }) && P.quizApi) loadQuiz(P.quizApi);
-      var ids = {}, pos = {}, rows = [], cols = [];
-      cards.forEach(function (c) { ids[c.id] = uid(c.id); (c.layout === "full" ? rows : cols).push(c); });
-      /* Position for analytics follows the page: wide rows first, then the small cards. */
-      rows.concat(cols).forEach(function (c, i) { pos[c.id] = i + 1; });
+      var ids = {}, pos = {}, runs = [];
+      /* Cards show in order down the page. Neighbouring cards with the same layout share a block, so a wide
+         card with a later order lands below the small cards. */
+      cards.forEach(function (c, i) {
+        ids[c.id] = uid(c.id); pos[c.id] = i + 1;
+        var r = runs[runs.length - 1];
+        if (r && r.layout === c.layout) r.cards.push(c); else runs.push({ layout: c.layout, cards: [c] });
+      });
       var first = true;
 
       function cta(c, cls, soonCls, loc) {
@@ -2418,9 +2422,13 @@
         '<header class="hkgames__head"><div class="hkgames__intro"><h1 class="hkgames__h1">' + esc(P.heading) + "</h1>" + (P.intro ? '<p class="hkgames__lead">' + esc(P.intro) + "</p>" : "") + "</div>" +
         (tiles ? '<section class="hkgames__now" aria-label="On now" hidden>' + tiles + "</section>" : "") + "</header>" +
         '<div class="hkgames__main">' +
-        (rows.length ? '<div class="hkgames__rows">' + rows.map(rowHtml).join("") + "</div>" : "") +
-        (cols.length ? '<section class="hkgames__more" aria-labelledby="' + hid + '"><div class="hkgames__mh"><h2 class="hkgames__h2s" id="' + hid + '">' + esc(P.moreHeading) + "</h2>" +
-          (P.moreSub ? '<p class="hkgames__sub">' + esc(P.moreSub) + "</p>" : "") + '</div><div class="hkgames__cols">' + cols.map(colHtml).join("") + "</div></section>" : "") +
+        runs.map(function (r, n) {
+          if (r.layout === "full") return '<div class="hkgames__rows">' + r.cards.map(rowHtml).join("") + "</div>";
+          var head = n === runs.findIndex(function (x) { return x.layout === "column"; });
+          return '<section class="hkgames__more"' + (head ? ' aria-labelledby="' + hid + '"' : "") + ">" +
+            (head ? '<div class="hkgames__mh"><h2 class="hkgames__h2s" id="' + hid + '">' + esc(P.moreHeading) + "</h2>" + (P.moreSub ? '<p class="hkgames__sub">' + esc(P.moreSub) + "</p>" : "") + "</div>" : "") +
+            '<div class="hkgames__cols">' + r.cards.map(colHtml).join("") + "</div></section>";
+        }).join("") +
         "</div></div>";
 
       var root = el.firstChild, now = root.querySelector(".hkgames__now");
@@ -2448,10 +2456,10 @@
           });
           var mc = cardOf("mvp");
           if (mc) {
-            var open = mvpOpen(s.now), g = open ? null : s.game, w = open;
-            if (g) w = ctx.data.mvpVote.windows.filter(function (x) { return x.date === g.date; })[0];
-            var opp = open ? open.opp : g ? g.opp : "", round = w && w.round ? "Round " + w.round : "";
-            once("mvp", open ? "o" + open._open : g ? "n" + g.n : "x", function () {
+            /* Every game counts, home and away, exactly as in mvp-vote: the open vote, else the next tip-off. */
+            var open = mvpOpen(s.now), g = open ? null : mvpNext(s.now), w = open || g;
+            var opp = w ? w.opp : "", round = w && w.round ? "Round " + w.round : "";
+            once("mvp", open ? "o" + open._open : g ? "n" + g._open : "x", function () {
               var vars = { round: round || "this round", game: opp ? "Hawks v " + opp : "" }, card = cardEl(mc.id), badge = R(card, "badge"), meta = R(card, "meta"), btn = R(card, "cta");
               var bt = open ? mc.badge : mc.badgeClosed;
               if (badge) { badge.hidden = !bt || (!open && !g); if (bt) R(badge, "badge-text").textContent = bt; }

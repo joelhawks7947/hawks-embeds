@@ -59,6 +59,15 @@ test("renders every card with the exact link, UTM tags and new-tab rules", async
   expect(log.errors).toEqual([]);
 });
 
+test("order runs down the whole page: MVP, CMG, the three small cards, then the Membership Finder last", async ({ page }) => {
+  await open(page, "2026-10-02T19:45");
+  const ids = await page.locator(G + " [data-card]").evaluateAll((a) => a.map((x) => x.getAttribute("data-card")));
+  expect(ids).toEqual(["greater-bank-mvp", "cmg-midcourt-mayhem", "hawks-grid", "hawks-trivia", "hawks-pecking-order", "membership-finder"]);
+  await expect(page.locator(G + " .hkgames__h2s")).toHaveCount(1);
+  const last = await page.locator(G + ' [data-card="membership-finder"]').evaluate((e) => e.getBoundingClientRect().top - document.querySelector('[data-card="hawks-pecking-order"]').getBoundingClientRect().bottom);
+  expect(last).toBeGreaterThan(0);
+});
+
 test("On now tiles: grid date, quiz countdown, MVP round when a vote is open", async ({ page }) => {
   await open(page, "2026-10-27T09:59:30"); // quiz closes 6 days 14:00:30 later
   const grid = page.locator(G + ' [data-tile="grid"]');
@@ -92,6 +101,21 @@ test("MVP closed: next home game, opens at tip-off, See past winners", async ({ 
   const c = page.locator(G + ' [data-card="greater-bank-mvp"]');
   await expect(c.locator("a")).toHaveText("See past winners");
   await expect(c.locator(".hkgames__badge")).toHaveText("Voting opens at tip-off");
+});
+
+test("MVP closed with an away game next: the tile and card name that away game", async ({ page }) => {
+  await open(page, "2026-10-31T10:00"); // next tip-off is Perth (away) at 9:30pm; the next home game is 19 Nov
+  const t = page.locator(G + ' [data-tile="mvp"]');
+  await expect(t.locator(".hkgames__tv")).toHaveText("31 Oct");
+  await expect(t.locator(".hkgames__ts")).toHaveText("Hawks v Perth Wildcats, opens at tip-off");
+  await expect(page.locator(G + ' [data-card="greater-bank-mvp"] .hkgames__m')).toHaveText("Next vote: Hawks v Perth Wildcats.");
+});
+
+test("MVP open for an away game: round and opponent", async ({ page }) => {
+  await open(page, "2026-10-31T22:00");
+  const t = page.locator(G + ' [data-tile="mvp"]');
+  await expect(t.locator(".hkgames__tv")).toHaveText("Round 7");
+  await expect(t.locator(".hkgames__ts")).toHaveText("Hawks v Perth Wildcats");
 });
 
 test("after the season: no MVP tile, quiz card still renders", async ({ page }) => {
@@ -154,8 +178,8 @@ test("GA4 click event carries card id and position, only if gtag exists", async 
   await page.locator(G + ' [data-card="hawks-trivia"] a').click();
   await page.locator(G + ' [data-tile="grid"]').click();
   const ev = await page.evaluate(() => window.__ev);
-  expect(ev[0]).toEqual(["event", "games_card_click", { card_id: "hawks-trivia", position: 5, location: "card" }]);
-  expect(ev[1]).toEqual(["event", "games_card_click", { card_id: "hawks-grid", position: 4, location: "tile" }]);
+  expect(ev[0]).toEqual(["event", "games_card_click", { card_id: "hawks-trivia", position: 4, location: "card" }]);
+  expect(ev[1]).toEqual(["event", "games_card_click", { card_id: "hawks-grid", position: 3, location: "tile" }]);
   // no gtag: clicking must not throw
   await page.evaluate(() => { delete window.gtag; });
   const errs = []; page.on("pageerror", (e) => errs.push(e.message));

@@ -314,6 +314,7 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 Everything on the Hawks Games page lives in `data.js` under `gamesPortal`, with a comment block above it explaining each field. Common edits:
 
 - **Change a card's words, button, link or picture:** edit that card's line. Every card's link gets `utm_source`, `utm_medium`, `utm_campaign` and `utm_content` (the card id) added for you, so paste the plain address.
+- **Reorder cards:** change `order`. It runs down the whole page, lowest first. Neighbouring cards with the same `layout` sit together, so a wide card with the highest number lands at the bottom, below the small cards.
 - **Move a card between the wide rows and the small cards:** change `layout` between `"full"` and `"column"`. Nothing else changes (for example when a card gets a sponsor, add `sponsor` and set `layout:"full"`).
 - **Hide a card, or show "Coming soon":** set `status` to `"hidden"` or `"soon"`.
 - **Pictures:** upload each screenshot to Webflow Assets, then paste its full https address into `image`. Until `image` is filled in the card shows a plain block.
