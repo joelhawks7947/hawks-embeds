@@ -1905,21 +1905,24 @@
 
   /* offer pages with a videoUrl: the video starts when the picture is near the screen, plays muted on a loop
      and has a pause/play button. If it can't play (or the visitor prefers reduced motion or Save-Data) the
-     picture stays, with a Play button for reduced motion; clicking the picture opens it full screen on black. */
+     picture stays, with a Play button for reduced motion. Clicking the video (or the picture) opens a full
+     screen black view: the same video playing large with its own pause/play button, or the picture if
+     there's no video showing. */
   function setupMotion(root, o) {
     var f = root.querySelector(".hkoff__fig"), zoom = f.querySelector(".hkoff__zoom"), v = f.querySelector(".hkoff__v"), vb = f.querySelector(".hkoff__vbtn");
     var reduce = !!(W.matchMedia && W.matchMedia("(prefers-reduced-motion: reduce)").matches), conn = W.navigator && W.navigator.connection;
-    var save = !!(conn && conn.saveData), started = false, userPaused = false, failed = false, dlg = null, prevOverflow = "";
+    var save = !!(conn && conn.saveData), started = false, userPaused = false, failed = false, dlg = null, lbv = null, lbp = null, prevOverflow = "", resume = false;
     v.muted = true; v.defaultMuted = true;
+    function zoomLabel() { zoom.setAttribute("aria-label", "Enlarge " + (v.hidden ? "picture" : "video") + ": " + o.alt); }
     function state(playing) { vb.setAttribute("data-state", playing ? "playing" : "paused"); vb.setAttribute("aria-label", playing ? "Pause video" : "Play video"); }
     function showPlay() { if (failed) return; state(false); vb.hidden = false; }
-    function fallBack() { failed = true; try { v.pause(); } catch (e) { /* nothing to stop */ } v.removeAttribute("src"); v.hidden = true; vb.hidden = true; zoom.hidden = false; }
+    function fallBack() { failed = true; try { v.pause(); } catch (e) { /* nothing to stop */ } v.removeAttribute("src"); v.hidden = true; vb.hidden = true; f.classList.remove("hkoff__fig--playing"); zoomLabel(); }
     function go() {
       var p; try { p = v.play(); } catch (e) { fallBack(); return; }
       if (p && p.catch) p.catch(function (e) { if (e && e.name === "NotAllowedError") showPlay(); });
     }
     function begin() { if (started || failed) return; started = true; v.src = o.videoUrl; go(); }
-    v.addEventListener("playing", function () { if (failed) return; v.hidden = false; zoom.hidden = true; vb.hidden = false; state(true); });
+    v.addEventListener("playing", function () { if (failed) return; v.hidden = false; f.classList.add("hkoff__fig--playing"); vb.hidden = false; state(true); zoomLabel(); });
     v.addEventListener("pause", function () { if (!failed && !v.hidden) state(false); });
     v.addEventListener("error", fallBack);
     vb.addEventListener("click", function () {
@@ -1930,26 +1933,54 @@
     else if ("IntersectionObserver" in W) {
       new IntersectionObserver(function (es) {
         es.forEach(function (e) {
+          if (dlg && dlg.open) return;
           if (e.isIntersecting) { if (!started) begin(); else if (!userPaused && !failed && v.paused) go(); }
           else if (started && !v.paused) v.pause();
         });
       }, { rootMargin: "200px" }).observe(f);
     } else begin();
 
+    /* Full screen view. One dialog per embed, built on first use. */
+    var ICON = {
+      pause: '<svg class="hkoff-lb__i-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>',
+      play: '<svg class="hkoff-lb__i-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 4l13 8-13 8z"/></svg>'
+    };
+    function lbState(playing) { lbp.setAttribute("data-state", playing ? "playing" : "paused"); lbp.setAttribute("aria-label", playing ? "Pause video" : "Play video"); }
     function lightbox() {
       var d = D.createElement("dialog");
-      d.className = "hkoff-lb"; d.setAttribute("aria-label", "Enlarged picture");
-      d.innerHTML = '<button type="button" class="hkoff-lb__x" aria-label="Close picture"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5L5 19"/></svg></button>' +
-        '<img class="hkoff-lb__img" src="' + esc(o.image) + '" alt="' + esc(o.alt) + '">';
+      d.className = "hkoff-lb"; d.setAttribute("aria-label", "Enlarged view");
+      d.innerHTML = '<button type="button" class="hkoff-lb__x" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5L5 19"/></svg></button>' +
+        '<img class="hkoff-lb__img" src="' + esc(o.image) + '" alt="' + esc(o.alt) + '" hidden>' +
+        '<video class="hkoff-lb__v" muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1" hidden></video>' +
+        '<button type="button" class="hkoff-lb__p" aria-label="Pause video" data-state="playing" hidden>' + ICON.pause + ICON.play + "</button>";
+      lbv = d.querySelector(".hkoff-lb__v"); lbp = d.querySelector(".hkoff-lb__p");
+      lbv.muted = true; lbv.defaultMuted = true;
+      lbv.addEventListener("playing", function () { lbState(true); });
+      lbv.addEventListener("pause", function () { lbState(false); });
+      lbp.addEventListener("click", function () { if (lbv.paused) { var p = lbv.play(); if (p && p.catch) p.catch(function () { /* stays paused */ }); } else lbv.pause(); });
       d.querySelector(".hkoff-lb__x").addEventListener("click", function () { d.close(); });
       d.addEventListener("click", function (e) { if (e.target === d) d.close(); });
-      d.addEventListener("close", function () { D.documentElement.style.overflow = prevOverflow; zoom.focus(); });
+      d.addEventListener("close", function () {
+        D.documentElement.style.overflow = prevOverflow;
+        if (!lbv.hidden) { try { v.currentTime = lbv.currentTime; } catch (e) { /* not ready */ } lbv.pause(); lbv.removeAttribute("src"); }
+        if (resume && !userPaused && !failed) go();
+        zoom.focus();
+      });
       D.body.appendChild(d);
       return d;
     }
     zoom.addEventListener("click", function () {
       if (!dlg) dlg = lightbox();
       if (typeof dlg.showModal !== "function") { W.open(o.image, "_blank", "noopener"); return; }
+      var img = dlg.querySelector(".hkoff-lb__img"), live = started && !failed && !v.hidden, wasPlaying = live && !v.paused;
+      img.hidden = live; lbv.hidden = !live; lbp.hidden = !live;
+      resume = wasPlaying;
+      if (live) {
+        lbv.src = o.videoUrl;
+        try { lbv.currentTime = v.currentTime; } catch (e) { /* not ready */ }
+        v.pause();
+        if (wasPlaying) { lbState(true); var p = lbv.play(); if (p && p.catch) p.catch(function () { lbState(false); }); } else lbState(false);
+      }
       prevOverflow = D.documentElement.style.overflow;
       D.documentElement.style.overflow = "hidden";
       dlg.showModal();
@@ -2005,11 +2036,12 @@
       ".hkoff .hkoff__cw:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hkoff .hkoff__none{font-size:16px;line-height:1.5;color:var(--g);margin:0;padding:0;}",
       ".hkoff .hkoff__fig--vid{aspect-ratio:4 / 5;}",
-      ".hkoff .hkoff__zoom{display:block;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;background:none;cursor:zoom-in;line-height:0;}",
+      ".hkoff .hkoff__zoom{position:relative;z-index:1;display:block;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;background:none;cursor:zoom-in;line-height:0;}",
+      ".hkoff .hkoff__fig--playing .hkoff__img{opacity:0;}",
       ".hkoff .hkoff__zoom:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hkoff .hkoff__fig--vid .hkoff__img{height:100%;aspect-ratio:auto;}",
-      ".hkoff .hkoff__v{position:absolute;left:0;top:0;display:block;width:100%;height:100%;margin:0;object-fit:cover;background:var(--k);}",
-      ".hkoff .hkoff__vbtn{position:absolute;right:12px;bottom:12px;display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:0;background:rgba(0,0,0,0.75);color:var(--w);cursor:pointer;transition:background-color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkoff .hkoff__v{position:absolute;z-index:0;left:0;top:0;display:block;width:100%;height:100%;margin:0;object-fit:cover;background:var(--k);}",
+      ".hkoff .hkoff__vbtn{position:absolute;z-index:2;right:12px;bottom:12px;display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:0;background:rgba(0,0,0,0.75);color:var(--w);cursor:pointer;transition:background-color 120ms var(--e),transform 100ms var(--e);}",
       ".hkoff .hkoff__vbtn:hover{background:var(--r);}",
       ".hkoff .hkoff__vbtn:active{transform:scale(0.98);}",
       ".hkoff .hkoff__vbtn:focus-visible{outline:2px solid var(--w);outline-offset:2px;box-shadow:0 0 0 4px var(--k);}",
@@ -2020,11 +2052,18 @@
       ".hkoff-lb *,.hkoff-lb *::before,.hkoff-lb *::after{box-sizing:border-box;}",
       ".hkoff-lb[open]{display:flex;align-items:center;justify-content:center;}",
       ".hkoff-lb .hkoff-lb__img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0;padding:0;border:0;object-fit:contain;}",
+      ".hkoff-lb .hkoff-lb__v{display:block;height:100%;max-width:100%;max-height:100%;aspect-ratio:4 / 5;margin:0;padding:0;border:0;object-fit:contain;background:#000;}",
+      ".hkoff-lb [hidden]{display:none !important;}",
+      ".hkoff-lb .hkoff-lb__p{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:0;background:rgba(255,255,255,0.12);color:#FFF;cursor:pointer;transition:background-color 120ms cubic-bezier(0.22,1,0.36,1);}",
+      ".hkoff-lb .hkoff-lb__p:hover{background:#FF0013;}",
+      ".hkoff-lb .hkoff-lb__p:focus-visible{outline:2px solid #FFF;outline-offset:2px;}",
+      ".hkoff-lb .hkoff-lb__p svg{display:block;width:18px;height:18px;fill:currentColor;}",
+      ".hkoff-lb .hkoff-lb__p[data-state=\"playing\"] .hkoff-lb__i-play,.hkoff-lb .hkoff-lb__p[data-state=\"paused\"] .hkoff-lb__i-pause{display:none;}",
       ".hkoff-lb .hkoff-lb__x{position:absolute;top:max(12px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:0;background:rgba(255,255,255,0.12);color:#FFF;cursor:pointer;transition:background-color 120ms cubic-bezier(0.22,1,0.36,1);}",
       ".hkoff-lb .hkoff-lb__x:hover{background:#FF0013;}",
       ".hkoff-lb .hkoff-lb__x:focus-visible{outline:2px solid #FFF;outline-offset:2px;}",
       ".hkoff-lb .hkoff-lb__x svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:square;}",
-      "@media (prefers-reduced-motion:reduce){.hkoff .hkoff__vbtn,.hkoff-lb .hkoff-lb__x{transition:none;}.hkoff .hkoff__vbtn:active{transform:none;}}",
+      "@media (prefers-reduced-motion:reduce){.hkoff .hkoff__vbtn,.hkoff-lb .hkoff-lb__x,.hkoff-lb .hkoff-lb__p{transition:none;}.hkoff .hkoff__vbtn:active{transform:none;}}",
       "@container (max-width:600px){.hkoff{padding:32px 0 40px;}.hkoff .hkoff__btn,.hkoff .hkoff__cw{display:block;width:100%;}.hkoff .hkoff__btn.hkoff__btn--row{margin:12px 0 0;}.hkoff .hkoff__row{display:block;}.hkoff .hkoff__cw{margin:12px 0 0;}}",
       "@media (prefers-reduced-motion:reduce){.hkoff .hkoff__btn,.hkoff .hkoff__play,.hkoff .hkoff__cw{transition:none;}.hkoff .hkoff__btn:active,.hkoff .hkoff__cw:active{transform:none;}.hkoff .hkoff__play:active{transform:translate(-50%,-50%);}}"
     ].join("\n"),

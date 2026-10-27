@@ -223,7 +223,10 @@ test("video: not loaded until near the screen, then plays muted on a loop, pictu
   const v = fig(page, "court-walk").locator("video"), b = fig(page, "court-walk").locator(".hkoff__vbtn"), z = fig(page, "court-walk").locator(".hkoff__zoom");
   await expect(v).toHaveAttribute("src", VID["court-walk"]);
   await expect(v).toBeVisible();
-  await expect(z).toBeHidden();
+  // The click target stays on top of the video (so clicking the video opens it full screen); the picture itself is hidden.
+  await expect(z).toBeVisible();
+  await expect(z).toHaveAttribute("aria-label", "Enlarge video: " + loadData().offers["court-walk"].alt);
+  expect(await z.locator("img").evaluate((e) => getComputedStyle(e).opacity)).toBe("0");
   await expect(b).toBeVisible();
   await expect(b).toHaveAttribute("aria-label", "Pause video");
   await b.click();
@@ -309,4 +312,48 @@ test("video pages: no horizontal scroll, video fills the 4:5 frame", async ({ pa
   await expect(fig(page, "court-walk").locator("video")).toBeVisible();
   const r = await fig(page, "court-walk").evaluate((e) => { const b = e.getBoundingClientRect(), v = e.querySelector("video").getBoundingClientRect(); return [Math.abs(b.width / b.height - 0.8) < 0.01, Math.round(v.width) === Math.round(b.width), Math.round(v.height) === Math.round(b.height)]; });
   expect(r).toEqual([true, true, true]);
+});
+
+test("clicking the playing video opens it full screen on black, playing, with pause/play and close; the page video resumes after", async ({ page }) => {
+  await fakePlayer(page);
+  const log = await open(page, "/test/?hk_now=2026-10-19T12:00");
+  await near(page, "vip-function");
+  const f = fig(page, "vip-function"), v = f.locator("video"), z = f.locator(".hkoff__zoom");
+  await expect(v).toBeVisible();
+  await z.click();
+  const dlg = page.locator("dialog.hkoff-lb"), lv = dlg.locator("video"), lp = dlg.locator(".hkoff-lb__p");
+  await expect(dlg).toBeVisible();
+  expect(await dlg.evaluate((e) => [getComputedStyle(e).backgroundColor, e.getBoundingClientRect().width === innerWidth, e.getBoundingClientRect().height === innerHeight])).toEqual(["rgb(0, 0, 0)", true, true]);
+  await expect(lv).toBeVisible();
+  await expect(lv).toHaveAttribute("src", VID["vip-function"]);
+  expect(await lv.evaluate((e) => [e.muted, e.loop, e.getAttribute("aria-hidden")])).toEqual([true, true, "true"]);
+  await expect(dlg.locator("img")).toBeHidden();
+  await expect(lp).toBeVisible();
+  await expect(lp).toHaveAttribute("aria-label", "Pause video");
+  expect(await v.evaluate((e) => e.paused)).toBe(true); // the one on the page waits behind
+  await lp.click();
+  await expect(lp).toHaveAttribute("aria-label", "Play video");
+  expect(await lv.evaluate((e) => e.paused)).toBe(true);
+  await lp.click();
+  await expect(lp).toHaveAttribute("aria-label", "Pause video");
+  await page.keyboard.press("Escape");
+  await expect(dlg).toBeHidden();
+  await expect(z).toBeFocused();
+  await expect.poll(() => v.evaluate((e) => e.paused)).toBe(false); // it was playing, so it carries on
+  expect(log.errors).toEqual([]);
+});
+
+test("a page video the visitor paused stays paused after the full screen view closes", async ({ page }) => {
+  await fakePlayer(page);
+  await open(page, "/test/?hk_now=2026-10-19T12:00");
+  await near(page, "court-walk");
+  const f = fig(page, "court-walk"), v = f.locator("video");
+  await expect(v).toBeVisible();
+  await f.locator(".hkoff__vbtn").click(); // pause
+  await f.locator(".hkoff__zoom").click();
+  const dlg = page.locator("dialog.hkoff-lb");
+  await expect(dlg.locator(".hkoff-lb__p")).toHaveAttribute("aria-label", "Play video");
+  await dlg.locator(".hkoff-lb__x").click();
+  await expect(dlg).toBeHidden();
+  expect(await v.evaluate((e) => e.paused)).toBe(true);
 });
