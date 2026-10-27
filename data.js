@@ -130,6 +130,10 @@ window.HAWKS_DATA = {
      alt:       a short description of the picture for screen readers
      video:     the 11 character YouTube video ID (from youtube.com/shorts/<ID>);
                 "" for no video. Plays only when the picture's play button is clicked.
+     videoUrl:  an https:// link to an MP4 video, 4x5 shape (for example 720 x 900), no sound,
+                a few MB. It replaces the picture with a muted looping video (pause/play
+                button bottom right); the picture is the fallback, and clicking it opens it
+                full screen on black. When set, it is used instead of video. "" for none.
      listHeading: only for "court-walk" and "vip-function", the line above the list. */
   offers: {
     "flexi": {
@@ -165,7 +169,7 @@ window.HAWKS_DATA = {
       body:"Enjoy food, drinks and guest speakers at our VIP Pre-Game Function before taking in the action live.",
       button:"Secure your place in the VIP experience 🥂", link:"functionTickets",
       image:"https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ad57980b3e3cd3cf9f3590d_Pre-Game%20Function_4x5.jpg",
-      alt:"Guests at a table in the VIP pre-game function", video:"",
+      alt:"Guests at a table in the VIP pre-game function", video:"", videoUrl:"https://video.illawarra-hawks.com.au/Pre-GameFunction_4x5.mp4",
       listHeading:"Pre-game function times"
     },
     "court-walk": {
@@ -173,7 +177,7 @@ window.HAWKS_DATA = {
       body:"Get a closer look at the action with our Warm-Up Court Walk experience and see game day from a different perspective.",
       button:"", link:"",
       image:"https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ad579802e57b218a807b921_Court%20Walk_4x5.jpg",
-      alt:"Fans on the court during warm-ups holding a We Rise Together sign", video:"",
+      alt:"Fans on the court during warm-ups holding a We Rise Together sign", video:"", videoUrl:"https://video.illawarra-hawks.com.au/CourtWalk_4x5.mp4",
       listHeading:"Book your Court Walk now 🏀"
     }
   },

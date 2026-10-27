@@ -127,7 +127,7 @@ test("court walk: future only, nothing played or already off sale", async ({ pag
 });
 
 test("a video ID adds a play button; clicking it loads the YouTube player, nothing loads before", async ({ page }) => {
-  await useData(page, (d) => { d.offers["court-walk"].video = "dQw4w9WgXcQ"; });
+  await useData(page, (d) => { d.offers["court-walk"].videoUrl = ""; d.offers["court-walk"].video = "dQw4w9WgXcQ"; });
   await open(page);
   const root = page.locator(sel("court-walk"));
   await expect(root.locator("iframe")).toHaveCount(0);
@@ -184,4 +184,129 @@ test("no horizontal scroll at phone and desktop widths", async ({ page }) => {
     const over = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(over, "width " + w).toBeLessThanOrEqual(0);
   }
+});
+
+// ---- video with picture fallback and full-screen lightbox (court-walk and vip-function) ----
+const VID = { "court-walk": "https://video.illawarra-hawks.com.au/CourtWalk_4x5.mp4", "vip-function": "https://video.illawarra-hawks.com.au/Pre-GameFunction_4x5.mp4" };
+
+// Headless Chromium has no H.264, so stand in for the browser's player: play() reports "playing", pause() "pause".
+async function fakePlayer(page) {
+  await page.addInitScript(() => {
+    const P = HTMLMediaElement.prototype;
+    P.__plays = 0;
+    P.load = function () {};
+    P.play = function () { this.__plays++; this.__paused = false; setTimeout(() => this.dispatchEvent(new Event("playing")), 0); return Promise.resolve(); };
+    P.pause = function () { this.__paused = true; this.dispatchEvent(new Event("pause")); };
+    Object.defineProperty(P, "paused", { get() { return this.__paused !== false; }, configurable: true });
+  });
+}
+const fig = (page, k) => page.locator(sel(k) + " .hkoff__fig");
+async function near(page, k) { await page.locator(sel(k)).scrollIntoViewIfNeeded(); }
+
+test("only Court Walk and VIP function have a videoUrl, and it is the hosted MP4", () => {
+  const o = loadData().offers;
+  Object.keys(o).forEach((k) => expect(o[k].videoUrl || "", k).toBe(VID[k] || ""));
+});
+
+test("video: not loaded until near the screen, then plays muted on a loop, picture hidden, pause/play works", async ({ page }) => {
+  await fakePlayer(page);
+  const log = await open(page, "/test/?hk_now=2026-10-19T12:00");
+  for (const k of Object.keys(VID)) {
+    const v = fig(page, k).locator("video");
+    await expect(v).toHaveAttribute("preload", "none");
+    expect(await v.evaluate((e) => [e.muted, e.loop, e.hasAttribute("playsinline"), e.getAttribute("aria-hidden")])).toEqual([true, true, true, "true"]);
+    expect(await v.getAttribute("poster")).toBe(loadData().offers[k].image);
+  }
+  // Far below the fold: nothing requested yet.
+  await expect(fig(page, "court-walk").locator("video")).not.toHaveAttribute("src", /.+/);
+  await near(page, "court-walk");
+  const v = fig(page, "court-walk").locator("video"), b = fig(page, "court-walk").locator(".hkoff__vbtn"), z = fig(page, "court-walk").locator(".hkoff__zoom");
+  await expect(v).toHaveAttribute("src", VID["court-walk"]);
+  await expect(v).toBeVisible();
+  await expect(z).toBeHidden();
+  await expect(b).toBeVisible();
+  await expect(b).toHaveAttribute("aria-label", "Pause video");
+  await b.click();
+  await expect(b).toHaveAttribute("aria-label", "Play video");
+  expect(await v.evaluate((e) => e.paused)).toBe(true);
+  await b.click();
+  await expect(b).toHaveAttribute("aria-label", "Pause video");
+  expect(await v.evaluate((e) => e.paused)).toBe(false);
+  expect(log.errors).toEqual([]);
+});
+
+test("video that cannot load: the picture stays, there is no video control, and the picture opens full screen on black", async ({ page }) => {
+  await page.route("https://video.illawarra-hawks.com.au/**", (r) => r.fulfill({ status: 404, body: "no" }));
+  const log = await open(page, "/test/?hk_now=2026-10-19T12:00");
+  await near(page, "vip-function");
+  const f = fig(page, "vip-function"), z = f.locator(".hkoff__zoom");
+  await expect(f.locator("video")).toBeHidden();
+  await expect(f.locator(".hkoff__vbtn")).toBeHidden();
+  await expect(z).toBeVisible();
+  await expect(z).toHaveAttribute("aria-label", "Enlarge picture: " + loadData().offers["vip-function"].alt);
+  await z.click();
+  const dlg = page.locator("dialog.hkoff-lb");
+  await expect(dlg).toBeVisible();
+  expect(await dlg.evaluate((e) => [getComputedStyle(e).backgroundColor, e.getBoundingClientRect().width === innerWidth, e.getBoundingClientRect().height === innerHeight])).toEqual(["rgb(0, 0, 0)", true, true]);
+  await expect(dlg.locator("img")).toHaveAttribute("src", loadData().offers["vip-function"].image);
+  expect(await page.evaluate(() => document.documentElement.style.overflow)).toBe("hidden");
+  await page.keyboard.press("Escape");
+  await expect(dlg).toBeHidden();
+  await expect.poll(() => page.evaluate(() => document.documentElement.style.overflow)).toBe("");
+  await expect(z).toBeFocused();
+  // The close button and a click outside the picture also close it.
+  await z.click(); await dlg.locator(".hkoff-lb__x").click(); await expect(dlg).toBeHidden();
+  await z.click(); await dlg.click({ position: { x: 5, y: 5 } }); await expect(dlg).toBeHidden();
+  expect(log.errors.filter((e) => !/Failed to load resource/.test(e))).toEqual([]);
+});
+
+test("reduced motion: nothing loads on its own, the picture shows with a Play button, which starts the video", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await fakePlayer(page);
+  await open(page, "/test/?hk_now=2026-10-19T12:00");
+  await near(page, "court-walk");
+  const f = fig(page, "court-walk"), v = f.locator("video"), b = f.locator(".hkoff__vbtn");
+  await expect(v).not.toHaveAttribute("src", /.+/);
+  await expect(f.locator(".hkoff__zoom")).toBeVisible();
+  await expect(b).toBeVisible();
+  await expect(b).toHaveAttribute("aria-label", "Play video");
+  await b.click();
+  await expect(v).toHaveAttribute("src", VID["court-walk"]);
+  await expect(v).toBeVisible();
+  await expect(b).toHaveAttribute("aria-label", "Pause video");
+});
+
+test("autoplay blocked by the browser: the picture stays with a Play button", async ({ page }) => {
+  await page.addInitScript(() => {
+    const P = HTMLMediaElement.prototype;
+    P.load = function () {};
+    P.play = function () { return Promise.reject(Object.assign(new Error("blocked"), { name: "NotAllowedError" })); };
+  });
+  await open(page, "/test/?hk_now=2026-10-19T12:00");
+  await near(page, "court-walk");
+  const f = fig(page, "court-walk");
+  await expect(f.locator(".hkoff__vbtn")).toHaveAttribute("aria-label", "Play video");
+  await expect(f.locator(".hkoff__zoom")).toBeVisible();
+  await expect(f.locator("video")).toBeHidden();
+});
+
+test("a bad videoUrl is ignored with a warning and the page keeps its plain picture", async ({ page }) => {
+  await useData(page, (d) => { d.offers["court-walk"].videoUrl = "http://example.com/x.mp4"; });
+  const log = await open(page, "/test/?hk_now=2026-10-19T12:00");
+  expect(log.warnings.join("\n")).toMatch(/offers\.court-walk\.videoUrl ignored/);
+  await expect(fig(page, "court-walk").locator("video")).toHaveCount(0);
+  await expect(fig(page, "court-walk").locator("img")).toBeVisible();
+});
+
+test("video pages: no horizontal scroll, video fills the 4:5 frame", async ({ page }) => {
+  await fakePlayer(page);
+  for (const w of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width: w, height: 900 });
+    await open(page, "/test/?hk_now=2026-10-19T12:00");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), "width " + w).toBeLessThanOrEqual(0);
+  }
+  await near(page, "court-walk");
+  await expect(fig(page, "court-walk").locator("video")).toBeVisible();
+  const r = await fig(page, "court-walk").evaluate((e) => { const b = e.getBoundingClientRect(), v = e.querySelector("video").getBoundingClientRect(); return [Math.abs(b.width / b.height - 0.8) < 0.01, Math.round(v.width) === Math.round(b.width), Math.round(v.height) === Math.round(b.height)]; });
+  expect(r).toEqual([true, true, true]);
 });

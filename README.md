@@ -178,7 +178,12 @@ Lists every Court Walk still on sale, each with its own ticket button. A Court W
 
 If `next-game` is on the same page, you only need the script line once. A second copy does no harm.
 
-**Adding a video:** upload a YouTube Short and paste its 11 character ID (the part after `youtube.com/shorts/`) into that offer's `video` in `data.js`. The video only loads when someone clicks the play button.
+**Video on the Court Walk and VIP function pages:** these two show a muted, looping video in place of the picture, with a pause/play button in the bottom right corner. The files are `https://video.illawarra-hawks.com.au/CourtWalk_4x5.mp4` and `https://video.illawarra-hawks.com.au/Pre-GameFunction_4x5.mp4` (the `videoUrl` of each offer in `data.js`). To swap a video, upload a new file with the same name and address. To use one on another page, paste an MP4 link into that offer's `videoUrl`.
+- It starts only when the page scrolls near it, and pauses when it scrolls away.
+- The picture is the fallback. It shows if the video can't play, if the visitor has "reduce motion" or Data Saver on (then there's a Play button), or if the browser blocks autoplay. Clicking the picture opens it full screen on black; the close button, Esc or a click outside closes it.
+- Best file: 4x5 shape (for example 720 x 900), no sound, H.264, a few MB, exported with "fast start" on.
+
+**Adding a YouTube Short instead:** paste its 11 character ID (the part after `youtube.com/shorts/`) into that offer's `video`. It only loads when someone clicks the play button. If `videoUrl` is also set, the MP4 is used.
 
 ### Game countdown (for the premium seating page)
 

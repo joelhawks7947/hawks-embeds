@@ -217,10 +217,11 @@
       if (!o || typeof o !== "object") { warn("offers." + k + " skipped: not an offer"); return; }
       function txt(v) { return typeof v === "string" ? v.trim() : ""; }
       var c = { overline: txt(o.overline), heading: txt(o.heading), note: txt(o.note), body: txt(o.body), button: txt(o.button), link: txt(o.link),
-        image: txt(o.image), alt: txt(o.alt), video: txt(o.video), listHeading: txt(o.listHeading) };
+        image: txt(o.image), alt: txt(o.alt), video: txt(o.video), videoUrl: txt(o.videoUrl), listHeading: txt(o.listHeading) };
       if (!c.heading) why.push("heading is empty");
       if (c.image && !okUrl(c.image)) why.push("image is not an https:// link");
       if (c.video && !/^[A-Za-z0-9_-]{11}$/.test(c.video)) { warn("offers." + k + ".video ignored: \"" + c.video + "\" is not an 11 character YouTube video ID"); c.video = ""; }
+      if (c.videoUrl && !okUrl(c.videoUrl)) { warn("offers." + k + ".videoUrl ignored: not an https:// link"); c.videoUrl = ""; }
       if (c.link && !okUrl(c.link) && !/^[A-Za-z][A-Za-z0-9]*$/.test(c.link)) why.push("link is neither an https:// link nor a link name");
       if (why.length) { warn("offers." + k + " skipped: " + why.join("; ")); return; }
       out[k] = c;
@@ -1902,6 +1903,59 @@
   };
 
 
+  /* offer pages with a videoUrl: the video starts when the picture is near the screen, plays muted on a loop
+     and has a pause/play button. If it can't play (or the visitor prefers reduced motion or Save-Data) the
+     picture stays, with a Play button for reduced motion; clicking the picture opens it full screen on black. */
+  function setupMotion(root, o) {
+    var f = root.querySelector(".hkoff__fig"), zoom = f.querySelector(".hkoff__zoom"), v = f.querySelector(".hkoff__v"), vb = f.querySelector(".hkoff__vbtn");
+    var reduce = !!(W.matchMedia && W.matchMedia("(prefers-reduced-motion: reduce)").matches), conn = W.navigator && W.navigator.connection;
+    var save = !!(conn && conn.saveData), started = false, userPaused = false, failed = false, dlg = null, prevOverflow = "";
+    v.muted = true; v.defaultMuted = true;
+    function state(playing) { vb.setAttribute("data-state", playing ? "playing" : "paused"); vb.setAttribute("aria-label", playing ? "Pause video" : "Play video"); }
+    function showPlay() { if (failed) return; state(false); vb.hidden = false; }
+    function fallBack() { failed = true; try { v.pause(); } catch (e) { /* nothing to stop */ } v.removeAttribute("src"); v.hidden = true; vb.hidden = true; zoom.hidden = false; }
+    function go() {
+      var p; try { p = v.play(); } catch (e) { fallBack(); return; }
+      if (p && p.catch) p.catch(function (e) { if (e && e.name === "NotAllowedError") showPlay(); });
+    }
+    function begin() { if (started || failed) return; started = true; v.src = o.videoUrl; go(); }
+    v.addEventListener("playing", function () { if (failed) return; v.hidden = false; zoom.hidden = true; vb.hidden = false; state(true); });
+    v.addEventListener("pause", function () { if (!failed && !v.hidden) state(false); });
+    v.addEventListener("error", fallBack);
+    vb.addEventListener("click", function () {
+      if (!started) { begin(); return; }
+      if (v.paused) { userPaused = false; go(); } else { userPaused = true; v.pause(); }
+    });
+    if (reduce || save) showPlay();
+    else if ("IntersectionObserver" in W) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) { if (!started) begin(); else if (!userPaused && !failed && v.paused) go(); }
+          else if (started && !v.paused) v.pause();
+        });
+      }, { rootMargin: "200px" }).observe(f);
+    } else begin();
+
+    function lightbox() {
+      var d = D.createElement("dialog");
+      d.className = "hkoff-lb"; d.setAttribute("aria-label", "Enlarged picture");
+      d.innerHTML = '<button type="button" class="hkoff-lb__x" aria-label="Close picture"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5L5 19"/></svg></button>' +
+        '<img class="hkoff-lb__img" src="' + esc(o.image) + '" alt="' + esc(o.alt) + '">';
+      d.querySelector(".hkoff-lb__x").addEventListener("click", function () { d.close(); });
+      d.addEventListener("click", function (e) { if (e.target === d) d.close(); });
+      d.addEventListener("close", function () { D.documentElement.style.overflow = prevOverflow; zoom.focus(); });
+      D.body.appendChild(d);
+      return d;
+    }
+    zoom.addEventListener("click", function () {
+      if (!dlg) dlg = lightbox();
+      if (typeof dlg.showModal !== "function") { W.open(o.image, "_blank", "noopener"); return; }
+      prevOverflow = D.documentElement.style.overflow;
+      D.documentElement.style.overflow = "hidden";
+      dlg.showModal();
+    });
+  }
+
   /* ---------------- offer (.hkoff) ----------------
      Landing page block for an offer (data-offer="flexi", "family", "tickets-from-30", "courtside",
      "vip-function" or "court-walk"; copy, picture and links in data.js offers). Light and
@@ -1950,6 +2004,27 @@
       ".hkoff .hkoff__cw:active{transform:scale(0.98);}",
       ".hkoff .hkoff__cw:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
       ".hkoff .hkoff__none{font-size:16px;line-height:1.5;color:var(--g);margin:0;padding:0;}",
+      ".hkoff .hkoff__fig--vid{aspect-ratio:4 / 5;}",
+      ".hkoff .hkoff__zoom{display:block;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;background:none;cursor:zoom-in;line-height:0;}",
+      ".hkoff .hkoff__zoom:focus-visible{outline:2px solid var(--k);outline-offset:2px;}",
+      ".hkoff .hkoff__fig--vid .hkoff__img{height:100%;aspect-ratio:auto;}",
+      ".hkoff .hkoff__v{position:absolute;left:0;top:0;display:block;width:100%;height:100%;margin:0;object-fit:cover;background:var(--k);}",
+      ".hkoff .hkoff__vbtn{position:absolute;right:12px;bottom:12px;display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:0;background:rgba(0,0,0,0.75);color:var(--w);cursor:pointer;transition:background-color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkoff .hkoff__vbtn:hover{background:var(--r);}",
+      ".hkoff .hkoff__vbtn:active{transform:scale(0.98);}",
+      ".hkoff .hkoff__vbtn:focus-visible{outline:2px solid var(--w);outline-offset:2px;box-shadow:0 0 0 4px var(--k);}",
+      ".hkoff .hkoff__vbtn svg{display:block;width:18px;height:18px;fill:currentColor;}",
+      ".hkoff .hkoff__vbtn[data-state=\"playing\"] .hkoff__i-play,.hkoff .hkoff__vbtn[data-state=\"paused\"] .hkoff__i-pause{display:none;}",
+      /* Full-screen picture on black. It lives on the page body, so its rules start at its own class. */
+      ".hkoff-lb{box-sizing:border-box;position:fixed;left:0;top:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#000;color:#FFF;overscroll-behavior:contain;}",
+      ".hkoff-lb *,.hkoff-lb *::before,.hkoff-lb *::after{box-sizing:border-box;}",
+      ".hkoff-lb[open]{display:flex;align-items:center;justify-content:center;}",
+      ".hkoff-lb .hkoff-lb__img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:0;padding:0;border:0;object-fit:contain;}",
+      ".hkoff-lb .hkoff-lb__x{position:absolute;top:max(12px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));display:grid;place-items:center;width:44px;height:44px;margin:0;padding:0;border:0;border-radius:0;background:rgba(255,255,255,0.12);color:#FFF;cursor:pointer;transition:background-color 120ms cubic-bezier(0.22,1,0.36,1);}",
+      ".hkoff-lb .hkoff-lb__x:hover{background:#FF0013;}",
+      ".hkoff-lb .hkoff-lb__x:focus-visible{outline:2px solid #FFF;outline-offset:2px;}",
+      ".hkoff-lb .hkoff-lb__x svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:square;}",
+      "@media (prefers-reduced-motion:reduce){.hkoff .hkoff__vbtn,.hkoff-lb .hkoff-lb__x{transition:none;}.hkoff .hkoff__vbtn:active{transform:none;}}",
       "@container (max-width:600px){.hkoff{padding:32px 0 40px;}.hkoff .hkoff__btn,.hkoff .hkoff__cw{display:block;width:100%;}.hkoff .hkoff__btn.hkoff__btn--row{margin:12px 0 0;}.hkoff .hkoff__row{display:block;}.hkoff .hkoff__cw{margin:12px 0 0;}}",
       "@media (prefers-reduced-motion:reduce){.hkoff .hkoff__btn,.hkoff .hkoff__play,.hkoff .hkoff__cw{transition:none;}.hkoff .hkoff__btn:active,.hkoff .hkoff__cw:active{transform:none;}.hkoff .hkoff__play:active{transform:translate(-50%,-50%);}}"
     ].join("\n"),
@@ -1957,8 +2032,16 @@
       var key = el.getAttribute("data-offer"), o = own(ctx.data.offers, key);
       if (!o) throw new Error("no offer called \"" + key + "\" in data.js (check data-offer in the placeholder)");
       var url = offerLink(o.link), list = key === "court-walk" || key === "vip-function";
-      var fig = "";
-      if (o.image) {
+      var fig = "", motion = !!(o.image && o.videoUrl);
+      if (motion) {
+        /* Picture (opens full screen) with the muted looping video over it once it plays. */
+        fig = '<figure class="hkoff__fig hkoff__fig--vid"><button type="button" class="hkoff__zoom" aria-haspopup="dialog" aria-label="Enlarge picture: ' + esc(o.alt) + '">' +
+          '<img class="hkoff__img" src="' + esc(o.image) + '" alt="' + esc(o.alt) + '" width="1080" height="1350" loading="lazy" decoding="async"></button>' +
+          '<video class="hkoff__v" muted loop playsinline preload="none" poster="' + esc(o.image) + '" aria-hidden="true" tabindex="-1" hidden></video>' +
+          '<button type="button" class="hkoff__vbtn" aria-label="Pause video" data-state="playing" hidden>' +
+          '<svg class="hkoff__i-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>' +
+          '<svg class="hkoff__i-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 4l13 8-13 8z"/></svg></button></figure>';
+      } else if (o.image) {
         fig = '<figure class="hkoff__fig"><img class="hkoff__img" src="' + esc(o.image) + '" alt="' + esc(o.alt) + '" width="1080" height="1350" loading="lazy" decoding="async">' +
           (o.video ? '<button type="button" class="hkoff__play" aria-label="Play video: ' + esc(o.heading) + '">Play video</button>' : "") + "</figure>";
       }
@@ -1974,6 +2057,7 @@
         (list ? '<div class="hkoff__list">' + (o.listHeading ? '<h3 class="hkoff__lh">' + esc(o.listHeading) + "</h3>" : "") + '<div class="hkoff__live"></div></div>' : "") +
         "</section>";
       var root = el.firstChild;
+      if (motion) setupMotion(root, o);
       var play = root.querySelector(".hkoff__play");
       if (play) play.addEventListener("click", function () {
         var f = root.querySelector(".hkoff__fig");
