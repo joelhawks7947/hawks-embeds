@@ -339,14 +339,14 @@ window.HAWKS_DATA = {
              While a vote is open the badge/meta/ctaLabel are used; between votes the
              badgeClosed/metaClosed/ctaLabelClosed ones are used.
        quiz: {title} is this week's quiz name from the quiz app. If the quiz app can't be
-             reached, bodyFallback is used and the countdown is left out.
+             reached, bodyFallback is used and the quiz tile is left out.
      --------------------------------------------------------------- */
   gamesPortal: {
     heading: "Hawks Games",
     intro: "Play, vote and have your say. Some games reset every day, some every home game, and some are always open.",
     moreHeading: "More Hawks games",
     moreSub: "Daily, weekly and all season long.",
-    /* The quiz app's current quiz (title, description, closes_at). Empty = the quiz card shows its fallback text and no countdown. */
+    /* The quiz app's current quiz (title, description, closes_at). Empty = the quiz card shows its fallback text and no quiz tile. */
     quizApi: "https://quiz.illawarra-hawks.com.au/api/public/current-quiz",
     utm: { source: "hawks.com.au", medium: "referral", campaign: "engagement-page" },
     cards: [

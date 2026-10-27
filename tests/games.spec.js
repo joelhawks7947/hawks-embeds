@@ -68,16 +68,23 @@ test("order runs down the whole page: MVP, CMG, the three small cards, then the 
   expect(last).toBeGreaterThan(0);
 });
 
-test("On now tiles: grid date, quiz countdown, MVP round when a vote is open", async ({ page }) => {
-  await open(page, "2026-10-27T09:59:30"); // quiz closes 6 days 14:00:30 later
+test("On now tiles: grid date, quiz closing date and time, MVP", async ({ page }) => {
+  await open(page, "2026-10-27T10:00");
   const grid = page.locator(G + ' [data-tile="grid"]');
   await expect(grid.locator(".hkgames__tv")).toHaveText("27 Oct");
-  const q = page.locator(G + ' [data-tile="quiz"] .hkgames__tv');
-  await expect(q).toHaveText("6D 14:00");
-  await expect(q).toHaveAttribute("role", "timer");
-  await expect(q).toHaveAttribute("aria-live", "off");
-  await expect(page.locator(G + ' [data-tile="quiz"] .hkgames__ts')).toHaveText("Hawks Quiz #1");
-  await expect(page.locator(G + " .hkgames__tile").first()).toHaveAttribute("href", /^#hk\d+-/ );
+  const q = page.locator(G + ' [data-tile="quiz"]');
+  // closes_at 2026-11-02T13:00:00Z is midnight Sydney, so the date is 3 Nov, time 12:00am
+  await expect(q.locator(".hkgames__tl")).toHaveText("Quiz closes");
+  await expect(q.locator(".hkgames__tv")).toHaveText("3 Nov");
+  await expect(q.locator(".hkgames__ts")).toHaveText("Hawks Quiz #1, 12:00am");
+  await expect(q.locator(".hkgames__tv")).not.toHaveAttribute("role", "timer");
+  await expect(page.locator(G + " .hkgames__tile").first()).toHaveAttribute("href", /^#hk\d+-/);
+});
+
+test("quiz closing time is shown in Sydney time, including daylight saving", async ({ page }) => {
+  await open(page, "2026-10-27T10:00", { quiz: { title: "Hawks Quiz #1", description: "", closes_at: "2026-11-04T05:30:00.000Z" } });
+  await expect(page.locator(G + ' [data-tile="quiz"] .hkgames__tv')).toHaveText("4 Nov");
+  await expect(page.locator(G + ' [data-tile="quiz"] .hkgames__ts')).toHaveText("Hawks Quiz #1, 4:30pm");
 });
 
 test("MVP open: tile and card show the round and opponent, button reads Vote now", async ({ page }) => {

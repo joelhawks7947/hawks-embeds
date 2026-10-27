@@ -2486,9 +2486,9 @@
             });
             if (tq) {
               if (live) {
-                var d = Math.floor(left / 86400000), h = Math.floor(left / 3600000) % 24, m = Math.floor(left / 60000) % 60;
-                var v = (d ? d + "D " : "") + ("0" + h).slice(-2) + ":" + ("0" + m).slice(-2);
-                once("quiztile", v + quiz.title, function () { setT(tq, "Quiz closes in", v, quiz.title); var tv = R(tq, "tv"); tv.setAttribute("role", "timer"); tv.setAttribute("aria-live", "off"); });
+                /* Closing date and time in Sydney, like the MVP tile. */
+                var cp = parts(quiz.closes), cd = ymd(cp.year, cp.month, cp.day), ct = ("0" + cp.hour).slice(-2) + ":" + ("0" + cp.minute).slice(-2);
+                once("quiztile", cd + ct + quiz.title, function () { setT(tq, "Quiz closes", U.dm(cd), quiz.title + ", " + U.time(ct)); });
               } else once("quiztile", "off" + quiz.status, function () { tq.hidden = true; });
             }
           }

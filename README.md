@@ -336,7 +336,7 @@ Everything on the Hawks Games page lives in `data.js` under `gamesPortal`, with 
 - **Hide a card, or show "Coming soon":** set `status` to `"hidden"` or `"soon"`.
 - **Pictures:** upload each screenshot to Webflow Assets, then paste its full https address into `image`. Until `image` is filled in the card shows a plain block.
 - **MVP round and opponent** come from the same schedule as the Greater Bank MVP embed (`mvpVote.games`), so updating that schedule updates both. Each game line has a `round` number; keep it filled in.
-- **Quiz title, description and countdown** come from the quiz app's current quiz. The address is in `gamesPortal.quizApi` (it belongs to the quiz app, which only allows `https://www.hawks.com.au` to read it). If it is empty or the app is down, the card says "This week's Hawks quiz" and the countdown tile is left out.
+- **Quiz title, description and closing date and time** come from the quiz app's current quiz. The address is in `gamesPortal.quizApi` (it belongs to the quiz app, which only allows `https://www.hawks.com.au` to read it). If it is empty or the app is down, the card says "This week's Hawks quiz" and the quiz tile is left out.
 - **Analytics:** each click sends a `games_card_click` event to the site's Google Analytics, with `card_id`, `position` and `location` (`card` or `tile`), if Google Analytics is on the page.
 
 ### Girls in the Game camps
