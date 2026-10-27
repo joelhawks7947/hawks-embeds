@@ -2,7 +2,7 @@
 // mvp-vote, quiz from the current-quiz function (mocked here), UTM tags, GA4 click events.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs"), path = require("path");
-const { ROOT, useData, watchConsole, ready } = require("./helpers");
+const { ROOT, loadData, useData, watchConsole, ready } = require("./helpers");
 
 const G = '[data-hawks="games"]';
 const IMG_DIR = path.join(ROOT, "test/games-images");
@@ -206,12 +206,37 @@ for (const w of [320, 390, 780, 870, 1280]) {
   });
 }
 
-test("script blocked: the fallback links are all there", async ({ page }) => {
+test("script blocked: readable copy and the working links are all there", async ({ page }) => {
   await page.route(/hawks\.js|hawks-core\.js/, (r) => r.abort());
   await page.goto("/test/games.html");
-  const links = page.locator(G + " > a");
-  await expect(links).toHaveCount(5);
-  await expect(links.nth(0)).toBeVisible();
+  await expect(page.locator(G + " h2")).toHaveText("Hawks Games");
+  await expect(page.locator(G + " h3")).toHaveCount(6);
+  const links = page.locator(G + " a");
+  await expect(links).toHaveCount(6);
+  await expect(links.first()).toBeVisible();
+});
+
+test("static copy in the embed matches data.js: names, links, sponsors and descriptions", async ({ page }) => {
+  await page.route(/hawks\.js|hawks-core\.js/, (r) => r.abort());
+  await page.goto("/test/games.html");
+  const html = await page.locator(G).innerText();
+  const hrefs = await page.locator(G + " a").evaluateAll((a) => a.map((x) => x.getAttribute("href")));
+  const P = loadData().gamesPortal;
+  expect(html).toContain(P.intro);
+  for (const c of P.cards) {
+    expect(html, c.id + " title").toContain(c.title);
+    expect(hrefs, c.id + " link").toContain(c.url);
+    if (c.sponsor) expect(html, c.id + " sponsor").toContain(c.sponsor);
+    if (c.kind !== "quiz") expect(html, c.id + " body").toContain(c.body);
+    if (c.kicker && !c.kicker.startsWith("Memberships")) expect(html, c.id + " kicker").toContain(c.kicker);
+  }
+  expect(html).toContain("Memberships for the NBL27 season");
+});
+
+test("once the script runs, the readable copy is replaced by the designed page", async ({ page }) => {
+  await open(page, "2026-10-02T19:45");
+  await expect(page.locator(G + " > h2, " + G + " > h3")).toHaveCount(0);
+  await expect(page.locator(G + " .hkgames")).toHaveCount(1);
 });
 
 test("styles and fonts are injected once with game-preview on the same page", async ({ page }) => {

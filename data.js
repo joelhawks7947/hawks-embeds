@@ -357,7 +357,7 @@ window.HAWKS_DATA = {
         image:"https://video.illawarra-hawks.com.au/image/membership.jpg", alt:"Membership Finder question screen", imagePos:"center 45%"},
       {id:"greater-bank-mvp", kind:"mvp", layout:"full", order:1, status:"live",
         badge:"Voting open", badgeClosed:"Voting opens at tip-off", title:"Greater Bank MVP", sponsor:"Presented by Greater Bank",
-        body:"Pick your standout Hawk after every home game.",
+        body:"Pick your standout Hawk after every game.",
         meta:"Now voting: {round}, {game}.", metaClosed:"Next vote: {game}.",
         ctaLabel:"Vote now", ctaLabelClosed:"See past winners", url:"https://hawks-mvp-vote.lovable.app/",
         image:"https://video.illawarra-hawks.com.au/image/mvp.jpg", alt:"Greater Bank MVP voting screen", imagePos:"center 20%"},

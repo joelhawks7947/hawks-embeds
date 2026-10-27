@@ -111,18 +111,35 @@ The NBL27 events, grouped by month. Finished events move to a collapsed **Past e
 
 ### Hawks Games page (engagement page)
 
-For hawks.com.au/pages/engagement. Put this in a Code Embed, with the game preview embed below it if wanted:
+For hawks.com.au/pages/engagement. Put this in a Code Embed. The text inside the `div` is what search engines, AI tools and anyone with the script blocked can read, so it is real copy rather than just links. The script replaces it with the designed page. It deliberately leaves out anything that changes (this week's quiz title, the MVP round).
 
 ```html
 <div data-hawks="games">
-  <a href="https://hawks-membership-picker.lovable.app/">Membership Finder</a>
-  <a href="https://hawks-mvp-vote.lovable.app/">Greater Bank MVP</a>
-  <a href="https://cmg-midcourt-mayhem.lovable.app/">CMG Midcourt Mayhem</a>
-  <a href="https://quiz.illawarra-hawks.com.au/">Hawks Trivia</a>
-  <a href="https://bracket.illawarra-hawks.com.au/">Hawks Pecking Order</a>
+  <h2>Hawks Games</h2>
+  <p>Play, vote and have your say. Some games reset every day, some every home game, and some are always open.</p>
+  <h3>Greater Bank MVP</h3>
+  <p>Presented by Greater Bank. Pick your standout Hawk after every game.</p>
+  <p><a href="https://hawks-mvp-vote.lovable.app/">Vote for the Greater Bank MVP</a></p>
+  <h3>CMG Midcourt Mayhem</h3>
+  <p>Presented by CMG. Four shots, 30 seconds, one run. Choose your shooter type and register for your shot at a home game. One fan is drawn about 48 hours before each home game.</p>
+  <p><a href="https://cmg-midcourt-mayhem.lovable.app/">Enter the CMG Midcourt Mayhem draw</a></p>
+  <h3>Hawks Grid</h3>
+  <p>Daily. Fill the grid with Hawks players who fit both categories. Nine guesses, each player once. A new grid every night at midnight.</p>
+  <p><a href="https://grid.illawarra-hawks.com.au/">Play Hawks Grid</a></p>
+  <h3>Hawks Trivia</h3>
+  <p>Weekly. A new Hawks quiz every week. Sign in with a magic link to go in the prize draw.</p>
+  <p><a href="https://quiz.illawarra-hawks.com.au/">Start the Hawks quiz</a></p>
+  <h3>Hawks Pecking Order</h3>
+  <p>Ongoing. Settle Hawks debates bracket by bracket. Pick your favourites and crown the winners.</p>
+  <p><a href="https://bracket.illawarra-hawks.com.au/">Vote in Hawks Pecking Order</a></p>
+  <h3>Membership Finder</h3>
+  <p>Memberships for the NBL27 season. Answer a few quick questions and we'll match you with the Hawks membership that suits how you follow the club.</p>
+  <p><a href="https://hawks-membership-picker.lovable.app/">Find my membership</a></p>
 </div>
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
+
+If a game's name, link or description changes in `data.js`, change it here too and paste the embed again (a test checks the names, links and descriptions still match).
 
 ### Offer landing pages
 
