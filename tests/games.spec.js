@@ -195,14 +195,14 @@ test("duplicate script tags: renders once, no duplicate IDs", async ({ page }) =
   expect(log.errors).toEqual([]);
 });
 
-for (const w of [320, 390, 780, 1280]) {
+for (const w of [320, 390, 780, 870, 1280]) {
   test("width " + w + ": no horizontal scroll", async ({ page }) => {
     await page.setViewportSize({ width: w, height: 900 });
     await open(page, "2026-10-02T19:45");
     const over = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(over).toBeLessThanOrEqual(0);
     const box = await page.locator(G + " .hkgames").boundingBox();
-    expect(box.width).toBeLessThanOrEqual(780);
+    expect(box.width).toBeLessThanOrEqual(870);
   });
 }
 

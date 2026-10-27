@@ -2305,7 +2305,7 @@
 
   M.games = {
     css: [
-      ".hkgames{box-sizing:border-box;display:block;width:100%;max-width:780px;margin:0 auto;background:#fff;color:#000;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;text-align:left;}",
+      ".hkgames{box-sizing:border-box;display:block;width:100%;max-width:870px;margin:0 auto;background:#fff;color:#000;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;text-align:left;}",
       ".hkgames *,.hkgames *::before,.hkgames *::after{box-sizing:border-box;}",
       ".hkgames[hidden],.hkgames [hidden]{display:none !important;}",
       ".hkgames a:focus-visible{outline:2px solid #FF0013;outline-offset:2px;}",
