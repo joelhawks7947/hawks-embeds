@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname;
-const SKIP_DIRS = new Set([".git", "node_modules", "test-results", "playwright-report"]);
+const SKIP_DIRS = new Set([".git", "node_modules", "test-results", "playwright-report", "hawks-games-handoff"]); // the design brief folder is not part of the repo
 const TEXT = /\.(js|mjs|cjs|json|html|css|md|yml|yaml|txt)$|^\.gitignore$/;
 const BAD = new RegExp("[" + [0x2012, 0x2013, 0x2014, 0x2015].map((c) => String.fromCharCode(c)).join("") + "]");
 

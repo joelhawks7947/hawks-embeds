@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hawks Games: preview with sample pictures and quiz</title>
+<link rel="stylesheet" href="webflow-sim.css">
+</head>
+<body>
+<div class="sim-head">PREVIEW ONLY: sample pictures and a fake quiz. Try ?hk_now=2026-10-02T19:45 (vote open) or ?hk_now=2026-10-27T10:00 (between votes).</div>
+<script src="../data.js"></script>
+<script>
+/* Preview only: point the cards at the local screenshots and fake the quiz reply. The live page uses data.js as is. */
+(function () {
+  var files = { "membership-finder": "membership.jpg", "greater-bank-mvp": "mvp.jpg", "cmg-midcourt-mayhem": "mayhem.jpg", "hawks-grid": "grid.png", "hawks-trivia": "trivia.jpg", "hawks-pecking-order": "pecking.png" };
+  var P = window.HAWKS_DATA.gamesPortal;
+  P.quizApi = "https://preview.invalid/current-quiz";
+  var realFetch = window.fetch;
+  window.fetch = function (u) {
+    if (String(u).indexOf("preview.invalid") < 0) return realFetch.apply(this, arguments);
+    var closes = new Date(Date.now() + (6 * 24 + 20) * 3600000 + 40 * 60000).toISOString();
+    return Promise.resolve(new Response(JSON.stringify({ title: "Hawks Quiz #1", description: "10 questions from the current decade (2020 to today)", closes_at: closes }), { headers: { "Content-Type": "application/json" } }));
+  };
+  P.cards.forEach(function (c) { c.image = "https://preview.invalid/" + files[c.id]; });
+  new MutationObserver(function () {
+    document.querySelectorAll('img[src^="https://preview.invalid/"]').forEach(function (i) { i.src = "games-images/" + i.src.split("/").pop(); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+<div data-hawks="games">
+  <a href="https://hawks-membership-picker.lovable.app/">Membership Finder</a>
+  <a href="https://hawks-mvp-vote.lovable.app/">Greater Bank MVP</a>
+  <a href="https://cmg-midcourt-mayhem.lovable.app/">CMG Midcourt Mayhem</a>
+  <a href="https://quiz.illawarra-hawks.com.au/">Hawks Trivia</a>
+  <a href="https://bracket.illawarra-hawks.com.au/">Hawks Pecking Order</a>
+</div>
+<script src="../hawks.js" defer></script>
+</body>
+</html>

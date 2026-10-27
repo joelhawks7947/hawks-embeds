@@ -307,6 +307,84 @@ window.HAWKS_DATA = {
     {n:14, date:"2027-01-20", opp:"New Zealand Breakers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-20-01-2027/event/130064FE94712CCE", preview:"", courtWalk:"https://www.eventbrite.com.au/e/hawks-court-walk-wednesday-20-january-tickets-2001422262865", functionTickets:"https://www.eventbrite.com.au/e/illawarra-hawks-v-nz-breakers-pre-game-function-tickets-2000232149203"},
     {n:15, date:"2027-01-30", opp:"Perth Wildcats",               func:"16:00", doors:"16:30", show:"17:00", tip:"17:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-30-01-2027/event/130064FE933B2BF7", preview:"", courtWalk:"https://www.eventbrite.com.au/e/hawks-court-walk-saturday-30-january-tickets-2001422789440", functionTickets:"https://www.eventbrite.com.au/e/illawarra-hawks-v-perth-wildcats-pre-game-function-tickets-2000232236464"},
     {n:16, date:"2027-02-04", opp:"Brisbane Bullets",             func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-04-02-2027/event/130064FE94922D10", preview:"", courtWalk:"", functionTickets:"https://www.eventbrite.com.au/e/illawarra-hawks-v-brisbane-bullets-pre-game-function-tickets-2000232267557"},
-  ]
+  ],
+
+  /* ---------------------------------------------------------------
+     HAWKS GAMES PAGE (data-hawks="games", hawks.com.au/pages/engagement)
+     One entry in cards per game. To change a card, edit its line here.
+       id        short name with no spaces (used in links and analytics). Do not change once live.
+       kind      "grid", "quiz" or "mvp" for the three cards that feed the "On now" tiles.
+                 Leave it out for any other card. The mvp card also needs the
+                 mvpVote schedule above; the quiz card needs quizApi below.
+       layout    "full" = wide row with the picture beside the words
+                 "column" = one of the three small cards under "More Hawks games"
+                 Moving a card between the two is just changing this word.
+       order     lowest number shows first within its layout
+       status    "live" shows it. "soon" shows it with "Coming soon" and no link.
+                 "hidden" leaves it off the page.
+       theme     "dark" gives a full row a black panel (optional)
+       kicker    small line above the title: the red line on a wide row, or Daily / Weekly / Ongoing on a small card
+       badge     small black label with a red dot (optional)
+       sponsor   "Presented by ..." line (optional)
+       body      main text
+       meta      small grey line (optional)
+       ctaLabel  the red button
+       url       the game's own address. The UTM tags are added for you.
+       image     the picture, a full https:// address (Webflow assets). "" shows a plain block.
+       alt       what the picture shows, for screen readers
+       imagePos  which part of the picture stays in view, like "center 20%" (optional)
+     Words in {curly brackets} are filled in by the page:
+       mvp:  {round} and {game} (for example "Round 3" and "Hawks v Adelaide 36ers").
+             While a vote is open the badge/meta/ctaLabel are used; between votes the
+             badgeClosed/metaClosed/ctaLabelClosed ones are used.
+       quiz: {title} is this week's quiz name from the quiz app. If the quiz app can't be
+             reached, bodyFallback is used and the countdown is left out.
+     --------------------------------------------------------------- */
+  gamesPortal: {
+    heading: "Hawks Games",
+    intro: "Play, vote and have your say. Some games reset every day, some every home game, and some are always open.",
+    moreHeading: "More Hawks games",
+    moreSub: "Daily, weekly and all season long.",
+    /* The quiz app's current-quiz function. Empty = the quiz card shows its fallback text and no countdown. */
+    quizApi: "",
+    utm: { source: "hawks.com.au", medium: "referral", campaign: "engagement-page" },
+    cards: [
+      {id:"membership-finder", layout:"full", order:1, status:"live", theme:"dark",
+        kicker:"Memberships for the NBL27 season", title:"Membership Finder",
+        body:"Answer a few quick questions and we'll match you with the Hawks membership that suits how you follow the club.",
+        ctaLabel:"Find my membership", url:"https://hawks-membership-picker.lovable.app/",
+        image:"", alt:"Membership Finder question screen", imagePos:"center 45%"},
+      {id:"greater-bank-mvp", kind:"mvp", layout:"full", order:2, status:"live",
+        badge:"Voting open", badgeClosed:"Voting opens at tip-off", title:"Greater Bank MVP", sponsor:"Presented by Greater Bank",
+        body:"Pick your standout Hawk after every home game.",
+        meta:"Now voting: {round}, {game}.", metaClosed:"Next vote: {game}.",
+        ctaLabel:"Vote now", ctaLabelClosed:"See past winners", url:"https://hawks-mvp-vote.lovable.app/",
+        image:"", alt:"Greater Bank MVP voting screen", imagePos:"center 20%"},
+      {id:"cmg-midcourt-mayhem", layout:"full", order:3, status:"live",
+        badge:"Entries open", title:"CMG Midcourt Mayhem", sponsor:"Presented by CMG",
+        body:"Four shots, 30 seconds, one run. Choose your shooter type and register for your shot at a home game.",
+        meta:"One fan is drawn about 48 hours before each home game.",
+        ctaLabel:"Enter the draw", url:"https://cmg-midcourt-mayhem.lovable.app/",
+        image:"", alt:"CMG Midcourt Mayhem entry screen", imagePos:"center 35%"},
+      {id:"hawks-grid", kind:"grid", layout:"column", order:1, status:"live",
+        kicker:"Daily", title:"Hawks Grid",
+        body:"Fill the grid with Hawks players who fit both categories. Nine guesses, each player once.",
+        meta:"A new grid every night at midnight.",
+        ctaLabel:"Play", url:"https://grid.illawarra-hawks.com.au/",
+        image:"", alt:"Hawks Grid game screen", imagePos:"center top"},
+      {id:"hawks-trivia", kind:"quiz", layout:"column", order:2, status:"live",
+        kicker:"Weekly", title:"Hawks Trivia",
+        body:"This week: {title}", bodyFallback:"This week's Hawks quiz",
+        meta:"Sign in with a magic link to go in the prize draw.",
+        ctaLabel:"Start quiz", url:"https://quiz.illawarra-hawks.com.au/",
+        image:"", alt:"Hawks Trivia quiz screen", imagePos:"center 62%"},
+      {id:"hawks-pecking-order", layout:"column", order:3, status:"live",
+        kicker:"Ongoing", title:"Pecking Order",
+        body:"Settle Hawks debates bracket by bracket. Pick your favourites and crown the winners.",
+        meta:"Featured: best uniform, 1979 to 2008.",
+        ctaLabel:"Vote", url:"https://bracket.illawarra-hawks.com.au/",
+        image:"", alt:"Hawks Pecking Order bracket home screen", imagePos:"center 25%"}
+    ]
+  }
 
 };

@@ -188,6 +188,7 @@
     out.hawksInBusiness = biz(raw.hawksInBusiness, out.games);
     out.offers = offers(raw.offers);
     out.gameCountdown = gameCountdown(raw.gameCountdown);
+    out.gamesPortal = gamesPortal(raw.gamesPortal);
     /* game-countdown: when each game stops being the "next game" (see gameCountdown below). */
     out.games.forEach(function (g) {
       var p = g.date.split("-").map(Number), dow = new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay();
@@ -226,6 +227,40 @@
       if (why.length) { warn("offers." + k + " skipped: " + why.join("; ")); return; }
       out[k] = c;
     });
+    return out;
+  }
+
+  /* Hawks Games page (data.js gamesPortal). A bad card is skipped with a warning. */
+  function gamesPortal(raw) {
+    var out = { heading: "Hawks Games", intro: "", moreHeading: "", moreSub: "", quizApi: "", utm: null, cards: [] };
+    if (!raw || typeof raw !== "object") return out;
+    function txt(v) { return typeof v === "string" ? v.trim() : ""; }
+    ["heading", "intro", "moreHeading", "moreSub"].forEach(function (k) { if (txt(raw[k]) || k !== "heading") out[k] = txt(raw[k]); else out[k] = "Hawks Games"; });
+    if (raw.quizApi) { if (okUrl(raw.quizApi)) out.quizApi = raw.quizApi; else warn("gamesPortal.quizApi ignored: not an https:// link"); }
+    if (raw.utm && typeof raw.utm === "object" && txt(raw.utm.source) && txt(raw.utm.medium) && txt(raw.utm.campaign)) out.utm = { source: txt(raw.utm.source), medium: txt(raw.utm.medium), campaign: txt(raw.utm.campaign) };
+    else if (raw.utm) warn("gamesPortal.utm needs source, medium and campaign; links go out without UTM tags");
+    var seen = {};
+    (Array.isArray(raw.cards) ? raw.cards : []).forEach(function (c, i) {
+      var who = "gamesPortal card in position " + (i + 1), why = [];
+      if (!c || typeof c !== "object") { warn(who + " skipped: not a card"); return; }
+      var id = txt(c.id), status = c.status == null ? "live" : txt(c.status), layout = c.layout == null ? "column" : txt(c.layout), kind = txt(c.kind);
+      if (!/^[a-z0-9-]+$/.test(id)) why.push("id needs lower case letters, numbers and dashes");
+      else if (seen[id]) why.push("id \"" + id + "\" is used twice");
+      if (!txt(c.title)) why.push("title is empty");
+      if (["live", "soon", "hidden"].indexOf(status) < 0) why.push("status \"" + status + "\" should be live, soon or hidden");
+      if (["full", "column"].indexOf(layout) < 0) why.push("layout \"" + layout + "\" should be full or column");
+      if (kind && ["grid", "quiz", "mvp"].indexOf(kind) < 0) { warn(who + ": kind \"" + kind + "\" ignored"); kind = ""; }
+      if (status === "live" && !okUrl(c.url)) why.push("a live card needs an https:// url");
+      if (c.image && !okUrl(c.image)) { warn(who + ": image ignored, not an https:// link"); c.image = ""; }
+      if (why.length) { warn(who + " skipped: " + why.join("; ")); return; }
+      seen[id] = true;
+      if (status === "hidden") return;
+      out.cards.push({ id: id, kind: kind, layout: layout, status: status, order: typeof c.order === "number" ? c.order : i + 1, _i: i, theme: txt(c.theme) === "dark" ? "dark" : "",
+        kicker: txt(c.kicker), badge: txt(c.badge), badgeClosed: txt(c.badgeClosed), sponsor: txt(c.sponsor), title: txt(c.title), body: txt(c.body), bodyFallback: txt(c.bodyFallback),
+        meta: txt(c.meta), metaClosed: txt(c.metaClosed), ctaLabel: txt(c.ctaLabel), ctaLabelClosed: txt(c.ctaLabelClosed), url: status === "live" ? c.url : "",
+        image: txt(c.image), alt: txt(c.alt), imagePos: /^[a-z0-9% ]{1,30}$/i.test(txt(c.imagePos)) ? txt(c.imagePos) : "center" });
+    });
+    out.cards.sort(function (a, b) { return a.order - b.order || a._i - b._i; });
     return out;
   }
 
@@ -269,7 +304,7 @@
       if (why.length) { warn(who + " skipped: " + why.join("; ")); return; }
       var d = g.date.split("-").map(Number), c = new Date(Date.UTC(d[0], d[1] - 1, d[2] + days));
       var cd = c.getUTCFullYear() + "-" + ("0" + (c.getUTCMonth() + 1)).slice(-2) + "-" + ("0" + c.getUTCDate()).slice(-2);
-      out.windows.push({ date: g.date, tip: g.tip, opp: g.opp.trim(), _open: toUtc(g.date, g.tip), _close: toUtc(cd, close) });
+      out.windows.push({ date: g.date, tip: g.tip, opp: g.opp.trim(), round: Number.isInteger(g.round) && g.round > 0 ? g.round : 0, _open: toUtc(g.date, g.tip), _close: toUtc(cd, close) });
     });
     if (raw.games && !Array.isArray(raw.games)) warn("mvpVote has no games list");
     return out;
@@ -2225,6 +2260,232 @@
           var t = Math.floor((g._tip - s.now) / 1000);
           k.d.textContent = pad(Math.floor(t / 86400)); k.h.textContent = pad(Math.floor(t % 86400 / 3600));
           k.m.textContent = pad(Math.floor(t % 3600 / 60)); k.s.textContent = pad(t % 60);
+        }
+      };
+    }
+  };
+
+  /* ---------------- games (.hkgames) ----------------
+     Hawks Games page (hawks.com.au/pages/engagement): an "On now" strip, wide rows and three
+     small cards. Everything comes from data.js gamesPortal (reference: the approved static design).
+     The MVP tile and card use the same vote windows as mvp-vote. The quiz title and close time
+     come from the quiz app's current-quiz function (gamesPortal.quizApi); if it can't be reached
+     the card shows its fallback text and the countdown tile is left out. */
+  var quiz = { status: "idle", title: "", description: "", closes: 0 };
+  function loadQuiz(url) {
+    if (quiz.status !== "idle") return;
+    quiz.status = "loading";
+    var ctl = typeof AbortController === "function" ? new AbortController() : null, t = setTimeout(function () { if (ctl) ctl.abort(); }, 6000);
+    function bad(why) { clearTimeout(t); quiz.status = "failed"; warn("could not load the current quiz (" + why + "); the quiz card shows its fallback text"); }
+    if (typeof W.fetch !== "function") { bad("this browser has no fetch"); return; }
+    W.fetch(url, { mode: "cors", credentials: "omit", signal: ctl ? ctl.signal : undefined }).then(function (r) {
+      if (!r.ok) throw new Error("status " + r.status);
+      return r.json();
+    }).then(function (j) {
+      clearTimeout(t);
+      var closes = j && typeof j.closes_at === "string" ? Date.parse(j.closes_at) : NaN;
+      if (!j || typeof j.title !== "string" || !j.title.trim()) throw new Error("no title in the reply");
+      quiz.title = j.title.trim();
+      quiz.description = typeof j.description === "string" ? j.description.trim() : "";
+      quiz.closes = isFinite(closes) ? closes : 0;
+      quiz.status = "ok";
+    }).catch(function (e) { bad(e && e.message ? e.message : "error"); });
+  }
+  function withUtm(url, id) {
+    var P = H.data.gamesPortal.utm;
+    if (!P || !url) return url;
+    try {
+      var u = new URL(url);
+      [["utm_source", P.source], ["utm_medium", P.medium], ["utm_campaign", P.campaign], ["utm_content", id]].forEach(function (kv) { if (!u.searchParams.has(kv[0])) u.searchParams.set(kv[0], kv[1]); });
+      return u.toString();
+    } catch (e) { return url; }
+  }
+  function fill(tpl, vars) { return tpl.replace(/\{(\w+)\}/g, function (m, k) { return own(vars, k) != null ? vars[k] : m; }); }
+  function gaGames(params) { try { if (typeof W.gtag === "function") W.gtag("event", "games_card_click", params); } catch (e) { /* analytics must never break the page */ } }
+
+  M.games = {
+    css: [
+      ".hkgames{box-sizing:border-box;display:block;width:100%;max-width:780px;margin:0 auto;background:#fff;color:#000;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;text-align:left;}",
+      ".hkgames *,.hkgames *::before,.hkgames *::after{box-sizing:border-box;}",
+      ".hkgames[hidden],.hkgames [hidden]{display:none !important;}",
+      ".hkgames a:focus-visible{outline:2px solid #FF0013;outline-offset:2px;}",
+      ".hkgames .hkgames__head{background:#000;border-top:6px solid #FF0013;padding:40px clamp(16px,5cqw,40px);display:flex;flex-direction:column;gap:28px;}",
+      ".hkgames .hkgames__intro{display:flex;flex-direction:column;gap:12px;}",
+      ".hkgames .hkgames__h1{margin:0;padding:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(56px,13cqw,96px);line-height:.95;letter-spacing:.01em;text-transform:uppercase;color:#fff;}",
+      ".hkgames .hkgames__lead{margin:0;max-width:520px;font-size:16px;line-height:1.55;color:#D4D4D4;}",
+      ".hkgames .hkgames__now{display:flex;flex-wrap:wrap;gap:12px;margin:0;padding:0;}",
+      ".hkgames .hkgames__tile{flex:1 1 180px;min-height:132px;border:1px solid #4A4A4A;padding:18px 18px 16px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;text-decoration:none;color:#fff;transition:border-color 120ms cubic-bezier(.22,1,.36,1),transform 120ms cubic-bezier(.22,1,.36,1);}",
+      ".hkgames .hkgames__tile:link,.hkgames .hkgames__tile:visited{color:#fff;text-decoration:none;}",
+      ".hkgames .hkgames__tile:hover{border-color:#fff;}",
+      ".hkgames .hkgames__tile:active{transform:scale(.98);}",
+      ".hkgames .hkgames__tl{font-size:12px;font-weight:700;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#FF0013;}",
+      ".hkgames .hkgames__tv{font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:44px;line-height:.95;letter-spacing:.01em;text-transform:uppercase;font-variant-numeric:tabular-nums;color:#fff;}",
+      ".hkgames .hkgames__ts{font-size:14px;line-height:1.3;color:#D4D4D4;}",
+      ".hkgames .hkgames__main{padding:40px clamp(16px,5cqw,40px) 56px;display:flex;flex-direction:column;gap:56px;}",
+      ".hkgames .hkgames__rows{display:flex;flex-direction:column;gap:20px;}",
+      ".hkgames .hkgames__row{display:flex;flex-wrap:wrap;border:1px solid #000;background:#fff;color:#000;}",
+      ".hkgames .hkgames__row--dark{background:#000;color:#fff;}",
+      ".hkgames .hkgames__rimg{flex:1 1 260px;min-height:220px;max-height:300px;width:100%;object-fit:cover;display:block;margin:0;border:0;background:#F4F4F4;}",
+      ".hkgames .hkgames__row--dark .hkgames__rimg{background:#000;}",
+      ".hkgames .hkgames__rtext{flex:999 1 300px;min-width:0;padding:28px 24px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;}",
+      ".hkgames .hkgames__row--dark .hkgames__rtext{border-top:4px solid #FF0013;}",
+      ".hkgames .hkgames__kick{margin:0;font-size:14px;font-weight:700;line-height:1.3;color:#FF0013;}",
+      ".hkgames .hkgames__badge{display:inline-flex;align-items:center;gap:8px;margin:0;padding:5px 12px;background:#000;color:#fff;font-size:12px;font-weight:700;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;}",
+      ".hkgames .hkgames__dot{flex:none;display:inline-block;width:8px;height:8px;border-radius:50%;background:#FF0013;}",
+      ".hkgames .hkgames__h2{margin:0;padding:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:40px;line-height:.95;letter-spacing:.01em;text-transform:uppercase;color:inherit;}",
+      ".hkgames .hkgames__by{margin:0;font-size:14px;font-weight:700;line-height:1.3;color:#BF0000;}",
+      ".hkgames .hkgames__p{margin:0;font-size:16px;line-height:1.55;color:inherit;}",
+      ".hkgames .hkgames__row--dark .hkgames__p{color:#E6E6E6;}",
+      ".hkgames .hkgames__m{margin:0;font-size:14px;line-height:1.55;color:#6E6E6E;}",
+      ".hkgames .hkgames__btn{margin:6px 0 0;display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 28px;border:0;border-radius:0;background:#FF0013;color:#fff;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:24px;line-height:1.2;letter-spacing:.01em;text-transform:uppercase;text-decoration:none;transition:background-color 120ms cubic-bezier(.22,1,.36,1),transform 120ms cubic-bezier(.22,1,.36,1);}",
+      ".hkgames .hkgames__btn:link,.hkgames .hkgames__btn:visited{color:#fff;text-decoration:none;}",
+      ".hkgames .hkgames__btn:hover{background:#BF0000;}",
+      ".hkgames .hkgames__btn:active{transform:scale(.98);}",
+      ".hkgames .hkgames__soon{margin:6px 0 0;display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 28px;border:2px solid #000;color:#000;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:24px;line-height:1.2;letter-spacing:.01em;text-transform:uppercase;}",
+      ".hkgames .hkgames__more{display:flex;flex-direction:column;gap:20px;}",
+      ".hkgames .hkgames__mh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;border-bottom:2px solid #000;padding-bottom:10px;}",
+      ".hkgames .hkgames__h2s{margin:0;padding:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:36px;line-height:1.1;letter-spacing:.01em;text-transform:uppercase;color:#000;}",
+      ".hkgames .hkgames__sub{margin:0;font-size:14px;line-height:1.4;color:#373737;}",
+      ".hkgames .hkgames__cols{display:flex;flex-wrap:wrap;gap:16px;}",
+      ".hkgames .hkgames__col{flex:1 1 200px;display:flex;flex-direction:column;border:1px solid #000;background:#fff;color:#000;}",
+      ".hkgames .hkgames__cimg{width:100%;height:150px;object-fit:cover;display:block;margin:0;border:0;border-bottom:1px solid #000;background:#F4F4F4;}",
+      ".hkgames .hkgames__ctext{flex:1 1 auto;padding:20px;display:flex;flex-direction:column;gap:10px;align-items:stretch;}",
+      ".hkgames .hkgames__ck{margin:0;font-size:12px;font-weight:700;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#373737;}",
+      ".hkgames .hkgames__h3{margin:0;padding:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:28px;line-height:1.05;letter-spacing:.01em;text-transform:uppercase;color:#000;}",
+      ".hkgames .hkgames__cp{margin:0;font-size:15px;line-height:1.5;color:#000;}",
+      ".hkgames .hkgames__cp strong{font-weight:700;}",
+      ".hkgames .hkgames__cm{margin:0;font-size:13px;line-height:1.5;color:#6E6E6E;}",
+      ".hkgames .hkgames__cbtn{margin:auto 0 0;display:flex;align-items:center;justify-content:center;min-height:48px;padding:0 16px;border-radius:0;background:#FF0013;color:#fff;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:24px;line-height:1.2;letter-spacing:.01em;text-transform:uppercase;text-decoration:none;transition:background-color 120ms cubic-bezier(.22,1,.36,1),transform 120ms cubic-bezier(.22,1,.36,1);}",
+      ".hkgames .hkgames__cbtn:link,.hkgames .hkgames__cbtn:visited{color:#fff;text-decoration:none;}",
+      ".hkgames .hkgames__cbtn:hover{background:#BF0000;}",
+      ".hkgames .hkgames__cbtn:active{transform:scale(.98);}",
+      ".hkgames .hkgames__csoon{margin:auto 0 0;display:flex;align-items:center;justify-content:center;min-height:48px;padding:0 16px;border:2px solid #000;color:#000;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:24px;line-height:1.2;letter-spacing:.01em;text-transform:uppercase;}",
+      "@media (prefers-reduced-motion:reduce){",
+      ".hkgames .hkgames__tile,.hkgames .hkgames__btn,.hkgames .hkgames__cbtn{transition-duration:1ms !important;}",
+      "}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var P = ctx.data.gamesPortal, cards = P.cards;
+      if (!cards.length) throw new Error("gamesPortal has no cards in data.js");
+      if (cards.some(function (c) { return c.kind === "quiz" && c.status === "live"; }) && P.quizApi) loadQuiz(P.quizApi);
+      var ids = {}, pos = {}, rows = [], cols = [];
+      cards.forEach(function (c) { ids[c.id] = uid(c.id); (c.layout === "full" ? rows : cols).push(c); });
+      /* Position for analytics follows the page: wide rows first, then the small cards. */
+      rows.concat(cols).forEach(function (c, i) { pos[c.id] = i + 1; });
+      var first = true;
+
+      function cta(c, cls, soonCls, loc) {
+        if (c.status !== "live" || !c.url) return '<span class="' + soonCls + '">Coming soon</span>';
+        return '<a class="' + cls + '"' + ext(withUtm(c.url, c.id)) + ' data-gid="' + esc(c.id) + '" data-gpos="' + pos[c.id] + '" data-gloc="card"><span data-r="cta">' + esc(c.ctaLabel) + "</span></a>";
+      }
+      function img(c, cls) {
+        var lazy = first ? "" : ' loading="lazy"';
+        first = false;
+        return c.image
+          ? '<img class="' + cls + '" src="' + esc(c.image) + '" alt="' + esc(c.alt) + '" width="780" height="300"' + lazy + ' style="object-position:' + esc(c.imagePos) + '">'
+          : '<div class="' + cls + '" role="presentation"></div>';
+      }
+      function rowHtml(c) {
+        return '<article class="hkgames__row' + (c.theme === "dark" ? " hkgames__row--dark" : "") + '" id="' + ids[c.id] + '" data-card="' + esc(c.id) + '">' + img(c, "hkgames__rimg") +
+          '<div class="hkgames__rtext">' +
+          (c.kicker ? '<p class="hkgames__kick">' + esc(c.kicker) + "</p>" : "") +
+          (c.badge || c.badgeClosed ? '<p class="hkgames__badge" data-r="badge"><span class="hkgames__dot" aria-hidden="true"></span><span data-r="badge-text">' + esc(c.badge) + "</span></p>" : "") +
+          '<h2 class="hkgames__h2">' + esc(c.title) + "</h2>" +
+          (c.sponsor ? '<p class="hkgames__by">' + esc(c.sponsor) + "</p>" : "") +
+          (c.body ? '<p class="hkgames__p">' + esc(c.body) + "</p>" : "") +
+          (c.meta ? '<p class="hkgames__m" data-r="meta">' + esc(c.meta) + "</p>" : "") +
+          cta(c, "hkgames__btn", "hkgames__soon") + "</div></article>";
+      }
+      function colHtml(c) {
+        return '<article class="hkgames__col" id="' + ids[c.id] + '" data-card="' + esc(c.id) + '">' + img(c, "hkgames__cimg") +
+          '<div class="hkgames__ctext">' +
+          (c.kicker ? '<p class="hkgames__ck">' + esc(c.kicker) + "</p>" : "") +
+          '<h3 class="hkgames__h3">' + esc(c.title) + "</h3>" +
+          (c.body ? '<p class="hkgames__cp" data-r="body">' + esc(c.body) + "</p>" : "") +
+          (c.meta ? '<p class="hkgames__cm" data-r="meta">' + esc(c.meta) + "</p>" : "") +
+          cta(c, "hkgames__cbtn", "hkgames__csoon") + "</div></article>";
+      }
+      var hid = uid("more");
+      function tileHtml(kind, label) {
+        var c = cards.filter(function (x) { return x.kind === kind && x.status === "live"; })[0];
+        return c ? '<a class="hkgames__tile" href="#' + ids[c.id] + '" data-tile="' + kind + '" data-gid="' + esc(c.id) + '" data-gpos="' + pos[c.id] + '" data-gloc="tile" hidden>' +
+          '<span class="hkgames__tl" data-r="tl">' + esc(label) + '</span><span class="hkgames__tv" data-r="tv"></span><span class="hkgames__ts" data-r="ts"></span></a>' : "";
+      }
+      var tiles = tileHtml("grid", "Today's grid") + tileHtml("quiz", "Quiz closes in") + tileHtml("mvp", "MVP voting open");
+      el.innerHTML =
+        '<div class="hkgames">' +
+        '<header class="hkgames__head"><div class="hkgames__intro"><h1 class="hkgames__h1">' + esc(P.heading) + "</h1>" + (P.intro ? '<p class="hkgames__lead">' + esc(P.intro) + "</p>" : "") + "</div>" +
+        (tiles ? '<section class="hkgames__now" aria-label="On now" hidden>' + tiles + "</section>" : "") + "</header>" +
+        '<div class="hkgames__main">' +
+        (rows.length ? '<div class="hkgames__rows">' + rows.map(rowHtml).join("") + "</div>" : "") +
+        (cols.length ? '<section class="hkgames__more" aria-labelledby="' + hid + '"><div class="hkgames__mh"><h2 class="hkgames__h2s" id="' + hid + '">' + esc(P.moreHeading) + "</h2>" +
+          (P.moreSub ? '<p class="hkgames__sub">' + esc(P.moreSub) + "</p>" : "") + '</div><div class="hkgames__cols">' + cols.map(colHtml).join("") + "</div></section>" : "") +
+        "</div></div>";
+
+      var root = el.firstChild, now = root.querySelector(".hkgames__now");
+      root.addEventListener("click", function (e) {
+        var a = e.target.closest ? e.target.closest("a[data-gid]") : null;
+        if (a) gaGames({ card_id: a.getAttribute("data-gid"), position: +a.getAttribute("data-gpos"), location: a.getAttribute("data-gloc") });
+      });
+      function R(scope, name) { return scope ? scope.querySelector('[data-r="' + name + '"]') : null; }
+      function cardEl(id) { return root.querySelector('[data-card="' + id + '"]'); }
+      function cardOf(kind) { return cards.filter(function (x) { return x.kind === kind && x.status === "live"; })[0]; }
+      function tile(kind) { return root.querySelector('[data-tile="' + kind + '"]'); }
+      function setT(t, label, value, sub) {
+        t.hidden = false;
+        R(t, "tl").textContent = label; R(t, "tv").textContent = value; R(t, "ts").textContent = sub;
+      }
+      var shown = {};
+      function once(k, key, fn) { if (shown[k] === key) return; shown[k] = key; fn(); }
+
+      return {
+        update: function (s) {
+          var tg = tile("grid"), tq = tile("quiz"), tm = tile("mvp"), p, any;
+          if (tg) once("grid", Math.floor(s.now / 60000), function () {
+            p = parts(s.now);
+            setT(tg, "Today's grid", U.dm(ymd(p.year, p.month, p.day)), cardOf("grid").title);
+          });
+          var mc = cardOf("mvp");
+          if (mc) {
+            var open = mvpOpen(s.now), g = open ? null : s.game, w = open;
+            if (g) w = ctx.data.mvpVote.windows.filter(function (x) { return x.date === g.date; })[0];
+            var opp = open ? open.opp : g ? g.opp : "", round = w && w.round ? "Round " + w.round : "";
+            once("mvp", open ? "o" + open._open : g ? "n" + g.n : "x", function () {
+              var vars = { round: round || "this round", game: opp ? "Hawks v " + opp : "" }, card = cardEl(mc.id), badge = R(card, "badge"), meta = R(card, "meta"), btn = R(card, "cta");
+              var bt = open ? mc.badge : mc.badgeClosed;
+              if (badge) { badge.hidden = !bt || (!open && !g); if (bt) R(badge, "badge-text").textContent = bt; }
+              if (meta) { var mt = open ? mc.meta : mc.metaClosed; meta.hidden = !mt || !opp; meta.textContent = fill(mt || "", vars); }
+              if (btn) btn.textContent = open || !mc.ctaLabelClosed ? mc.ctaLabel : mc.ctaLabelClosed;
+              if (tm) {
+                if (open) setT(tm, "MVP voting open", round || "Now", "Hawks v " + opp);
+                else if (g) setT(tm, "Next MVP vote", U.dm(g.date), "Hawks v " + opp + ", opens at tip-off");
+                else tm.hidden = true;
+              }
+            });
+          }
+          var qc = cardOf("quiz");
+          if (qc) {
+            var ok = quiz.status === "ok", left = ok && quiz.closes ? quiz.closes - s.now : 0, live = left > 0;
+            once("quizcard", quiz.status, function () {
+              var body = R(cardEl(qc.id), "body");
+              if (!body) return;
+              body.textContent = "";
+              var st = D.createElement("strong");
+              st.textContent = ok ? fill(qc.body, { title: quiz.title }) : (qc.bodyFallback || fill(qc.body, { title: "" }).trim());
+              body.appendChild(st);
+              if (ok && quiz.description) { body.appendChild(D.createElement("br")); body.appendChild(D.createTextNode(quiz.description)); }
+            });
+            if (tq) {
+              if (live) {
+                var d = Math.floor(left / 86400000), h = Math.floor(left / 3600000) % 24, m = Math.floor(left / 60000) % 60;
+                var v = (d ? d + "D " : "") + ("0" + h).slice(-2) + ":" + ("0" + m).slice(-2);
+                once("quiztile", v + quiz.title, function () { setT(tq, "Quiz closes in", v, quiz.title); var tv = R(tq, "tv"); tv.setAttribute("role", "timer"); tv.setAttribute("aria-live", "off"); });
+              } else once("quiztile", "off" + quiz.status, function () { tq.hidden = true; });
+            }
+          }
+          any = [].some.call(root.querySelectorAll(".hkgames__tile"), function (t) { return !t.hidden; });
+          if (now) now.hidden = !any;
         }
       };
     }

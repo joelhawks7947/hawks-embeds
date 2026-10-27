@@ -109,6 +109,21 @@ Shows the next camp from `data.js`, with a Register button. After the last camp 
 
 The NBL27 events, grouped by month. Finished events move to a collapsed **Past events** bar at the bottom (grey, most recent first). The events are in `data.js` (see section 2).
 
+### Hawks Games page (engagement page)
+
+For hawks.com.au/pages/engagement. Put this in a Code Embed, with the game preview embed below it if wanted:
+
+```html
+<div data-hawks="games">
+  <a href="https://hawks-membership-picker.lovable.app/">Membership Finder</a>
+  <a href="https://hawks-mvp-vote.lovable.app/">Greater Bank MVP</a>
+  <a href="https://cmg-midcourt-mayhem.lovable.app/">CMG Midcourt Mayhem</a>
+  <a href="https://quiz.illawarra-hawks.com.au/">Hawks Trivia</a>
+  <a href="https://bracket.illawarra-hawks.com.au/">Hawks Pecking Order</a>
+</div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
 ### Offer landing pages
 
 One embed for each offer page. Paste it into a Webflow Code Embed on that page. Only `data-offer` and the fallback link change; the script line is the same every time. Each page is a light, transparent block with the picture, headline, copy and button. The copy, pictures and links are in `data.js` under `offers`.
@@ -293,6 +308,18 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 | Change or hide the pre-game function "Buy ticket" link (next game and upcoming games) | `functionTickets` in the `links` section (`""` hides it) |
 | Change or hide a small FAQ link ("What's a Court Walk?", "What's included?", "When does it finish?", "compare memberships", "Accessible parking and drop-off") | The `faqLinks` section: put a different question ID from the FAQ spreadsheet (for example `"GD-02"`), or `""` to hide that link |
 | Add the next Girls in the Game camp | Add a line to `girlsInTheGame` (see below) |
+
+### Hawks Games cards and the quiz
+
+Everything on the Hawks Games page lives in `data.js` under `gamesPortal`, with a comment block above it explaining each field. Common edits:
+
+- **Change a card's words, button, link or picture:** edit that card's line. Every card's link gets `utm_source`, `utm_medium`, `utm_campaign` and `utm_content` (the card id) added for you, so paste the plain address.
+- **Move a card between the wide rows and the small cards:** change `layout` between `"full"` and `"column"`. Nothing else changes (for example when a card gets a sponsor, add `sponsor` and set `layout:"full"`).
+- **Hide a card, or show "Coming soon":** set `status` to `"hidden"` or `"soon"`.
+- **Pictures:** upload each screenshot to Webflow Assets, then paste its full https address into `image`. Until `image` is filled in the card shows a plain block.
+- **MVP round and opponent** come from the same schedule as the Greater Bank MVP embed (`mvpVote.games`), so updating that schedule updates both. Each game line has a `round` number; keep it filled in.
+- **Quiz title, description and countdown** come from the quiz app's `current-quiz` function. Set its address in `gamesPortal.quizApi`. If it is empty or the app is down, the card says "This week's Hawks quiz" and the countdown tile is left out. The function's code is in `edge-functions/current-quiz/` (it is deployed in the quiz project, not here).
+- **Analytics:** each click sends a `games_card_click` event to the site's Google Analytics, with `card_id`, `position` and `location` (`card` or `tile`), if Google Analytics is on the page.
 
 ### Girls in the Game camps
 
