@@ -20,6 +20,7 @@ async function expectOpen(page, opp) {
     await expect(mv.locator(".hkmvp__btn")).toHaveText("Pick your MVP");
     await expect(mv.locator(".hkmvp__btn")).toHaveAttribute("aria-label", "Pick your MVP: Greater Bank Game MVP, Hawks v " + opp);
     await expect(mv.locator(".hkmvp__body")).toHaveText(OPEN_BODY);
+    await expect(mv.locator(".hkmvp__body strong").last()).toHaveText(/^One lucky winner/);
   }
 }
 async function expectClosed(page, badge) {

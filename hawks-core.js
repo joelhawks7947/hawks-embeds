@@ -1010,7 +1010,7 @@
       /* Black on red: white text on Hawks red is 3.99:1, below AA for 16px text. */
       /* Long button text wraps into even lines on phones. */
       ".hkpv .hkpv__btn{text-wrap:balance;}",
-      ".hkpv .hkpv__prize{max-width:320px;font-size:14px;line-height:1.5;color:#D8D8D8;margin:0;}",
+      ".hkpv .hkpv__prize{max-width:320px;font-size:14px;font-weight:700;line-height:1.5;color:#D8D8D8;margin:0;}",
       ".hkpv .hkpv__soon{background:transparent;border-color:var(--k);color:var(--k);cursor:default;}",
       "@container (max-width:700px){",
       ".hkpv{grid-template-columns:1fr;}",
@@ -1257,7 +1257,7 @@
           badge.hidden = !(g || next);
           dot.hidden = !g;
           badgeText.textContent = g ? "Voting open now" : next ? "Next vote opens " + mvpWhen(next, s.now) : "";
-          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game.") + " " + MVP_PRIZE;
+          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game.") + " <strong>" + esc(MVP_PRIZE) + "</strong>";
           if (!btn) return;
           label.textContent = g ? "Pick your MVP" : "See past winners";
           btn.setAttribute("aria-label", g ? "Pick your MVP: Greater Bank Game MVP, Hawks v " + g.opp : "See past winners: Greater Bank Game MVP");
