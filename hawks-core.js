@@ -189,6 +189,7 @@
     out.offers = offers(raw.offers);
     out.gameCountdown = gameCountdown(raw.gameCountdown);
     out.gamesPortal = gamesPortal(raw.gamesPortal);
+    out.hoopsfest = hoopsfest(raw.hoopsfest);
     /* game-countdown: when each game stops being the "next game" (see gameCountdown below). */
     out.games.forEach(function (g) {
       var p = g.date.split("-").map(Number), dow = new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay();
@@ -263,6 +264,54 @@
     });
     out.cards.sort(function (a, b) { return a.order - b.order || a._i - b._i; });
     return out;
+  }
+
+  /* HoopsFest Perth page (data.js hoopsfest). Anything broken is skipped with a warning; null if the section is missing. */
+  function hoopsfest(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    function txt(v) { return typeof v === "string" ? v.trim() : ""; }
+    function link(v, who) { v = txt(v); if (v && !okUrl(v)) { warn("hoopsfest." + who + " ignored: not an https:// link"); return ""; } return v; }
+    function cards(list, who) {
+      var out = [];
+      (Array.isArray(list) ? list : []).forEach(function (c, i) {
+        var n = "hoopsfest." + who + " " + (i + 1);
+        if (!c || typeof c !== "object" || !txt(c.title) || !okUrl(txt(c.url))) { warn(n + " skipped: it needs a title and an https:// url"); return; }
+        out.push({ title: txt(c.title), body: txt(c.body), label: txt(c.label), url: txt(c.url), image: link(c.image, n + " image"), alt: txt(c.alt) });
+      });
+      return out;
+    }
+    var o = { site: link(raw.site, "site"), heading: txt(raw.heading) || "HoopsFest", dates: txt(raw.dates), tagline: txt(raw.tagline), background: link(raw.background, "background"),
+      players: [], partners: [], aboutHeading: txt(raw.aboutHeading), aboutBody: txt(raw.aboutBody), about: cards(raw.about, "about"),
+      scheduleHeading: txt(raw.scheduleHeading) || "Our game", schedule: link(raw.schedule, "schedule"), scheduleLabel: txt(raw.scheduleLabel),
+      game: null, ticketsHeading: txt(raw.ticketsHeading), tickets: cards(raw.tickets, "tickets"), perth: null,
+      travelHeading: txt(raw.travelHeading), travelLabel: txt(raw.travelLabel), travel: cards(raw.travel, "travel"), travelUrl: link(raw.travelUrl, "travelUrl"), travelButton: txt(raw.travelButton) };
+    (Array.isArray(raw.players) ? raw.players : []).forEach(function (p, i) {
+      if (!p || !txt(p.src)) return;
+      /* http://localhost is allowed so a picture can be previewed from a local file; the live site always uses https. */
+      if (!okUrl(txt(p.src)) && !/^http:\/\/localhost[:\/][^\s"'<>]*$/.test(txt(p.src))) { warn("hoopsfest.players " + (i + 1) + " skipped: src is not an https:// link"); return; }
+      if (!txt(p.alt)) { warn("hoopsfest.players " + (i + 1) + " skipped: it needs alt text"); return; }
+      o.players.push({ src: txt(p.src), alt: txt(p.alt), scale: typeof p.scale === "number" && p.scale >= 0.5 && p.scale <= 2.5 ? p.scale : 1 });
+      if (p.scale != null && o.players[o.players.length - 1].scale !== p.scale) warn("hoopsfest.players " + (i + 1) + " scale ignored: use a number from 0.5 to 2.5");
+    });
+    (Array.isArray(raw.partners) ? raw.partners : []).forEach(function (p, i) {
+      if (p && txt(p.name) && okUrl(txt(p.url)) && okUrl(txt(p.logo))) o.partners.push({ name: txt(p.name), url: txt(p.url), logo: txt(p.logo) });
+      else warn("hoopsfest.partners " + (i + 1) + " skipped: it needs a name, url and logo (https:// links)");
+    });
+    var g = raw.game;
+    if (g && typeof g === "object") {
+      var why = [];
+      if (!realDate(g.date)) why.push("date \"" + g.date + "\" is not a real YYYY-MM-DD date");
+      if (!TIME.test(g.tip)) why.push("tip \"" + g.tip + "\" is not HH:MM");
+      if (!txt(g.opp)) why.push("opp is empty");
+      if (!txt(g.venue)) why.push("venue is empty");
+      if (why.length) warn("hoopsfest.game skipped: " + why.join("; "));
+      else o.game = { date: g.date, tip: g.tip, opp: txt(g.opp), venue: txt(g.venue), tickets: link(g.tickets, "game.tickets"), box: link(g.box, "game.box"),
+        hawksLogo: link(g.hawksLogo, "game.hawksLogo"), oppLogo: link(g.oppLogo, "game.oppLogo"), _tip: toUtc(g.date, g.tip), _end: toUtc(g.date, g.tip) + GAME_HOURS * 3600000 };
+    }
+    var pr = raw.perth;
+    if (pr && txt(pr.heading) && okUrl(txt(pr.url))) o.perth = { heading: txt(pr.heading), label: txt(pr.label), button: txt(pr.button) || "Visit Perth", url: txt(pr.url), image: link(pr.image, "perth.image") };
+    else if (pr) warn("hoopsfest.perth skipped: it needs a heading and an https:// url");
+    return o;
   }
 
   /* Girls in the Game camps. A camp stays up until 6 hours after its start time. */
@@ -2531,6 +2580,189 @@
           }
           any = [].some.call(root.querySelectorAll(".hkgames__tile"), function (t) { return !t.hidden; });
           if (now) now.hidden = !any;
+        }
+      };
+    }
+  };
+
+  /* ---------------- hoopsfest (.hkhf) ----------------
+     The Hawks page for HoopsFest Perth (13 to 17 January 2027). Wears HoopsFest's own look (editor's
+     approval, 28 October 2026): their colours, Druk and rounded buttons. This is a deliberate exception
+     to the Hawks square-corner, no-gradient rules for this module only. Our one game is the schedule;
+     everything else links back to hoopsfest.com.au in a new tab. All copy, links and pictures are in
+     data.js hoopsfest. The Hawks red appears only on the black game card, never against the HoopsFest pinks. */
+  var HF_FONT = "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6865a6be917786294d61fad5_Druk-HeavyItalic.otf";
+  function perthParts(ms) {
+    var o = {}, f = new Intl.DateTimeFormat("en-AU", { timeZone: "Australia/Perth", hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+    f.formatToParts(new Date(ms)).forEach(function (p) { o[p.type] = +p.value; });
+    if (o.hour === 24) o.hour = 0;
+    return o;
+  }
+
+  M.hoopsfest = {
+    css: [
+      "@font-face{font-family:'HFDruk';src:url('" + HF_FONT + "') format('opentype');font-weight:900;font-style:italic;font-display:swap;}",
+      ".hkhf{box-sizing:border-box;display:block;width:100%;max-width:870px;margin:0 auto;background:#000;color:#D8D8D8;border-radius:20px;overflow:hidden;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;text-align:left;}",
+      ".hkhf *,.hkhf *::before,.hkhf *::after{box-sizing:border-box;}",
+      ".hkhf[hidden],.hkhf [hidden]{display:none !important;}",
+      ".hkhf a:focus-visible{outline:2px solid #fff;outline-offset:2px;}",
+      ".hkhf .hkhf__sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}",
+      ".hkhf .hkhf__disp{font-family:'HFDruk','Anton',Impact,sans-serif;font-weight:900;font-style:italic;text-transform:uppercase;letter-spacing:0;}",
+      /* hero */
+      ".hkhf .hkhf__hero{position:relative;isolation:isolate;overflow:hidden;background-color:#1a0030;background-size:cover;background-position:center;padding:40px 20px 44px;min-height:clamp(440px,64cqw,560px);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;}",
+      ".hkhf .hkhf__hero--players{padding-bottom:clamp(250px,64cqw,44px);}",
+      ".hkhf .hkhf__hero--players .hkhf__body{padding-bottom:0;}",
+      ".hkhf .hkhf__pl{position:absolute;bottom:0;z-index:-1;display:block;width:calc(36cqw * var(--s,1));max-width:calc(330px * var(--s,1));height:auto;margin:0;border:0;}",
+      ".hkhf .hkhf__pl--l{left:-9cqw;}",
+      ".hkhf .hkhf__pl--r{right:-5cqw;}",
+      ".hkhf .hkhf__body{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:560px;}",
+      ".hkhf .hkhf__dates{margin:0;padding:0;font-size:14px;font-weight:700;line-height:1.4;color:#fff;}",
+      ".hkhf .hkhf__h1{margin:0;padding:0;font-size:clamp(52px,14.5cqw,124px);line-height:.95;color:#fff;}",
+      ".hkhf .hkhf__tag{margin:0;padding:0;font-size:clamp(24px,4.4cqw,36px);line-height:1.1;letter-spacing:.01em;color:#fff;}",
+      ".hkhf .hkhf__vs{display:inline-flex;align-items:center;gap:10px;margin:4px 0 0;padding:6px 18px 6px 8px;border-radius:999px;background:#000;color:#fff;font-size:14px;font-weight:700;line-height:1.3;text-align:left;}",
+      ".hkhf .hkhf__vs img{display:block;width:28px;height:auto;margin:0;border:0;}",
+      ".hkhf .hkhf__partners{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px 22px;margin:6px 0 0;padding:0;list-style:none;}",
+      ".hkhf .hkhf__partners li{margin:0;padding:0;}",
+      ".hkhf .hkhf__partners a{display:block;}",
+      ".hkhf .hkhf__partners img{display:block;height:34px;width:auto;max-width:110px;object-fit:contain;margin:0;border:0;}",
+      /* buttons */
+      ".hkhf .hkhf__btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;margin:0;padding:6px 28px;border:2px solid #1CEDFA;border-radius:999px;background:#1CEDFA;color:#2B388C;font-family:'HFDruk','Anton',Impact,sans-serif;font-weight:900;font-style:italic;font-size:22px;line-height:1.15;letter-spacing:.01em;text-transform:uppercase;text-align:center;text-decoration:none;transition:background-color 120ms cubic-bezier(.22,1,.36,1),color 120ms cubic-bezier(.22,1,.36,1),transform 120ms cubic-bezier(.22,1,.36,1);}",
+      ".hkhf .hkhf__btn:link,.hkhf .hkhf__btn:visited{color:#2B388C;text-decoration:none;}",
+      ".hkhf .hkhf__btn:hover{background:#fff;border-color:#fff;color:#000;}",
+      ".hkhf .hkhf__btn:active{transform:scale(.98);}",
+      ".hkhf .hkhf__btn--o{background:transparent;border-color:#fff;}",
+      ".hkhf .hkhf__btn--o:link,.hkhf .hkhf__btn--o:visited{color:#fff;}",
+      ".hkhf .hkhf__btn--o:hover{background:#fff;border-color:#fff;color:#000;}",
+      /* sections */
+      ".hkhf .hkhf__sec{padding:48px clamp(16px,5cqw,40px) 0;}",
+      ".hkhf .hkhf__sec:last-child{padding-bottom:48px;}",
+      ".hkhf .hkhf__h2{margin:0 0 18px;padding:0;font-size:clamp(36px,8cqw,56px);line-height:1;color:#fff;background:linear-gradient(90deg,#1CEDFA,#E8008A);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}",
+      ".hkhf .hkhf__sub{margin:0 0 6px;padding:0;font-size:14px;font-weight:700;line-height:1.4;color:#1CEDFA;}",
+      ".hkhf .hkhf__lead{margin:0 0 28px;max-width:640px;font-size:16px;line-height:1.6;color:#D8D8D8;}",
+      ".hkhf .hkhf__grid{display:grid;gap:16px;margin:0;padding:0;list-style:none;}",
+      ".hkhf .hkhf__grid li{margin:0;padding:0;display:flex;}",
+      ".hkhf .hkhf__grid--2{grid-template-columns:1fr 1fr;}",
+      ".hkhf .hkhf__grid--3{grid-template-columns:1fr 1fr 1fr;}",
+      /* cards: picture on top, text below, the whole card is one link */
+      ".hkhf .hkhf__card{display:flex;flex-direction:column;flex:1 1 auto;min-width:0;border-radius:16px;overflow:hidden;background:#131313;border:1px solid rgba(255,255,255,.18);color:#D8D8D8;text-decoration:none;transition:border-color 120ms cubic-bezier(.22,1,.36,1),transform 120ms cubic-bezier(.22,1,.36,1);}",
+      ".hkhf .hkhf__card:link,.hkhf .hkhf__card:visited{color:#D8D8D8;text-decoration:none;}",
+      ".hkhf .hkhf__card:hover{border-color:#1CEDFA;}",
+      ".hkhf .hkhf__card:active{transform:scale(.98);}",
+      ".hkhf .hkhf__img{display:block;width:100%;aspect-ratio:16/10;height:auto;object-fit:cover;margin:0;border:0;background:#131313;}",
+      ".hkhf .hkhf__ct{display:flex;flex-direction:column;gap:6px;flex:1 1 auto;padding:16px 18px 20px;}",
+      ".hkhf .hkhf__h3{margin:0;padding:0;font-size:30px;line-height:1.05;letter-spacing:.01em;color:#fff;}",
+      ".hkhf .hkhf__cp{margin:0;font-size:14px;line-height:1.5;color:#D8D8D8;}",
+      ".hkhf .hkhf__go{margin:auto 0 0;padding-top:8px;font-size:14px;font-weight:700;line-height:1.3;color:#1CEDFA;text-decoration:underline;text-underline-offset:3px;}",
+      /* ticket cards: text laid over the bottom of the picture */
+      ".hkhf .hkhf__card--t{position:relative;min-height:300px;justify-content:flex-end;border:0;background:#131313 center/cover no-repeat;}",
+      ".hkhf .hkhf__card--t::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.1) 30%,rgba(0,0,0,.88));}",
+      ".hkhf .hkhf__card--t .hkhf__ct{position:relative;flex:0 0 auto;padding-top:0;}",
+      ".hkhf .hkhf__card--t .hkhf__go{margin-top:0;}",
+      ".hkhf .hkhf__card--t:hover{box-shadow:inset 0 0 0 2px #1CEDFA;}",
+      /* our game */
+      ".hkhf .hkhf__game{background:#131313;border:1px solid rgba(255,255,255,.18);border-top:6px solid #FF0013;border-radius:16px;padding:28px clamp(16px,4cqw,32px);display:flex;flex-direction:column;gap:20px;}",
+      ".hkhf .hkhf__teams{display:flex;align-items:center;justify-content:center;gap:clamp(12px,3cqw,28px);}",
+      ".hkhf .hkhf__team{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1 1 0;min-width:0;text-align:center;font-size:30px;line-height:1.05;letter-spacing:.01em;color:#fff;}",
+      ".hkhf .hkhf__team img{display:block;width:auto;height:92px;max-width:100%;object-fit:contain;margin:0;border:0;}",
+      ".hkhf .hkhf__v{flex:none;font-size:40px;line-height:1;color:#fff;}",
+      ".hkhf .hkhf__facts{display:flex;flex-direction:column;align-items:center;gap:2px;margin:0;padding:0;text-align:center;}",
+      ".hkhf .hkhf__fd{margin:0;font-size:32px;line-height:1.1;letter-spacing:.01em;color:#fff;}",
+      ".hkhf .hkhf__ft{margin:0;font-size:15px;line-height:1.5;color:#D8D8D8;}",
+      ".hkhf .hkhf__left{margin:6px 0 0;font-size:14px;font-weight:700;line-height:1.4;color:#1CEDFA;}",
+      ".hkhf .hkhf__row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:0;}",
+      ".hkhf .hkhf__row--c{margin-top:20px;}",
+      /* visit perth */
+      ".hkhf .hkhf__perth{position:relative;isolation:isolate;overflow:hidden;border-radius:16px;background:#2B1B5A center/cover no-repeat;padding:48px clamp(20px,5cqw,40px);display:flex;flex-direction:column;align-items:flex-start;gap:14px;}",
+      ".hkhf .hkhf__perth::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.86),rgba(43,56,140,.55));}",
+      ".hkhf .hkhf__perth .hkhf__h2s{margin:0;padding:0;max-width:520px;font-size:clamp(34px,7cqw,52px);line-height:1;color:#fff;}",
+      "@container (max-width:700px){",
+      ".hkhf .hkhf__grid--3{grid-template-columns:1fr;}",
+      ".hkhf .hkhf__card--t{min-height:240px;}",
+      ".hkhf .hkhf__hero{padding:32px 16px 36px;}",
+      ".hkhf .hkhf__hero--players{padding-bottom:88cqw;}",
+      ".hkhf .hkhf__partners{order:2;margin:2px 0 4px;}",
+      ".hkhf .hkhf__vs{order:3;}",
+      ".hkhf .hkhf__body .hkhf__btn{order:4;}",
+      ".hkhf .hkhf__pl{width:calc(50cqw * min(var(--s,1), 1.3));}",
+      ".hkhf .hkhf__pl--l{left:-2cqw;}",
+      ".hkhf .hkhf__pl--r{right:-2cqw;}",
+      "}",
+      "@container (max-width:560px){",
+      ".hkhf .hkhf__grid--2{grid-template-columns:1fr;}",
+      ".hkhf .hkhf__row .hkhf__btn,.hkhf .hkhf__body .hkhf__btn,.hkhf .hkhf__perth .hkhf__btn{width:100%;}",
+      ".hkhf .hkhf__perth .hkhf__btn{width:100%;}",
+      ".hkhf .hkhf__team{font-size:24px;}",
+      ".hkhf .hkhf__fd{font-size:28px;}",
+      ".hkhf .hkhf__btn{font-size:21px;}",
+      ".hkhf .hkhf__team img{height:72px;}",
+      ".hkhf .hkhf__perth{padding:36px 20px;}",
+      "}",
+      "@media (prefers-reduced-motion:reduce){",
+      ".hkhf .hkhf__btn,.hkhf .hkhf__card{transition-duration:1ms !important;}",
+      ".hkhf .hkhf__btn:active,.hkhf .hkhf__card:active{transform:none;}",
+      "}"
+    ].join("\n"),
+
+    render: function (el, ctx) {
+      var h = ctx.data.hoopsfest;
+      if (!h) throw new Error("data.js has no hoopsfest section");
+      var NEW = '<span class="hkhf__sr"> (opens in a new tab)</span>';
+      var pid = uid("hf"), gm = h.game, first = true;
+      function a(url, cls, inner, label) { return "<a" + (cls ? ' class="' + cls + '"' : "") + ext(url) + (label ? ' aria-label="' + esc(label) + '"' : "") + ">" + inner + NEW + "</a>"; }
+      function img(src, alt, cls, w, hgt, eager) { return src ? '<img' + (cls ? ' class="' + cls + '"' : "") + ' src="' + esc(src) + '" alt="' + esc(alt) + '" width="' + w + '" height="' + hgt + '"' + (eager ? "" : ' loading="lazy"') + ">" : ""; }
+      function card(c) {
+        return "<li>" + a(c.url, "hkhf__card", img(c.image, c.alt, "hkhf__img", 800, 500) +
+          '<span class="hkhf__ct"><span class="hkhf__h3 hkhf__disp" role="heading" aria-level="3">' + esc(c.title) + "</span>" + (c.body ? '<span class="hkhf__cp">' + esc(c.body) + "</span>" : "") + (c.label ? '<span class="hkhf__go">' + esc(c.label) + "</span>" : "") + "</span>") + "</li>";
+      }
+      function ticketCard(c) {
+        return "<li>" + '<a class="hkhf__card hkhf__card--t"' + ext(c.url) + (c.image ? ' style="background-image:url(\'' + esc(c.image) + "')\"" : "") + ">" +
+          '<span class="hkhf__ct"><span class="hkhf__h3 hkhf__disp" role="heading" aria-level="3">' + esc(c.title) + '</span><span class="hkhf__cp">' + esc(c.body) + '</span><span class="hkhf__go">' + esc(c.label) + "</span></span>" +
+          (c.image ? '<span class="hkhf__sr">' + esc(c.alt) + "</span>" : "") + NEW + "</a></li>";
+      }
+      var perthTime = "", sydTime = "", perthDate = "";
+      if (gm) {
+        var pp = perthParts(gm._tip), pt = ("0" + pp.hour).slice(-2) + ":" + ("0" + pp.minute).slice(-2);
+        perthDate = ymd(pp.year, pp.month, pp.day); perthTime = U.time(pt); sydTime = U.time(gm.tip);
+      }
+      var vs = gm ? "Hawks v " + gm.opp + ", " + U.longDate(perthDate) : "";
+
+      var players = h.players.slice(0, 2).map(function (p, i) { return img(p.src, p.alt, "hkhf__pl " + (i ? "hkhf__pl--r" : "hkhf__pl--l"), 720, 1000, true).replace("<img ", p.scale !== 1 ? '<img style="--s:' + p.scale + '" ' : "<img "); }).join("");
+      var html = '<div class="hkhf">' +
+        '<section class="hkhf__hero' + (players ? " hkhf__hero--players" : "") + '"' + (h.background ? ' style="background-image:url(\'' + esc(h.background) + "')\"" : "") + ">" + players +
+        '<div class="hkhf__body">' + (h.dates ? '<p class="hkhf__dates">' + esc(h.dates) + "</p>" : "") +
+        '<h2 class="hkhf__h1 hkhf__disp">' + esc(h.heading) + "</h2>" + (h.tagline ? '<p class="hkhf__tag hkhf__disp">' + esc(h.tagline) + "</p>" : "") +
+        (gm ? '<p class="hkhf__vs">' + img(gm.hawksLogo, "", "", 1086, 1067, true) + "<span>" + esc(vs) + "</span></p>" : "") +
+        (gm && gm.tickets ? a(gm.tickets, "hkhf__btn", "Get Hawks tickets", "Get Hawks tickets: " + vs) : "") +
+        (h.partners.length ? '<ul class="hkhf__partners" aria-label="HoopsFest partners">' + h.partners.map(function (p) { return "<li>" + a(p.url, "", img(p.logo, p.name, "", 220, 68, true)) + "</li>"; }).join("") + "</ul>" : "") +
+        "</div></section>";
+      if (h.aboutHeading || h.about.length) html += '<section class="hkhf__sec" aria-labelledby="' + pid + '-about"><h2 class="hkhf__h2 hkhf__disp" id="' + pid + '-about">' + esc(h.aboutHeading) + "</h2>" +
+        (h.aboutBody ? '<p class="hkhf__lead">' + esc(h.aboutBody) + "</p>" : "") + (h.about.length ? '<ul class="hkhf__grid hkhf__grid--2">' + h.about.map(card).join("") + "</ul>" : "") + "</section>";
+      if (gm) html += '<section class="hkhf__sec" aria-labelledby="' + pid + '-sched"><h2 class="hkhf__h2 hkhf__disp" id="' + pid + '-sched">' + esc(h.scheduleHeading) + "</h2>" +
+        '<div class="hkhf__game"><div class="hkhf__teams"><div class="hkhf__team">' + img(gm.hawksLogo, "", "", 1086, 1067) + '<span class="hkhf__disp">Illawarra Hawks</span></div><span class="hkhf__v hkhf__disp" aria-hidden="true">v</span>' +
+        '<div class="hkhf__team">' + img(gm.oppLogo, "", "", 3746, 2964) + '<span class="hkhf__disp">' + esc(gm.opp) + "</span></div></div>" +
+        '<div class="hkhf__facts"><p class="hkhf__fd hkhf__disp">' + esc(U.longDate(perthDate)) + '</p><p class="hkhf__ft">' + esc(perthTime) + " Perth time (" + esc(sydTime) + ' Sydney time)</p><p class="hkhf__ft">' + esc(gm.venue) + '</p><p class="hkhf__left" data-r="left" aria-live="off" hidden></p></div>' +
+        ((gm.tickets || gm.box) ? '<div class="hkhf__row">' + (gm.tickets ? a(gm.tickets, "hkhf__btn", "Buy tickets", "Buy tickets: " + vs) : "") + (gm.box ? a(gm.box, "hkhf__btn hkhf__btn--o", "Get a corporate box", "Get a corporate box: " + vs) : "") + "</div>" : "") + "</div>" +
+        (h.schedule ? '<div class="hkhf__row hkhf__row--c">' + a(h.schedule, "hkhf__btn hkhf__btn--o", esc(h.scheduleLabel || "View the full schedule")) + "</div>" : "") + "</section>";
+      if (h.tickets.length) html += '<section class="hkhf__sec" aria-labelledby="' + pid + '-tix"><h2 class="hkhf__h2 hkhf__disp" id="' + pid + '-tix">' + esc(h.ticketsHeading) + '</h2><ul class="hkhf__grid hkhf__grid--3">' + h.tickets.map(ticketCard).join("") + "</ul></section>";
+      if (h.perth) html += '<section class="hkhf__sec" aria-labelledby="' + pid + '-perth"><div class="hkhf__perth"' + (h.perth.image ? ' style="background-image:url(\'' + esc(h.perth.image) + "')\"" : "") + ">" +
+        (h.perth.label ? '<p class="hkhf__sub">' + esc(h.perth.label) + "</p>" : "") + '<h2 class="hkhf__h2s hkhf__disp" id="' + pid + '-perth">' + esc(h.perth.heading) + "</h2>" + a(h.perth.url, "hkhf__btn", esc(h.perth.button)) + "</div></section>";
+      if (h.travel.length) html += '<section class="hkhf__sec" aria-labelledby="' + pid + '-trip">' + (h.travelLabel ? '<p class="hkhf__sub">' + esc(h.travelLabel) + "</p>" : "") +
+        '<h2 class="hkhf__h2 hkhf__disp" id="' + pid + '-trip">' + esc(h.travelHeading) + '</h2><ul class="hkhf__grid hkhf__grid--3">' + h.travel.map(card).join("") + "</ul>" +
+        (h.travelUrl ? '<div class="hkhf__row hkhf__row--c">' + a(h.travelUrl, "hkhf__btn", esc(h.travelButton || "View all travel packages")) + "</div>" : "") + "</section>";
+      el.innerHTML = html + "</div>";
+
+      var left = el.querySelector('[data-r="left"]'), shown = "";
+      return {
+        update: function (s) {
+          if (!gm || !left) return;
+          var ms = gm._tip - s.now, t;
+          if (s.now >= gm._end) t = "";
+          else if (ms <= 0) t = "Game on";
+          else if (ms >= 2 * 86400000) t = Math.floor(ms / 86400000) + " days to go";
+          else if (ms >= 86400000) t = "1 day to go";
+          else t = "Tip-off in " + Math.floor(ms / 3600000) + " hr " + Math.floor((ms % 3600000) / 60000) + " min";
+          if (t === shown) return;
+          shown = t; left.textContent = t; left.hidden = !t;
         }
       };
     }

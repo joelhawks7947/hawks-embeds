@@ -392,4 +392,83 @@ window.HAWKS_DATA = {
     ]
   }
 
+  ,
+
+  /* ---------------------------------------------------------------
+     HOOPSFEST PERTH (module: hoopsfest)
+     The Hawks page for HoopsFest, Perth, 13 to 17 January 2027. It wears HoopsFest's own
+     branding (the editor approved this, 28 October 2026). Pictures and logos are loaded
+     straight from the HoopsFest site; "players" are the two Hawks players in the banner.
+       players   two pictures, left then right, transparent PNG cut-outs of a player
+                 (https:// link) with alt text. Leave src empty and the banner shows no players.
+                 scale (optional) makes a player bigger or smaller: 1 is normal, 1.5 is half as big again.
+       game      our game. date and tip are SYDNEY time like the rest of this file; the page
+                 works out the Perth time. tickets and box are the Ticketek links.
+     Every link opens in a new tab. A broken link or picture is skipped with a console warning.
+     --------------------------------------------------------------- */
+  hoopsfest: {
+    site: "https://www.hoopsfest.com.au/",
+    heading: "HoopsFest",
+    dates: "13 to 17 January 2027",
+    tagline: "Five days. One city. All hoops.",
+    background: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6a1e69696e7662acea5f00d2_BG%20Hoopfest-p-1080.png",
+    players: [
+      {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae1b22447d160151ee5fa2f_FROLS-BLUR.webp", alt: "Sam Froling, number 13, catching the ball", scale: 1.5},
+      {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae1b2244e0095e2c94336f6_MAKER-Blur.webp", alt: "Makur Maker, number 44, going up for a jump shot", scale: 1.5}
+    ],
+    partners: [
+      {name: "WNBL", url: "https://www.wnbl.com.au/", logo: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6865a6be917786294d61fb2a_WNBL-Social-Media-Avatars-1665761219_V1_News-Article-p-1080.png"},
+      {name: "Hungry Jack's NBL", url: "https://www.nbl.com.au/", logo: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6865a6be917786294d61fae0_NBL-HJ_Logo_NEW_Horizontal.svg"},
+      {name: "Sneakerland", url: "https://sneakerland.com.au/", logo: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6a0c06f14906d559d4cd6c37_Sneakerland_Text%20Logo%20Stacked-p-1080.png"},
+      {name: "City of Perth", url: "https://www.hoopsfest.com.au/", logo: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6ad9ac756b6ea6f8bd9b143e_City%20Of%20Perth_City%20Of%20Light_Stacked_REV-p-1080.png"}
+    ],
+    aboutHeading: "What is HoopsFest?",
+    aboutBody: "HoopsFest is Australasia's biggest basketball, culture and lifestyle festival. An extended five-day celebration of basketball, showcasing elite NBL + WNBL games, fan activations and Sneakerland exhibition. Returning to Perth for the next two seasons. It's all about Hoops!",
+    about: [
+      {title: "Hungry Jack's NBL", body: "10 teams and 5 games in an electrifying round of the Hungry Jack's NBL27 season.",
+        url: "https://www.hoopsfest.com.au/#game-schedule", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa44/6a0baa4fb523dc4fa124dec5_NBLimage1212121444%201-p-800.png", alt: "NBL players contesting a rebound"},
+      {title: "WNBL regular season", body: "9 teams and 5 games set to light up HoopsFest 2027.",
+        url: "https://www.hoopsfest.com.au/#game-schedule", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa44/6a0ba9904f1fd029ceacd748_WNBLimage02385302-p-800.jpg", alt: "WNBL players in a game at RAC Arena"},
+      {title: "Bounce Nation Fan Zone", body: "A five day fan festival celebrating all things basketball culture.",
+        url: "https://www.hoopsfest.com.au/#whats-on", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa44/6a0ba96a79c60d54ea18be67_FanZoneimage028503-p-800.jpg", alt: "Fans at the Bounce Nation Fan Zone"},
+      {title: "Sneakerland", body: "Australia's largest festival of sneaker culture, included in each gameday ticket at RAC Arena.",
+        url: "https://sneakerland.com.au/", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa44/6865a6be917786294d61fb58_091A8607-p-800.jpg", alt: "The Sneakerland exhibition"}
+    ],
+    scheduleHeading: "Our game",
+    schedule: "https://www.hoopsfest.com.au/#game-schedule",
+    scheduleLabel: "View the full HoopsFest schedule",
+    game: {
+      date: "2027-01-17", tip: "17:00", opp: "Brisbane Bullets", venue: "RAC Arena, Perth",
+      tickets: "https://premier.ticketek.com.au/shows/Show.aspx?sh=HPFTGM0527",
+      box: "https://premier.ticketek.com.au/shows/show.aspx?sh=HPFTGM0527&v=WPA&p=EWPA2027617EB",
+      hawksLogo: "https://cdn.prod.website-files.com/6865a6be917786294d61fa44/6865a6be917786294d61fb44_65e164d8efafaca9d9dffb2a_64a8b4dd5b0fb260f9d0b1a0_Illawarra%252520Hawks.png",
+      oppLogo: "https://cdn.prod.website-files.com/6865a6be917786294d61fa44/6865a6be917786294d61fb5d_Logo_Blue_Yellow%202.png"
+    },
+    ticketsHeading: "Ticketing options",
+    tickets: [
+      {title: "Single day", body: "For just one day of HoopsFest action!", label: "Buy early-bird tickets",
+        url: "https://premier.ticketek.com.au/shows/show.aspx?sh=HOOPFEST27", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6a0aa2cbd8b8ddd9c9464e8e_GettyImages-2256578442-p-800.jpg", alt: "Young fans at HoopsFest"},
+      {title: "Multi-day pass", body: "For multiple days of HoopsFest filled fun!", label: "Buy multi-day pass",
+        url: "https://premier.ticketek.com.au/shows/show.aspx?sh=HOOPFEST27", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6a0aa450a09572bbe098d494_GettyImages-2256713575-p-800.jpg", alt: "Fans at HoopsFest"},
+      {title: "Group tickets", body: "Book a group for the ultimate fan experience at HoopsFest.", label: "Learn more",
+        url: "https://www.hoopsfest.com.au/group-tickets", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6a0aa44f21f08afd83900466_GettyImages-2256712204-p-800.jpg", alt: "A group of fans in front of a giant NBL basketball"}
+    ],
+    perth: {
+      heading: "Step outside of the everyday and into a dream", label: "Visit Perth", button: "Plan your Perth trip",
+      url: "https://www.hoopsfest.com.au/#visit-perth",
+      image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6865a6be917786294d61fb05_Perth-CBD-p-1080.jpg"
+    },
+    travelHeading: "HoopsFest travel packages",
+    travelLabel: "Plan your trip",
+    travel: [
+      {title: "Book your flights to Perth", body: "Heading to HoopsFest?", label: "Book flights",
+        url: "https://www.hoopsfest.com.au/travel-packages#Virgin", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6adee78936a06a6c5ed961c1_241025%20-%20Virgin%20Australia_SHOT_02_0544%20(1)-p-800.jpg", alt: "Virgin Australia flights to Perth"},
+      {title: "HoopsFest All Rounder", body: "", label: "View more packages",
+        url: "https://www.hoopsfest.com.au/travel-packages#hoopfest-all-rounders", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6a055738e5f58cea23c8cf60_GettyImages-2256903960%201-p-800.png", alt: "HoopsFest All Rounder travel package"},
+      {title: "Club travel packages", body: "", label: "View more packages",
+        url: "https://www.hoopsfest.com.au/travel-packages#club-travel-packages", image: "https://cdn.prod.website-files.com/6865a6be917786294d61fa36/6a0aa2cbab34645ff06f9f5c_GettyImages-2256730844-p-800.jpg", alt: "Club travel packages for HoopsFest"}
+    ],
+    travelUrl: "https://www.hoopsfest.com.au/travel-packages",
+    travelButton: "View all travel packages"
+  }
 };

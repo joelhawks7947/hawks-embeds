@@ -141,6 +141,17 @@ For hawks.com.au/pages/engagement. Put this in a Code Embed. The text inside the
 
 If a game's name, link or description changes in `data.js`, change it here too and paste the embed again (a test checks the names, links and descriptions still match).
 
+### HoopsFest Perth page
+
+For the Hawks page about HoopsFest (Perth, 13 to 17 January 2027). It sits in a Code Embed, 870px wide on desktop and fitting a 365px phone. It wears HoopsFest's own colours and type on purpose. Every link goes back to hoopsfest.com.au (or Ticketek) and opens in a new tab, and the pictures load straight from the HoopsFest site.
+
+```html
+<div data-hawks="hoopsfest"><a href="https://www.hoopsfest.com.au/">HoopsFest Perth, 13 to 17 January 2027: see the Illawarra Hawks game and book tickets</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+What it shows, top to bottom: the banner (two Hawks players, "HoopsFest", a "Hawks v Brisbane Bullets" line and a Get Hawks tickets button), What is HoopsFest, **Our game** (Sunday 17th January, with the Perth and Sydney times, a days-to-go line, Buy tickets, Get a corporate box, and a button to the full HoopsFest schedule), Ticketing options, a Visit Perth block and the travel packages.
+
 ### Offer landing pages
 
 One embed for each offer page. Paste it into a Webflow Code Embed on that page. Only `data-offer` and the fallback link change; the script line is the same every time. Each page is a light, transparent block with the picture, headline, copy and button. The copy, pictures and links are in `data.js` under `offers`.
@@ -339,6 +350,15 @@ Everything on the Hawks Games page lives in `data.js` under `gamesPortal`, with 
 - **Quiz title, description and closing date and time** come from the quiz app's current quiz. The address is in `gamesPortal.quizApi` (it belongs to the quiz app, which only allows `https://www.hawks.com.au` to read it). If it is empty or the app is down, the card says "This week's Hawks quiz" and the quiz tile is left out.
 - **Pecking Order closing time** comes from the bracket app's featured bracket, address in `gamesPortal.bracketApi`. While it is open the card says "Now voting: <bracket name>. Closes Friday 6th November, 12:00pm." (the wording is `metaLive` on that card) and a "Pecking Order closes" tile shows the date and time. Before it opens, after it closes, with no close time, or if the app can't be reached, the card keeps its plain `meta` line and there is no tile, so update that line if it goes stale. Times are shown in Sydney time.
 - **Analytics:** each click sends a `games_card_click` event to the site's Google Analytics, with `card_id`, `position` and `location` (`card` or `tile`), if Google Analytics is on the page.
+
+### HoopsFest page: players, game and links
+
+Everything is in `data.js` under `hoopsfest`, with a comment block above it.
+
+- **The two Hawks players in the banner:** upload a transparent PNG of each player (left, then right) to Webflow Assets and paste each full https address into `players`, with alt text describing the player. Leave `src` empty and the banner shows no players. A player without alt text is skipped.
+- **Our game:** `game` holds the date, tip-off (in **Sydney time**, like every other game in this file), opponent, venue, Ticketek links and logos. The page works out the Perth time and shows both, for example "2:00pm Perth time (5:00pm Sydney time)", so there is only one time to keep right.
+- **Wording, links and pictures** for the other sections are in the same block. All links are https addresses and open in a new tab.
+- **Fonts:** the headings use HoopsFest's own font, loaded from their site. If it ever fails to load they fall back to Anton.
 
 ### Girls in the Game camps
 
