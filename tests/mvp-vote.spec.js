@@ -8,7 +8,7 @@ const MV = '[data-hawks="mvp-vote"]';
 const URL = "https://hawks-mvp-vote.lovable.app/";
 const IMG = "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a610/6ab2493948d4bd882a387a13_MVP%20Vote_1080x1080.png";
 const OPEN_BODY = "Voting for the Greater Bank Game MVP, presented by the Hawks’ Major Community Partner, is open now.";
-const SHUT_BODY = "Voting for the Greater Bank Game MVP, presented by the Hawks’ Major Community Partner, opens at tip-off of every game.";
+const SHUT_BODY = "Voting for the Greater Bank Game MVP, presented by the Hawks’ Major Community Partner, opens at tip-off of every game. One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
 
 async function open(page, t) { const log = watchConsole(page); await page.goto("/test/?hk_now=" + t); await ready(page); return log; }
 async function expectOpen(page, opp) {
