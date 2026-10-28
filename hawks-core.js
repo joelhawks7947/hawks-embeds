@@ -1253,7 +1253,7 @@
           badge.hidden = !(g || next);
           dot.hidden = !g;
           badgeText.textContent = g ? "Voting open now" : next ? "Next vote opens " + mvpWhen(next, s.now) : "";
-          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game. One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.");
+          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game.") + " One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
           if (!btn) return;
           label.textContent = g ? "Pick your MVP" : "See past winners";
           btn.setAttribute("aria-label", g ? "Pick your MVP: Greater Bank Game MVP, Hawks v " + g.opp : "See past winners: Greater Bank Game MVP");
