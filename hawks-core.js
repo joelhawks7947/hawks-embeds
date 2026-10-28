@@ -326,6 +326,8 @@
     var t = U.time(w.tip), soon = w._open - now < 6 * 86400000;
     return (soon ? fmt(w.date, { weekday: "long" }) : U.longDate(w.date) + ",") + " " + t;
   }
+  /* Prize line shown with the vote in mvp-vote and trivia-mvp. */
+  var MVP_PRIZE = "One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
   H.mvpOpen = mvpOpen;
 
   /* Hawks in Business events. An event is past (shown grey) from its end time, or from midnight
@@ -1008,6 +1010,7 @@
       /* Black on red: white text on Hawks red is 3.99:1, below AA for 16px text. */
       /* Long button text wraps into even lines on phones. */
       ".hkpv .hkpv__btn{text-wrap:balance;}",
+      ".hkpv .hkpv__prize{max-width:320px;font-size:14px;line-height:1.5;color:#D8D8D8;margin:0;}",
       ".hkpv .hkpv__soon{background:transparent;border-color:var(--k);color:var(--k);cursor:default;}",
       "@container (max-width:700px){",
       ".hkpv{grid-template-columns:1fr;}",
@@ -1029,6 +1032,7 @@
         "</div>" +
         '<div class="hkpv__panel hkpv__panel--k hkpv__mvp">' +
         (L.mvpImage ? '<img class="hkpv__img" src="' + esc(L.mvpImage) + '" width="1080" height="1080" loading="lazy" alt="Vote for your Greater Bank Game MVP">' : "") +
+        '<p class="hkpv__prize">' + esc(MVP_PRIZE) + "</p>" +
         (L.mvpVote ? '<a class="hkpv__btn"' + ext(L.mvpVote) + '><span class="hkpv__vote"></span></a>' : "") +
         "</div></section>";
       /* Same voting window as mvp-vote: "Pick your MVP" while a vote is open, otherwise "See past winners". */
@@ -1253,7 +1257,7 @@
           badge.hidden = !(g || next);
           dot.hidden = !g;
           badgeText.textContent = g ? "Voting open now" : next ? "Next vote opens " + mvpWhen(next, s.now) : "";
-          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game.") + " One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
+          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game.") + " " + MVP_PRIZE;
           if (!btn) return;
           label.textContent = g ? "Pick your MVP" : "See past winners";
           btn.setAttribute("aria-label", g ? "Pick your MVP: Greater Bank Game MVP, Hawks v " + g.opp : "See past winners: Greater Bank Game MVP");

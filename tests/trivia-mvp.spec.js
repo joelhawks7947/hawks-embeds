@@ -24,6 +24,7 @@ test("Coming soon while the trivia link is empty; MVP panel complete", async ({ 
   await expect(img).toHaveAttribute("height", "1080");
   await expect(img).toHaveAttribute("loading", "lazy");
   await expect(img).toHaveAttribute("alt", "Vote for your Greater Bank Game MVP");
+  await expect(pv.locator(".hkpv__prize")).toHaveText("One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.");
   const vote = pv.locator(".hkpv__mvp a");
   await expect(vote).toHaveText("See past winners");
   await expect(vote).toHaveAttribute("href", "https://hawks-mvp-vote.lovable.app/");
