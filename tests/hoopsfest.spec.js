@@ -41,12 +41,14 @@ test("our game: Sunday 17th January, 2:00pm Perth time, 5:00pm Sydney time, RAC 
   expect(log.errors).toEqual([]);
 });
 
-test("countdown: days, then hours, then Game on, then gone after the game", async ({ page }) => {
+test("countdown: days, tomorrow, then hours, then Game on, then gone after the game", async ({ page }) => {
   const left = H + " [data-r=left]";
   await open(page, "2026-11-10T10:00");
   await expect(page.locator(left)).toHaveText("68 days to go");
   await open(page, "2027-01-16T12:00");
-  await expect(page.locator(left)).toHaveText("1 day to go");
+  await expect(page.locator(left)).toHaveText("Tomorrow");
+  await open(page, "2027-01-15T18:00");
+  await expect(page.locator(left)).toHaveText("2 days to go");
   await open(page, "2027-01-17T09:29:30");
   await expect(page.locator(left)).toHaveText("Tip-off in 7 hr 30 min");
   await open(page, "2027-01-17T17:30");

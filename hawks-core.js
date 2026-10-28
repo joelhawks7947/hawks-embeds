@@ -2759,7 +2759,11 @@
           if (s.now >= gm._end) t = "";
           else if (ms <= 0) t = "Game on";
           else if (ms >= 2 * 86400000) t = Math.floor(ms / 86400000) + " days to go";
-          else if (ms >= 86400000) t = "1 day to go";
+          else if (ms >= 86400000) {
+            /* 24 to 48 hours out: "Tomorrow" when the game is on tomorrow's date in Sydney, else "2 days to go" (a Friday evening for a Sunday game). */
+            var np = parts(s.now), gp = gm.date.split("-").map(Number);
+            t = Date.UTC(gp[0], gp[1] - 1, gp[2]) - Date.UTC(np.year, np.month - 1, np.day) <= 86400000 ? "Tomorrow" : "2 days to go";
+          }
           else t = "Tip-off in " + Math.floor(ms / 3600000) + " hr " + Math.floor((ms % 3600000) / 60000) + " min";
           if (t === shown) return;
           shown = t; left.textContent = t; left.hidden = !t;
