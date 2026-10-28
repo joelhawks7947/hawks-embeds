@@ -116,7 +116,7 @@ For hawks.com.au/pages/engagement. Put this in a Code Embed. The text inside the
 ```html
 <div data-hawks="games">
   <h2>Hawks Games</h2>
-  <p>Play, vote and have your say. Some games reset every day, some every home game, and some are always open.</p>
+  <p>Play, vote and have your say. Some games reset every day, some every game, and some are always open.</p>
   <h3>Greater Bank MVP</h3>
   <p>Presented by Greater Bank. Pick your standout Hawk after every game.</p>
   <p><a href="https://hawks-mvp-vote.lovable.app/">Vote for the Greater Bank MVP</a></p>
