@@ -232,11 +232,12 @@
 
   /* Hawks Games page (data.js gamesPortal). A bad card is skipped with a warning. */
   function gamesPortal(raw) {
-    var out = { heading: "Hawks Games", intro: "", moreHeading: "", moreSub: "", quizApi: "", utm: null, cards: [] };
+    var out = { heading: "Hawks Games", intro: "", moreHeading: "", moreSub: "", quizApi: "", bracketApi: "", utm: null, cards: [] };
     if (!raw || typeof raw !== "object") return out;
     function txt(v) { return typeof v === "string" ? v.trim() : ""; }
     ["heading", "intro", "moreHeading", "moreSub"].forEach(function (k) { if (txt(raw[k]) || k !== "heading") out[k] = txt(raw[k]); else out[k] = "Hawks Games"; });
     if (raw.quizApi) { if (okUrl(raw.quizApi)) out.quizApi = raw.quizApi; else warn("gamesPortal.quizApi ignored: not an https:// link"); }
+    if (raw.bracketApi) { if (okUrl(raw.bracketApi)) out.bracketApi = raw.bracketApi; else warn("gamesPortal.bracketApi ignored: not an https:// link"); }
     if (raw.utm && typeof raw.utm === "object" && txt(raw.utm.source) && txt(raw.utm.medium) && txt(raw.utm.campaign)) out.utm = { source: txt(raw.utm.source), medium: txt(raw.utm.medium), campaign: txt(raw.utm.campaign) };
     else if (raw.utm) warn("gamesPortal.utm needs source, medium and campaign; links go out without UTM tags");
     var seen = {};
@@ -249,7 +250,7 @@
       if (!txt(c.title)) why.push("title is empty");
       if (["live", "soon", "hidden"].indexOf(status) < 0) why.push("status \"" + status + "\" should be live, soon or hidden");
       if (["full", "column"].indexOf(layout) < 0) why.push("layout \"" + layout + "\" should be full or column");
-      if (kind && ["grid", "quiz", "mvp"].indexOf(kind) < 0) { warn(who + ": kind \"" + kind + "\" ignored"); kind = ""; }
+      if (kind && ["grid", "quiz", "mvp", "bracket"].indexOf(kind) < 0) { warn(who + ": kind \"" + kind + "\" ignored"); kind = ""; }
       if (status === "live" && !okUrl(c.url)) why.push("a live card needs an https:// url");
       if (c.image && !okUrl(c.image)) { warn(who + ": image ignored, not an https:// link"); c.image = ""; }
       if (why.length) { warn(who + " skipped: " + why.join("; ")); return; }
@@ -257,7 +258,7 @@
       if (status === "hidden") return;
       out.cards.push({ id: id, kind: kind, layout: layout, status: status, order: typeof c.order === "number" ? c.order : i + 1, _i: i, theme: txt(c.theme) === "dark" ? "dark" : "",
         kicker: txt(c.kicker), badge: txt(c.badge), badgeClosed: txt(c.badgeClosed), sponsor: txt(c.sponsor), title: txt(c.title), body: txt(c.body), bodyFallback: txt(c.bodyFallback),
-        meta: txt(c.meta), metaClosed: txt(c.metaClosed), ctaLabel: txt(c.ctaLabel), ctaLabelClosed: txt(c.ctaLabelClosed), url: status === "live" ? c.url : "",
+        meta: txt(c.meta), metaClosed: txt(c.metaClosed), metaLive: txt(c.metaLive), ctaLabel: txt(c.ctaLabel), ctaLabelClosed: txt(c.ctaLabelClosed), url: status === "live" ? c.url : "",
         image: txt(c.image), alt: txt(c.alt), imagePos: /^[a-z0-9% ]{1,30}$/i.test(txt(c.imagePos)) ? txt(c.imagePos) : "center" });
     });
     out.cards.sort(function (a, b) { return a.order - b.order || a._i - b._i; });
@@ -2275,25 +2276,39 @@
      The MVP tile and card use the same vote windows as mvp-vote. The quiz title and close time
      come from the quiz app's current-quiz function (gamesPortal.quizApi); if it can't be reached
      the card shows its fallback text and the countdown tile is left out. */
+  /* Live details from the quiz and bracket apps. status: idle, loading, ok or failed (the cards then show their own fallback text). */
   var quiz = { status: "idle", title: "", description: "", closes: 0 };
-  function loadQuiz(url) {
-    if (quiz.status !== "idle") return;
-    quiz.status = "loading";
+  var bracket = { status: "idle", title: "", opens: 0, closes: 0 };
+  function loadFeed(st, url, what, parse) {
+    if (st.status !== "idle") return;
+    st.status = "loading";
     var ctl = typeof AbortController === "function" ? new AbortController() : null, t = setTimeout(function () { if (ctl) ctl.abort(); }, 6000);
-    function bad(why) { clearTimeout(t); quiz.status = "failed"; warn("could not load the current quiz (" + why + "); the quiz card shows its fallback text"); }
+    function bad(why) { clearTimeout(t); st.status = "failed"; warn("could not load the current " + what + " (" + why + "); its card shows the fallback text"); }
     if (typeof W.fetch !== "function") { bad("this browser has no fetch"); return; }
     W.fetch(url, { mode: "cors", credentials: "omit", signal: ctl ? ctl.signal : undefined }).then(function (r) {
       if (!r.ok) throw new Error("status " + r.status);
       return r.json();
     }).then(function (j) {
       clearTimeout(t);
-      var closes = j && typeof j.closes_at === "string" ? Date.parse(j.closes_at) : NaN;
       if (!j || typeof j.title !== "string" || !j.title.trim()) throw new Error("no title in the reply");
+      parse(j);
+      st.status = "ok";
+    }).catch(function (e) { bad(e && e.message ? e.message : "error"); });
+  }
+  function when(v) { var n = typeof v === "string" ? Date.parse(v) : NaN; return isFinite(n) ? n : 0; }
+  function loadQuiz(url) {
+    loadFeed(quiz, url, "quiz", function (j) {
       quiz.title = j.title.trim();
       quiz.description = typeof j.description === "string" ? j.description.trim() : "";
-      quiz.closes = isFinite(closes) ? closes : 0;
-      quiz.status = "ok";
-    }).catch(function (e) { bad(e && e.message ? e.message : "error"); });
+      quiz.closes = when(j.closes_at);
+    });
+  }
+  function loadBracket(url) {
+    loadFeed(bracket, url, "bracket", function (j) {
+      bracket.title = j.title.trim();
+      bracket.opens = when(j.opens_at);
+      bracket.closes = when(j.closes_at);
+    });
   }
   function withUtm(url, id) {
     var P = H.data.gamesPortal.utm;
@@ -2373,6 +2388,7 @@
       var P = ctx.data.gamesPortal, cards = P.cards;
       if (!cards.length) throw new Error("gamesPortal has no cards in data.js");
       if (cards.some(function (c) { return c.kind === "quiz" && c.status === "live"; }) && P.quizApi) loadQuiz(P.quizApi);
+      if (cards.some(function (c) { return c.kind === "bracket" && c.status === "live"; }) && P.bracketApi) loadBracket(P.bracketApi);
       var ids = {}, pos = {}, runs = [];
       /* Cards show in order down the page. Neighbouring cards with the same layout share a block, so a wide
          card with a later order lands below the small cards. */
@@ -2420,7 +2436,7 @@
         return c ? '<a class="hkgames__tile" href="#' + ids[c.id] + '" data-tile="' + kind + '" data-gid="' + esc(c.id) + '" data-gpos="' + pos[c.id] + '" data-gloc="tile" hidden>' +
           '<span class="hkgames__tl" data-r="tl">' + esc(label) + '</span><span class="hkgames__tv" data-r="tv"></span><span class="hkgames__ts" data-r="ts"></span></a>' : "";
       }
-      var tiles = tileHtml("grid", "Today's grid") + tileHtml("quiz", "Quiz closes in") + tileHtml("mvp", "MVP voting open");
+      var tiles = tileHtml("grid", "Today's grid") + tileHtml("quiz", "Quiz closes in") + tileHtml("mvp", "MVP voting open") + tileHtml("bracket", "Pecking Order closes");
       el.innerHTML =
         '<div class="hkgames">' +
         '<header class="hkgames__head"><div class="hkgames__intro"><h1 class="hkgames__h1">' + esc(P.heading) + "</h1>" + (P.intro ? '<p class="hkgames__lead">' + esc(P.intro) + "</p>" : "") + "</div>" +
@@ -2494,6 +2510,23 @@
                 var cp = parts(quiz.closes), cd = ymd(cp.year, cp.month, cp.day), ct = ("0" + cp.hour).slice(-2) + ":" + ("0" + cp.minute).slice(-2);
                 once("quiztile", cd + ct + quiz.title, function () { setT(tq, "Quiz closes", U.dm(cd), quiz.title + ", " + U.time(ct)); });
               } else once("quiztile", "off" + quiz.status, function () { tq.hidden = true; });
+            }
+          }
+          var bc = cardOf("bracket");
+          if (bc) {
+            /* Open now: the featured bracket has opened and not yet closed, with a close time to show. */
+            var bopen = bracket.status === "ok" && bracket.closes > s.now && (!bracket.opens || bracket.opens <= s.now);
+            var bcp = bopen ? parts(bracket.closes) : null, bcd = bcp ? ymd(bcp.year, bcp.month, bcp.day) : "", bct = bcp ? ("0" + bcp.hour).slice(-2) + ":" + ("0" + bcp.minute).slice(-2) : "";
+            once("bracketcard", bopen ? "o" + bracket.closes + bracket.title : "x", function () {
+              var m = R(cardEl(bc.id), "meta");
+              if (!m) return;
+              m.textContent = bopen && bc.metaLive ? fill(bc.metaLive, { title: bracket.title, closes: U.longDate(bcd) + ", " + U.time(bct) }) : bc.meta;
+              m.hidden = !m.textContent;
+            });
+            var tb = tile("bracket");
+            if (tb) {
+              if (bopen) once("brackettile", bcd + bct + bracket.title, function () { setT(tb, "Pecking Order closes", U.dm(bcd), bracket.title + ", " + U.time(bct)); });
+              else once("brackettile", "off" + bracket.status + (bracket.closes > s.now), function () { tb.hidden = true; });
             }
           }
           any = [].some.call(root.querySelectorAll(".hkgames__tile"), function (t) { return !t.hidden; });

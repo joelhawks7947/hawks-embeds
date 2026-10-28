@@ -7,6 +7,8 @@ const { ROOT, loadData, useData, watchConsole, ready } = require("./helpers");
 const G = '[data-hawks="games"]';
 const IMG_DIR = path.join(ROOT, "test/games-images");
 const QUIZ_API = "https://quiz-project.example.test/functions/v1/current-quiz";
+const BRACKET_API = "https://bracket-project.example.test/api/public/current-bracket";
+const BRACKET = { title: "Best Uniform from 1979 to 2008", description: "x", opens_at: "2026-10-27T01:00:00+00:00", closes_at: "2026-11-06T01:00:00+00:00", url: "https://bracket.illawarra-hawks.com.au/" };
 const UTM = (id) => "?utm_source=hawks.com.au&utm_medium=referral&utm_campaign=engagement-page&utm_content=" + id;
 const URLS = {
   "membership-finder": "https://hawks-membership-picker.lovable.app/",
@@ -28,8 +30,13 @@ async function setup(page, opts = {}) {
     if (opts.quiz === "fail") return r.fulfill({ status: 500, body: "no" });
     r.fulfill({ contentType: "application/json", body: JSON.stringify(opts.quiz || { title: "Hawks Quiz #1", description: "10 questions from the current decade (2020 to today)", closes_at: "2026-11-02T13:00:00Z", url: "https://quiz.illawarra-hawks.com.au/" }) });
   });
+  await page.route(BRACKET_API, (r) => {
+    if (opts.bracket === "fail") return r.fulfill({ status: 500, body: "no" });
+    r.fulfill({ contentType: "application/json", body: JSON.stringify(opts.bracket || BRACKET) });
+  });
   await useData(page, (d) => {
     d.gamesPortal.quizApi = opts.noApi ? "" : QUIZ_API;
+    d.gamesPortal.bracketApi = opts.noApi ? "" : BRACKET_API;
     d.gamesPortal.cards.forEach((c) => { c.image = "https://cdn.test/img/" + FILES[c.id]; });
     if (opts.mutate) opts.mutate(d);
   });
@@ -123,6 +130,41 @@ test("MVP open for an away game: round and opponent", async ({ page }) => {
   const t = page.locator(G + ' [data-tile="mvp"]');
   await expect(t.locator(".hkgames__tv")).toHaveText("Round 7");
   await expect(t.locator(".hkgames__ts")).toHaveText("Hawks v Perth Wildcats");
+});
+
+const PO = G + ' [data-card="hawks-pecking-order"] .hkgames__cm';
+const FALLBACK_META = "Featured: best uniform, 1979 to 2008.";
+
+test("bracket open: tile and card show the title and the Friday noon close in Sydney time", async ({ page }) => {
+  await open(page, "2026-10-28T10:00");
+  const tb = page.locator(G + ' [data-tile="bracket"]');
+  await expect(tb.locator(".hkgames__tl")).toHaveText("Pecking Order closes");
+  await expect(tb.locator(".hkgames__tv")).toHaveText("6 Nov");
+  await expect(tb.locator(".hkgames__ts")).toHaveText("Best Uniform from 1979 to 2008, 12:00pm");
+  await expect(page.locator(PO)).toHaveText("Now voting: Best Uniform from 1979 to 2008. Closes Friday 6th November, 12:00pm.");
+  await expect(tb).toHaveAttribute("href", /^#hk\d+-hawks-pecking-order$/);
+});
+
+test("bracket not open yet, already closed, no close time or app down: plain meta line, no tile", async ({ page }) => {
+  const cases = [
+    ["2026-10-27T09:00", undefined],                                                  // opens 27 Oct 12:00 Sydney
+    ["2026-11-06T12:00", undefined],                                                  // closes 6 Nov 12:00 Sydney
+    ["2026-10-28T10:00", { ...BRACKET, closes_at: null }],
+    ["2026-10-28T10:00", "fail"]
+  ];
+  for (const [t, bracket] of cases) {
+    await open(page, t, { bracket });
+    await expect(page.locator(G + ' [data-tile="bracket"]')).toBeHidden();
+    await expect(page.locator(PO)).toHaveText(FALLBACK_META);
+  }
+});
+
+test("no bracketApi set: no network call and the plain meta line", async ({ page }) => {
+  let hit = false;
+  await page.route(BRACKET_API, (r) => { hit = true; r.abort(); });
+  await open(page, "2026-10-28T10:00", { noApi: true });
+  await expect(page.locator(PO)).toHaveText(FALLBACK_META);
+  expect(hit).toBe(false);
 });
 
 test("after the season: no MVP tile, quiz card still renders", async ({ page }) => {

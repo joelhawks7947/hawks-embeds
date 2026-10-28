@@ -313,7 +313,7 @@ window.HAWKS_DATA = {
      HAWKS GAMES PAGE (data-hawks="games", hawks.com.au/pages/engagement)
      One entry in cards per game. To change a card, edit its line here.
        id        short name with no spaces (used in links and analytics). Do not change once live.
-       kind      "grid", "quiz" or "mvp" for the three cards that feed the "On now" tiles.
+       kind      "grid", "quiz", "mvp" or "bracket" for the cards that feed the "On now" tiles.
                  Leave it out for any other card. The mvp card also needs the
                  mvpVote schedule above; the quiz card needs quizApi below.
        layout    "full" = wide row with the picture beside the words
@@ -338,6 +338,8 @@ window.HAWKS_DATA = {
        mvp:  {round} and {game} (for example "Round 3" and "Hawks v Adelaide 36ers").
              While a vote is open the badge/meta/ctaLabel are used; between votes the
              badgeClosed/metaClosed/ctaLabelClosed ones are used.
+       bracket: {title} and {closes} (for example "Friday 6th November, 12:00pm") come from the bracket app, in metaLive.
+                When no bracket is open, or the bracket app can't be reached, the plain meta line is used.
        quiz: {title} is this week's quiz name from the quiz app. If the quiz app can't be
              reached, bodyFallback is used and the quiz tile is left out.
      --------------------------------------------------------------- */
@@ -348,6 +350,8 @@ window.HAWKS_DATA = {
     moreSub: "Daily, weekly and all season long.",
     /* The quiz app's current quiz (title, description, closes_at). Empty = the quiz card shows its fallback text and no quiz tile. */
     quizApi: "https://quiz.illawarra-hawks.com.au/api/public/current-quiz",
+    /* The bracket app's featured bracket (title, opens_at, closes_at). Empty = the Pecking Order card keeps its own meta line and there is no Pecking Order tile. */
+    bracketApi: "https://bracket.illawarra-hawks.com.au/api/public/current-bracket",
     utm: { source: "hawks.com.au", medium: "referral", campaign: "engagement-page" },
     cards: [
       {id:"membership-finder", layout:"full", order:6, status:"live", theme:"dark",
@@ -379,10 +383,10 @@ window.HAWKS_DATA = {
         meta:"Sign in with a magic link to go in the prize draw.",
         ctaLabel:"Start quiz", url:"https://quiz.illawarra-hawks.com.au/",
         image:"https://video.illawarra-hawks.com.au/image/trivia.jpg", alt:"Hawks Trivia quiz screen", imagePos:"center 62%"},
-      {id:"hawks-pecking-order", layout:"column", order:5, status:"live",
+      {id:"hawks-pecking-order", kind:"bracket", layout:"column", order:5, status:"live",
         kicker:"Ongoing", title:"Pecking Order",
         body:"Settle Hawks debates bracket by bracket. Pick your favourites and crown the winners.",
-        meta:"Featured: best uniform, 1979 to 2008.",
+        meta:"Featured: best uniform, 1979 to 2008.", metaLive:"Now voting: {title}. Closes {closes}.",
         ctaLabel:"Vote", url:"https://bracket.illawarra-hawks.com.au/",
         image:"https://video.illawarra-hawks.com.au/image/pecking.jpg", alt:"Hawks Pecking Order bracket home screen", imagePos:"center 25%"}
     ]

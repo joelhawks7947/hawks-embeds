@@ -337,6 +337,7 @@ Everything on the Hawks Games page lives in `data.js` under `gamesPortal`, with 
 - **Pictures:** upload each screenshot to Webflow Assets, then paste its full https address into `image`. Until `image` is filled in the card shows a plain block.
 - **MVP round and opponent** come from the same schedule as the Greater Bank MVP embed (`mvpVote.games`), so updating that schedule updates both. Each game line has a `round` number; keep it filled in.
 - **Quiz title, description and closing date and time** come from the quiz app's current quiz. The address is in `gamesPortal.quizApi` (it belongs to the quiz app, which only allows `https://www.hawks.com.au` to read it). If it is empty or the app is down, the card says "This week's Hawks quiz" and the quiz tile is left out.
+- **Pecking Order closing time** comes from the bracket app's featured bracket, address in `gamesPortal.bracketApi`. While it is open the card says "Now voting: <bracket name>. Closes Friday 6th November, 12:00pm." (the wording is `metaLive` on that card) and a "Pecking Order closes" tile shows the date and time. Before it opens, after it closes, with no close time, or if the app can't be reached, the card keeps its plain `meta` line and there is no tile, so update that line if it goes stale. Times are shown in Sydney time.
 - **Analytics:** each click sends a `games_card_click` event to the site's Google Analytics, with `card_id`, `position` and `location` (`card` or `tile`), if Google Analytics is on the page.
 
 ### Girls in the Game camps

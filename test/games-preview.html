@@ -21,6 +21,13 @@
     var closes = new Date(Date.now() + (6 * 24 + 20) * 3600000 + 40 * 60000).toISOString();
     return Promise.resolve(new Response(JSON.stringify({ title: "Hawks Quiz #1", description: "10 questions from the current decade (2020 to today)", closes_at: closes }), { headers: { "Content-Type": "application/json" } }));
   };
+  P.bracketApi = "https://preview.invalid/current-bracket";
+  var quizFetch = window.fetch;
+  window.fetch = function (u) {
+    if (String(u).indexOf("preview.invalid/current-bracket") < 0) return quizFetch.apply(this, arguments);
+    var o = new Date(Date.now() - 86400000).toISOString(), c = new Date(Date.now() + 9 * 86400000).toISOString();
+    return Promise.resolve(new Response(JSON.stringify({ title: "Best Uniform from 1979 to 2008", description: "", opens_at: o, closes_at: c }), { headers: { "Content-Type": "application/json" } }));
+  };
   P.cards.forEach(function (c) { c.image = "https://preview.invalid/" + files[c.id]; });
   new MutationObserver(function () {
     document.querySelectorAll('img[src^="https://preview.invalid/"]').forEach(function (i) { i.src = "games-images/" + i.src.split("/").pop(); });
