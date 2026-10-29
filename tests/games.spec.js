@@ -57,7 +57,8 @@ test("renders every card with the exact link, UTM tags and new-tab rules", async
     await expect(a).toHaveAttribute("target", "_blank");
     await expect(a).toHaveAttribute("rel", "noopener noreferrer");
   }
-  await expect(page.locator(G + " h1")).toHaveText("Hawks Games");
+  await expect(page.locator(G + " h2").first()).toHaveText("Play now!");
+  await expect(page.locator(G + " h1")).toHaveCount(0); // the Webflow page already has its own H1
   await expect(page.locator(G + " .hkgames__row")).toHaveCount(3);
   await expect(page.locator(G + " .hkgames__col")).toHaveCount(3);
   await expect(page.locator(G + " .hkgames__h2s")).toHaveText("More Hawks games");
@@ -258,7 +259,7 @@ for (const w of [320, 390, 780, 870, 1280]) {
 test("script blocked: readable copy and the working links are all there", async ({ page }) => {
   await page.route(/hawks\.js|hawks-core\.js/, (r) => r.abort());
   await page.goto("/test/games.html");
-  await expect(page.locator(G + " h2")).toHaveText("Hawks Games");
+  await expect(page.locator(G + " h2")).toHaveText("Play now!");
   await expect(page.locator(G + " h3")).toHaveCount(6);
   const links = page.locator(G + " a");
   await expect(links).toHaveCount(6);
@@ -271,6 +272,7 @@ test("static copy in the embed matches data.js: names, links, sponsors and descr
   const html = await page.locator(G).innerText();
   const hrefs = await page.locator(G + " a").evaluateAll((a) => a.map((x) => x.getAttribute("href")));
   const P = loadData().gamesPortal;
+  expect(html).toContain(P.heading);
   expect(html).toContain(P.intro);
   for (const c of P.cards) {
     expect(html, c.id + " title").toContain(c.title);

@@ -233,10 +233,10 @@
 
   /* Hawks Games page (data.js gamesPortal). A bad card is skipped with a warning. */
   function gamesPortal(raw) {
-    var out = { heading: "Hawks Games", intro: "", moreHeading: "", moreSub: "", quizApi: "", bracketApi: "", utm: null, cards: [] };
+    var out = { heading: "Play now!", intro: "", moreHeading: "", moreSub: "", quizApi: "", bracketApi: "", utm: null, cards: [] };
     if (!raw || typeof raw !== "object") return out;
     function txt(v) { return typeof v === "string" ? v.trim() : ""; }
-    ["heading", "intro", "moreHeading", "moreSub"].forEach(function (k) { if (txt(raw[k]) || k !== "heading") out[k] = txt(raw[k]); else out[k] = "Hawks Games"; });
+    ["heading", "intro", "moreHeading", "moreSub"].forEach(function (k) { if (txt(raw[k]) || k !== "heading") out[k] = txt(raw[k]); else out[k] = "Play now!"; });
     if (raw.quizApi) { if (okUrl(raw.quizApi)) out.quizApi = raw.quizApi; else warn("gamesPortal.quizApi ignored: not an https:// link"); }
     if (raw.bracketApi) { if (okUrl(raw.bracketApi)) out.bracketApi = raw.bracketApi; else warn("gamesPortal.bracketApi ignored: not an https:// link"); }
     if (raw.utm && typeof raw.utm === "object" && txt(raw.utm.source) && txt(raw.utm.medium) && txt(raw.utm.campaign)) out.utm = { source: txt(raw.utm.source), medium: txt(raw.utm.medium), campaign: txt(raw.utm.campaign) };
@@ -2488,7 +2488,7 @@
       var tiles = tileHtml("grid", "Today's grid") + tileHtml("quiz", "Quiz closes in") + tileHtml("mvp", "MVP voting open") + tileHtml("bracket", "Pecking Order closes");
       el.innerHTML =
         '<div class="hkgames">' +
-        '<header class="hkgames__head"><div class="hkgames__intro"><h1 class="hkgames__h1">' + esc(P.heading) + "</h1>" + (P.intro ? '<p class="hkgames__lead">' + esc(P.intro) + "</p>" : "") + "</div>" +
+        '<header class="hkgames__head"><div class="hkgames__intro"><h2 class="hkgames__h1">' + esc(P.heading) + "</h2>" + (P.intro ? '<p class="hkgames__lead">' + esc(P.intro) + "</p>" : "") + "</div>" +
         (tiles ? '<section class="hkgames__now" aria-label="On now" hidden>' + tiles + "</section>" : "") + "</header>" +
         '<div class="hkgames__main">' +
         runs.map(function (r, n) {

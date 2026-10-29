@@ -109,13 +109,13 @@ Shows the next camp from `data.js`, with a Register button. After the last camp 
 
 The NBL27 events, grouped by month. Finished events move to a collapsed **Past events** bar at the bottom (grey, most recent first). The events are in `data.js` (see section 2).
 
-### Hawks Games page (engagement page)
+### GameLab (the Hawks Games page, hawks.com.au/pages/engagement)
 
 For hawks.com.au/pages/engagement. Put this in a Code Embed. The text inside the `div` is what search engines, AI tools and anyone with the script blocked can read, so it is real copy rather than just links. The script replaces it with the designed page. It deliberately leaves out anything that changes (this week's quiz title, the MVP round).
 
 ```html
 <div data-hawks="games">
-  <h2>Hawks Games</h2>
+  <h2>Play now!</h2>
   <p>Play, vote and have your say. Some games reset every day, some every game, and some are always open.</p>
   <h3>Greater Bank MVP</h3>
   <p>Presented by Greater Bank. Pick your standout Hawk after every game.</p>
@@ -337,7 +337,7 @@ Everything you'd change lives in **[`data.js`](data.js)**.
 | Change or hide a small FAQ link ("What's a Court Walk?", "What's included?", "When does it finish?", "compare memberships", "Accessible parking and drop-off") | The `faqLinks` section: put a different question ID from the FAQ spreadsheet (for example `"GD-02"`), or `""` to hide that link |
 | Add the next Girls in the Game camp | Add a line to `girlsInTheGame` (see below) |
 
-### Hawks Games cards and the quiz
+### GameLab cards, the quiz and the bracket
 
 Everything on the Hawks Games page lives in `data.js` under `gamesPortal`, with a comment block above it explaining each field. Common edits:
 

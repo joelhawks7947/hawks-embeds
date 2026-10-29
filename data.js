@@ -310,7 +310,7 @@ window.HAWKS_DATA = {
   ],
 
   /* ---------------------------------------------------------------
-     HAWKS GAMES PAGE (data-hawks="games", hawks.com.au/pages/engagement)
+     GAMELAB PAGE (data-hawks="games", hawks.com.au/pages/engagement)
      One entry in cards per game. To change a card, edit its line here.
        id        short name with no spaces (used in links and analytics). Do not change once live.
        kind      "grid", "quiz", "mvp" or "bracket" for the cards that feed the "On now" tiles.
@@ -344,7 +344,7 @@ window.HAWKS_DATA = {
              reached, bodyFallback is used and the quiz tile is left out.
      --------------------------------------------------------------- */
   gamesPortal: {
-    heading: "Hawks Games",
+    heading: "Play now!",
     intro: "Play, vote and have your say. Some games reset every day, some every game, and some are always open.",
     moreHeading: "More Hawks games",
     moreSub: "Daily, weekly and all season long.",
