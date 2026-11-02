@@ -1073,10 +1073,12 @@
     render: function (el, ctx) {
       var L = ctx.data.links;
       el.innerHTML =
-        '<section class="hkpv" aria-label="' + (L.gamesHub ? "Fan Engagement Hub" : "Hawks trivia") + ' and Game MVP vote">' +
+        '<section class="hkpv" aria-label="' + (L.gamesHub ? "GameLab" : "Hawks trivia") + ' and Game MVP vote">' +
         '<div class="hkpv__panel hkpv__panel--r hkpv__trivia">' +
         (L.gamesHub
-          ? '<h2 class="hkpv__head">Your move, Hawkheads</h2><a class="hkpv__btn"' + ext(L.gamesHub) + ">Visit the Fan Engagement&nbsp;Hub</a>"
+          ? '<h2 class="hkpv__head">Your move, Hawkheads</h2>' +
+            (L.gameLabImage ? '<img class="hkpv__img" src="' + esc(L.gameLabImage) + '" width="1080" height="1080" loading="lazy" alt="GameLab. Beat the buzzer. Beat your mates. Climb the leaderboard. Win prizes! A Hawks player holds up a phone showing one of the GameLab games.">' : "") +
+            '<a class="hkpv__btn"' + ext(L.gamesHub) + ">Visit GameLab</a>"
           : '<h2 class="hkpv__head">Hawks trivia</h2>' +
             (L.trivia ? '<a class="hkpv__btn"' + ext(L.trivia) + ">Test your knowledge</a>" : '<span class="hkpv__btn hkpv__soon">Coming soon</span>')) +
         "</div>" +

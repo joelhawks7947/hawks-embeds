@@ -45,9 +45,11 @@ window.HAWKS_DATA = {
     member: "",
     picker: "https://picker.illawarra-hawks.com.au/",
 
-    /* Fan Engagement Hub: the red panel next to the MVP vote says "Your move, Hawkheads"
-       with a "Visit the Fan Engagement Hub" button to this link. Leave "" to show Hawks trivia instead. */
-    gamesHub: "https://hawks-fan-engagement-hub.lovable.app/",
+    /* GameLab: the red panel next to the MVP vote says "Your move, Hawkheads", shows the
+       GameLab picture and a "Visit GameLab" button to this link. Leave gamesHub "" to show
+       Hawks trivia instead; leave gameLabImage "" for no picture. */
+    gamesHub: "https://www.hawks.com.au/pages/gamelab",
+    gameLabImage: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae843ed133a65a65d12f25f_GameLab-Square.jpg",
 
     /* Hawks trivia (only used when gamesHub is ""): leave "" to show "Coming soon" */
     trivia: "",

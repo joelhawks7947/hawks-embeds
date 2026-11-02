@@ -53,21 +53,39 @@ test("stays on after the final game", async ({ page }) => {
   await expect(page.locator(PV).first().locator(".hkpv__mvp a")).toBeVisible();
 });
 
-test("Fan Engagement Hub set: Your move, Hawkheads with a Visit the Fan Engagement Hub button", async ({ page }) => {
+test("GameLab set: Your move, Hawkheads, the GameLab picture and a Visit GameLab button (same tab)", async ({ page }) => {
   const log = watchConsole(page);
   await page.goto("/test/?hk_now=2026-10-01T12:00");
   await ready(page);
   const pv = page.locator(PV).first();
-  await expect(pv.locator(".hkpv")).toHaveAttribute("aria-label", "Fan Engagement Hub and Game MVP vote");
+  await expect(pv.locator(".hkpv")).toHaveAttribute("aria-label", "GameLab and Game MVP vote");
   await expect(pv.locator(".hkpv__trivia h2")).toHaveText("Your move, Hawkheads");
+  const img = pv.locator(".hkpv__trivia img");
+  await expect(img).toHaveAttribute("src", "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae843ed133a65a65d12f25f_GameLab-Square.jpg");
+  await expect(img).toHaveAttribute("width", "1080");
+  await expect(img).toHaveAttribute("height", "1080");
+  await expect(img).toHaveAttribute("loading", "lazy");
+  await expect(img).toHaveAttribute("alt", /^GameLab\. Beat the buzzer\./);
+  // Order: heading, picture, button.
+  expect(await pv.locator(".hkpv__trivia > *").evaluateAll((els) => els.map((e) => e.tagName))).toEqual(["H2", "IMG", "A"]);
   const a = pv.locator(".hkpv__trivia a");
-  await expect(a).toHaveText("Visit the Fan Engagement Hub");
-  await expect(a).toHaveAttribute("href", "https://hawks-fan-engagement-hub.lovable.app/");
-  await expect(a).toHaveAttribute("target", "_blank");
-  await expect(a).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(a).toHaveText("Visit GameLab");
+  await expect(a).toHaveAttribute("href", "https://www.hawks.com.au/pages/gamelab");
+  // A hawks.com.au page: same tab.
+  await expect(a).not.toHaveAttribute("target", /.*/);
+  await expect(a).not.toHaveAttribute("rel", /.*/);
   await expect(pv.locator(".hkpv__soon")).toHaveCount(0);
   await expect(pv.locator(".hkpv__mvp a")).toHaveText("See past winners");
+  await expect(pv.locator(".hkpv__mvp a")).toHaveAttribute("href", "https://mvp.illawarra-hawks.com.au/");
   expect(log.errors).toEqual([]);
+});
+
+test("GameLab with no picture set: heading and button only", async ({ page }) => {
+  await useData(page, (d) => { d.links.gameLabImage = ""; });
+  await page.goto("/test/");
+  await ready(page);
+  await expect(page.locator(PV).first().locator(".hkpv__trivia img")).toHaveCount(0);
+  await expect(page.locator(PV).first().locator(".hkpv__trivia a")).toHaveText("Visit GameLab");
 });
 
 test("vote button: Pick your MVP while a vote is open, See past winners otherwise", async ({ page }) => {
