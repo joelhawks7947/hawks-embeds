@@ -7,8 +7,8 @@ const { loadData, useData, watchConsole, ready } = require("./helpers");
 const MV = '[data-hawks="mvp-vote"]';
 const URL = "https://mvp.illawarra-hawks.com.au/";
 const IMG = "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a610/6ab2493948d4bd882a387a13_MVP%20Vote_1080x1080.png";
-const OPEN_BODY = "Voting for the Greater Bank Game MVP, presented by the Hawks Platinum Partner, is open now. One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
-const SHUT_BODY = "Voting for the Greater Bank Game MVP, presented by the Hawks Platinum Partner, opens at tip-off of every game. One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
+const OPEN_BODY = "Voting for the Greater Bank Game MVP, presented by our Platinum Partner, is open now. One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
+const SHUT_BODY = "Voting for the Greater Bank Game MVP, presented by our Platinum Partner, opens at tip-off of every game. One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
 
 async function open(page, t) { const log = watchConsole(page); await page.goto("/test/?hk_now=" + t); await ready(page); return log; }
 async function expectOpen(page, opp) {
@@ -125,7 +125,7 @@ test("reference/mvp-vote.html: open state copy matches the original word for wor
   // Approved changes: the open-state button reads "Pick your MVP", not "Vote now" (11 October 2026),
   // and the body ends with the prize line (28 October 2026).
   const PRIZE = " One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
-  // and the partner is the Hawks Platinum Partner, not the Major Community Partner (2 November 2026).
-  const fix = (t) => (t === "Vote now" ? "Pick your MVP" : /is open now\.$/.test(t) ? t.replace("the Hawks\u2019 Major Community Partner", "the Hawks Platinum Partner") + PRIZE : t);
+  // and the partner is "our Platinum Partner", not the Major Community Partner (2 November 2026).
+  const fix = (t) => (t === "Vote now" ? "Pick your MVP" : /is open now\.$/.test(t) ? t.replace("the Hawks\u2019 Major Community Partner", "our Platinum Partner") + PRIZE : t);
   expect(got.map((t) => t.toLowerCase())).toEqual(texts.map((t) => fix(t).toLowerCase()));
 });
