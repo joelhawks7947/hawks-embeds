@@ -26,8 +26,8 @@ test("data.js links match the reference and CLAUDE.md canonical links", () => {
   expect(d.links).toMatchObject({
     flexi: "https://am.ticketmaster.com/thehawks/FLeximemberships",
     member: "",   // season membership hidden until NBL28 memberships open (23 October 2026)
-    picker: "https://hawks-membership-picker.lovable.app/",
-    mvpVote: "https://hawks-mvp-vote.lovable.app/",
+    picker: "https://picker.illawarra-hawks.com.au/",
+    mvpVote: "https://mvp.illawarra-hawks.com.au/",
     mvpImage: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ab73bbbf4abbf2c6fdda107_MVP%20Vote_1080x1080_.jpg",
     hospitality: "https://hawks-corporate-hospitality.lovable.app/",
     transport: "https://www.wsec.com.au/transport",

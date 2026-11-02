@@ -43,7 +43,7 @@ window.HAWKS_DATA = {
        suits you?" line under the next game. Paste the link back when NBL28 memberships open
        (it was https://am.ticketmaster.com/thehawks/). */
     member: "",
-    picker: "https://hawks-membership-picker.lovable.app/",
+    picker: "https://picker.illawarra-hawks.com.au/",
 
     /* Fan Engagement Hub: the red panel next to the MVP vote says "Your move, Hawkheads"
        with a "Visit the Fan Engagement Hub" button to this link. Leave "" to show Hawks trivia instead. */
@@ -53,7 +53,7 @@ window.HAWKS_DATA = {
     trivia: "",
 
     /* Game MVP vote */
-    mvpVote:  "https://hawks-mvp-vote.lovable.app/",
+    mvpVote:  "https://mvp.illawarra-hawks.com.au/",
     mvpImage: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ab73bbbf4abbf2c6fdda107_MVP%20Vote_1080x1080_.jpg",
 
     /* Plan your night */
@@ -357,13 +357,13 @@ window.HAWKS_DATA = {
       {id:"membership-finder", layout:"full", order:6, status:"live", theme:"dark",
         kicker:"Memberships for the NBL27 season", title:"Membership Finder",
         body:"Answer a few quick questions and we'll match you with the Hawks membership that suits how you follow the club.",
-        ctaLabel:"Find my membership", url:"https://hawks-membership-picker.lovable.app/",
+        ctaLabel:"Find my membership", url:"https://picker.illawarra-hawks.com.au/",
         image:"https://video.illawarra-hawks.com.au/image/membership.jpg", alt:"Membership Finder question screen", imagePos:"center 45%"},
       {id:"greater-bank-mvp", kind:"mvp", layout:"full", order:1, status:"live",
         badge:"Voting open", badgeClosed:"Voting opens at tip-off", title:"Greater Bank MVP", sponsor:"Presented by Greater Bank",
         body:"Pick your standout Hawk after every game.",
         meta:"Now voting: {round}, {game}.", metaClosed:"Next vote: {game}.",
-        ctaLabel:"Vote now", ctaLabelClosed:"See past winners", url:"https://hawks-mvp-vote.lovable.app/",
+        ctaLabel:"Vote now", ctaLabelClosed:"See past winners", url:"https://mvp.illawarra-hawks.com.au/",
         image:"https://video.illawarra-hawks.com.au/image/mvp.jpg", alt:"Greater Bank MVP voting screen", imagePos:"center 20%"},
       {id:"cmg-midcourt-mayhem", layout:"full", order:2, status:"live",
         badge:"Entries open", title:"CMG Midcourt Mayhem", sponsor:"Presented by CMG",

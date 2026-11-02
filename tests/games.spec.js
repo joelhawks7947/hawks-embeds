@@ -11,8 +11,8 @@ const BRACKET_API = "https://bracket-project.example.test/api/public/current-bra
 const BRACKET = { title: "Best Uniform from 1979 to 2008", description: "x", opens_at: "2026-10-27T01:00:00+00:00", closes_at: "2026-11-06T01:00:00+00:00", url: "https://bracket.illawarra-hawks.com.au/" };
 const UTM = (id) => "?utm_source=hawks.com.au&utm_medium=referral&utm_campaign=engagement-page&utm_content=" + id;
 const URLS = {
-  "membership-finder": "https://hawks-membership-picker.lovable.app/",
-  "greater-bank-mvp": "https://hawks-mvp-vote.lovable.app/",
+  "membership-finder": "https://picker.illawarra-hawks.com.au/",
+  "greater-bank-mvp": "https://mvp.illawarra-hawks.com.au/",
   "cmg-midcourt-mayhem": "https://cmg-midcourt-mayhem.lovable.app/",
   "hawks-grid": "https://grid.illawarra-hawks.com.au/",
   "hawks-trivia": "https://quiz.illawarra-hawks.com.au/",

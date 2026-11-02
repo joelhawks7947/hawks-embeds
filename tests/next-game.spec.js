@@ -115,7 +115,7 @@ test("ticket panels and preview button: exact links, target, rel, labels", async
   await check(ng.locator('[data-k="single"]'), "https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-02-10-2026/event/130064FDD1FC7914", "Buy tickets: single game, Hawks v Adelaide 36ers");
   await check(ng.locator('[data-k="flexi"]'), "https://am.ticketmaster.com/thehawks/FLeximemberships", "Pick your games: 3 and 5 game Flexi pack");
   await check(ng.locator('[data-k="member"]'), "https://am.ticketmaster.com/thehawks/", "Join now: season membership");
-  await check(ng.locator('[data-k="picker"]'), "https://hawks-membership-picker.lovable.app/");
+  await check(ng.locator('[data-k="picker"]'), "https://picker.illawarra-hawks.com.au/");
   await expect(ng.locator(".hkng__pk")).toHaveText("Not sure which option suits you? Try our membership picker or compare memberships");
   await check(ng.locator('[data-k="prev"]'), "https://www.hawks.com.au/news/test-preview");
   await expect(ng.locator('[data-k="prev"]')).toHaveText("Read the Hawks v Adelaide 36ers preview");

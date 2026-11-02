@@ -51,7 +51,7 @@ In **News recaps and previews** (the fallback goes to the Game Day Guide):
 ### Hawks trivia and Game MVP vote
 
 ```html
-<div data-hawks="trivia-mvp"><a href="https://hawks-mvp-vote.lovable.app/">Vote for your Game MVP</a></div>
+<div data-hawks="trivia-mvp"><a href="https://mvp.illawarra-hawks.com.au/">Vote for your Game MVP</a></div>
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
@@ -60,7 +60,7 @@ The "Game MVP" button reads **Pick your MVP** while a vote is open and **See pas
 ### Greater Bank Game MVP vote
 
 ```html
-<div data-hawks="mvp-vote"><a href="https://hawks-mvp-vote.lovable.app/">Vote for your Greater Bank Game MVP</a></div>
+<div data-hawks="mvp-vote"><a href="https://mvp.illawarra-hawks.com.au/">Vote for your Greater Bank Game MVP</a></div>
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```
 
@@ -119,7 +119,7 @@ For hawks.com.au/pages/engagement. Put this in a Code Embed. The text inside the
   <p>Play, vote and have your say. Some games reset every day, some every game, and some are always open.</p>
   <h3>Greater Bank MVP</h3>
   <p>Presented by Greater Bank. Pick your standout Hawk after every game.</p>
-  <p><a href="https://hawks-mvp-vote.lovable.app/">Vote for the Greater Bank MVP</a></p>
+  <p><a href="https://mvp.illawarra-hawks.com.au/">Vote for the Greater Bank MVP</a></p>
   <h3>CMG Midcourt Mayhem</h3>
   <p>Presented by CMG. Four shots, 30 seconds, one run. Choose your shooter type and register for your shot at a home game. One fan is drawn about 48 hours before each home game.</p>
   <p><a href="https://cmg-midcourt-mayhem.lovable.app/">Enter the CMG Midcourt Mayhem draw</a></p>
@@ -134,7 +134,7 @@ For hawks.com.au/pages/engagement. Put this in a Code Embed. The text inside the
   <p><a href="https://bracket.illawarra-hawks.com.au/">Vote in Hawks Pecking Order</a></p>
   <h3>Membership Finder</h3>
   <p>Memberships for the NBL27 season. Answer a few quick questions and we'll match you with the Hawks membership that suits how you follow the club.</p>
-  <p><a href="https://hawks-membership-picker.lovable.app/">Find my membership</a></p>
+  <p><a href="https://picker.illawarra-hawks.com.au/">Find my membership</a></p>
 </div>
 <script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
 ```

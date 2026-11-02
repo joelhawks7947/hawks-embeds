@@ -28,7 +28,7 @@ test("Coming soon while the trivia link is empty; MVP panel complete", async ({ 
   await expect(pv.locator(".hkpv__prize")).toHaveCSS("font-weight", "700");
   const vote = pv.locator(".hkpv__mvp a");
   await expect(vote).toHaveText("See past winners");
-  await expect(vote).toHaveAttribute("href", "https://hawks-mvp-vote.lovable.app/");
+  await expect(vote).toHaveAttribute("href", "https://mvp.illawarra-hawks.com.au/");
   await expect(vote).toHaveAttribute("target", "_blank");
   await expect(vote).toHaveAttribute("rel", "noopener noreferrer");
   expect(log.errors).toEqual([]);
