@@ -377,12 +377,12 @@
       "question": "What's the difference between a season membership and a 3 or 5 game Flexi pack?",
       "answer": "A season membership gets you into all home games of the season at WIN Entertainment Centre. A 3 or 5 game Flexi pack lets you pick any 3 or 5 home games you like, so it's the best value way to see the Hawks if you can't make every game. Not sure which suits you? Try our membership picker.",
       "link": {
-        "url": "https://hawks-membership-picker.lovable.app/",
+        "url": "https://picker.illawarra-hawks.com.au/",
         "text": "Membership picker"
       },
       "links": [
         {
-          "url": "https://hawks-membership-picker.lovable.app/",
+          "url": "https://picker.illawarra-hawks.com.au/",
           "text": "Membership picker"
         }
       ]
@@ -394,12 +394,12 @@
       "question": "How do I buy a membership?",
       "answer": "NBL27 memberships are sold through Ticketmaster. Not sure which option suits you? Try our membership picker on the website.",
       "link": {
-        "url": "https://hawks-membership-picker.lovable.app/",
+        "url": "https://picker.illawarra-hawks.com.au/",
         "text": "Membership picker"
       },
       "links": [
         {
-          "url": "https://hawks-membership-picker.lovable.app/",
+          "url": "https://picker.illawarra-hawks.com.au/",
           "text": "Membership picker"
         }
       ]
@@ -648,7 +648,7 @@
       "url": "https://www.hawks.com.au/pages/faqs#faq-gn-02",
       "section": "General",
       "question": "How do I vote for Game MVP?",
-      "answer": "Vote for the Game MVP after every home game using the voting form on our game day page.",
+      "answer": "Vote for the Game MVP after every game using the voting form on our game day page.",
       "link": {
         "url": "https://www.hawks.com.au/pages/gameday",
         "text": "Game Day Guide"
