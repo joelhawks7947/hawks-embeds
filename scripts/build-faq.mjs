@@ -41,6 +41,7 @@ const LINK_TEXT = {
   "nbl.com.au/how-to-watch": "How to watch on the NBL website",
   "illawarrahawks.typeform.com/to/ldprcjhi": "Group tickets form",
   "hawks-membership-picker.lovable.app": "Membership picker",
+  "picker.illawarra-hawks.com.au": "Membership picker",
   "shop-illawarrahawks.com": "Hawks shop",
   "ticketmaster.com.au": "Ticketmaster",
   "am.ticketmaster.com/thehawks": "Hawks Membership website",
