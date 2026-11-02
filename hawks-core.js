@@ -1296,7 +1296,7 @@
       var root = el.firstChild, badge = root.querySelector(".hkmvp__badge"), dot = root.querySelector(".hkmvp__dot"),
         badgeText = root.querySelector(".hkmvp__badge-text"), body = root.querySelector(".hkmvp__body"),
         btn = root.querySelector(".hkmvp__btn"), label = root.querySelector(".hkmvp__label"), shown;
-      var PARTNER = "<strong>Greater Bank Game MVP</strong>, presented by the Hawks’ Major Community Partner, ";
+      var PARTNER = "<strong>Greater Bank Game MVP</strong>, presented by the Hawks Platinum Partner, ";
       return {
         update: function (s) {
           var g = mvpOpen(s.now), next = g ? null : mvpNext(s.now);
