@@ -103,7 +103,7 @@ test.describe("in the browser", () => {
       await page.goto("/test/");
       await page.waitForTimeout(500);
       const links = await page.$$eval("[data-hawks]", (els) => els.map((e) => e.querySelector("a") && e.querySelector("a").href));
-      expect(links).toHaveLength(30);
+      expect(links).toHaveLength(31);
       links.forEach((h) => expect(h).toMatch(/^https:\/\//));
       expect(log.errors.join("\n")).toMatch(/\[hawks\]|SyntaxError/);
     });
@@ -115,7 +115,7 @@ test.describe("in the browser", () => {
     await page.goto("/test/");
     await page.waitForTimeout(500);
     const links = await page.$$eval("[data-hawks]", (els) => els.map((e) => !e.hasAttribute("data-hawks-ready") && e.querySelector("a") && e.querySelector("a").href));
-    expect(links).toHaveLength(30);
+    expect(links).toHaveLength(31);
     links.forEach((h) => expect(h).toMatch(/^https:\/\//));
     expect(log.errors.join("\n")).toContain("[hawks] could not load");
   });
@@ -131,7 +131,7 @@ test.describe("in the browser", () => {
       styles: document.querySelectorAll("#hawks-embeds-css").length,
       fonts: document.querySelectorAll('link[href*="fonts.googleapis.com/css2"]').length
     }));
-    expect(r.scripts).toBe(30);
+    expect(r.scripts).toBe(31);
     expect(r.dataScripts).toBe(1);
     // The loader fetches the core once, from the same folder, with a 10 minute cache-buster.
     expect(r.coreScripts).toEqual([expect.stringMatching(/^http:\/\/localhost:8123\/hawks-core\.js\?v=\d+$/)]);

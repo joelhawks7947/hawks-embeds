@@ -229,6 +229,22 @@ If `next-game` is on the same page, you only need the script line once. A second
 
 **Adding a YouTube Short instead:** paste its 11 character ID (the part after `youtube.com/shorts/`) into that offer's `video`. It only loads when someone clicks the play button. If `videoUrl` is also set, the MP4 is used.
 
+### Photo gallery (opens in a full screen viewer)
+
+A grid of pictures. Clicking one opens a full screen viewer with previous and next buttons, a counter and the caption (arrow keys, Esc and swiping work too). Every gallery looks and behaves the same; only the pictures and captions change. The pictures live in `data.js` under `galleries`, one entry per gallery.
+
+To make a new gallery:
+
+1. In `data.js`, copy the `indigenous-jersey` entry under `galleries`, give it a new name (lower case, dashes, for example `nbl27-launch`), and swap in the new pictures, alt text and captions. The comment above `galleries` explains each field.
+2. Paste this into a Webflow Code Embed, with your gallery name in `data-gallery`:
+
+```html
+<div data-hawks="gallery" data-gallery="nbl27-launch"><a href="https://www.hawks.com.au/">Photo gallery</a></div>
+<script src="https://cdn.jsdelivr.net/gh/joelhawks7947/hawks-embeds@main/hawks.js" defer></script>
+```
+
+Use the same snippet with `indigenous-jersey` for the NBL27 Indigenous Jersey lookbook. Change the fallback link to the page the embed sits on (or the most relevant one), since that is what readers see if the script is blocked. Several galleries can sit on one page.
+
 ### Game countdown (for the premium seating page)
 
 The next game with a live countdown, then the next few home games, and **no ticket links at all** (the only control is the Show all button), so a page that sells one thing isn't diluted. Light and transparent, to sit under an offer page.

@@ -19,8 +19,8 @@ test("every placeholder renders exactly once; no duplicate IDs; no console error
       };
     });
     expect(r.dupes, t).toEqual([]);
-    expect(r.hosts, t).toEqual(Array(30).fill("1:true"));
-    expect(r.instances, t).toBe(30);
+    expect(r.hosts, t).toEqual(Array(31).fill("1:true"));
+    expect(r.instances, t).toBe(31);
     expect(log.errors, t).toEqual([]);
   }
 });

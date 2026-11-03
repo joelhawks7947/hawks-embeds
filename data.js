@@ -472,5 +472,71 @@ window.HAWKS_DATA = {
     ],
     travelUrl: "https://www.hoopsfest.com.au/travel-packages",
     travelButton: "View all travel packages"
+  },
+
+  /* PHOTO GALLERIES (data-hawks="gallery" data-gallery="name"). A grid of pictures; clicking one
+     opens a full screen viewer with previous, next, close, a counter and the caption. Each gallery
+     is one entry below. To make a new one, copy an entry, give it a new name (lower case, dashes),
+     swap the pictures, then paste the placeholder from README.md with that name in data-gallery.
+     overline, heading, intro: the text above the grid. "" leaves a line out. With no heading the
+                gallery is labelled by "label" for screen readers.
+     label:     what the viewer is called for screen readers, e.g. "NBL27 Indigenous Jersey gallery"
+     ratio:     the shape of the pictures in the grid: "4:5" (portrait, the default), "1:1" or "3:2",
+                all cropped to fit; or "auto" to show each picture in its own shape, uncropped
+                (give each picture its pixel width and height so the page doesn't jump while it loads).
+                The viewer always shows them whole.
+     columns:   2 (default) or 3 (three only when the page column is wide enough)
+     accent:    "red" (default) or "teal": the ring on hover and around the picture in the viewer
+     images:    in order. Each one has
+        src:     the picture (full https:// address, uploaded to Webflow Assets)
+        full:    optional bigger version for the viewer; "" or leave out to use src
+        width, height: the picture's pixel size; only needed when ratio is "auto"
+        alt:     what is in the picture, for screen readers (required)
+        eyebrow: small line over the caption, e.g. "Healthy Deadly Kids"; "" for none
+        title:   the caption, e.g. "Navi & Tom"; "" for none */
+  galleries: {
+    "indigenous-jersey": {
+      overline: "", heading: "The Lookbook", intro: "",
+      label: "NBL27 Indigenous Jersey gallery", ratio: "4:5", columns: 2, accent: "teal",
+      images: [
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6adeb5d582ef2cdeb7739918_Slide%202.webp", full: "",
+         alt: "Navi and Tom stand together under a covered court, one holding a basketball, both wearing the NBL27 Indigenous Jersey.",
+         eyebrow: "Healthy Deadly Kids", title: "Navi & Tom"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6adeb5d558e659fcf6e9af57_Slide%203.webp", full: "",
+         alt: "A young participant sits on a basketball, arms folded, wearing the NBL27 Indigenous Jersey.",
+         eyebrow: "NBL27 Indigenous", title: "Courtside"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6adeb5d6dd7db70cb601b470_Slide%206.webp", full: "",
+         alt: "A participant holds a basketball at his side, showing the front of the jersey with MCR and Illawarra across the chest.",
+         eyebrow: "Front of jersey", title: "Illawarra"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6adeb5d5202c409750fbe056_Slide%207.webp", full: "",
+         alt: "A participant dribbles past the camera, his movement blurred.",
+         eyebrow: "In motion", title: "Game ready"}
+      ]
+    },
+    /* Matt Flinn's 500th game. Pictures are in the order supplied; each caption is the year from the
+       file name. Alt text is the editor's wording (picture 5 says 1994, corrected from 1992 by the editor). The first two pictures have
+       no year in their file names, so no caption. width and height are the pictures' real pixel sizes. */
+    "matt-flinn-500": {
+      overline: "", heading: "Matt Flinn: 500 Hawks games", intro: "",
+      label: "Matt Flinn: 500 Hawks games photo gallery", ratio: "auto", columns: 2, accent: "red",
+      images: [
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9322999787a1e15fe4b8d_Flinny-02IMG_2837.JPG", full: "", width: 1916, height: 1536, alt: "Young Matt Flinn.", eyebrow: "", title: ""},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae93213c5676a66e48d25bd_Flinny-01.JPG", full: "", width: 943, height: 1920, alt: "Young Matt Flinn representing the Hawks as a junior.", eyebrow: "", title: ""},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251f17facc0bbd69518e_1991.jpeg", full: "", width: 1600, height: 1077, alt: "NBL Rookie Matt Flinn in early 1990s", eyebrow: "", title: "1991"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251ea82f83970813a166_1992%20Hawks%20Team%20Photo.jpg", full: "", width: 2924, height: 2384, alt: "1992 Hawks team photo: Matt Flinn bottom left.", eyebrow: "", title: "1992"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251d85d4ccb0ba6a5a23_1994-09-09%20-%20Hawks%20vs%20Wildcats-0020.jpg", full: "", width: 1820, height: 1180, alt: "1994 Hawks team photo: Matt Flinn back row, third from left.", eyebrow: "", title: "1994"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251db44374fbdc4b24b7_2008-01-25%20-%20Hawks%20vs%20Dragons-5642-joelarmstrong47.JPG", full: "", width: 3888, height: 2592, alt: "Matt Flinn with Head Coach Eric Cooks (Jan 25, 2008)", eyebrow: "", title: "2008"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251ea7a564d82c5184e6_2008-09-20%20-%20Hawks%20vs%20Spirit-0042-joelarmstrong47.JPG", full: "", width: 3888, height: 2592, alt: "Matt Flinn on the bench between fellow assistant coach Kevin Brooks and injured player Cameron Tragadh. Head Coach is Eric Cooks (Sept 20, 2008)", eyebrow: "", title: "2008"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251e00a9a63578489ad6_2008-September%2013%2C%202008_IMG_8575.JPG", full: "", width: 3888, height: 2592, alt: "Matt Flinn showing off his all sports talent with Daniel Jackson and Larry Davidson (September 2008)", eyebrow: "", title: "2008"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251f205564b749c39346_4e47ff06be19a9048fa19610b81ccbd0_2016-021A5484.jpg", full: "", width: 1200, height: 800, alt: "Matt and Jonah Flinn, during filming of the launch video for \"Hawkheads\" in 2016", eyebrow: "", title: "2016"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251e379e70f89b0164b1_2009-10-07-Housing%20Trust%20Clinic-0260-joelarmstrong47.jpg", full: "", width: 4898, height: 3265, alt: "Matt Flinn leading a clinic for Kids from the Housing Trust in 2009.", eyebrow: "", title: "2009"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251e934d05d8e1e7ccc4_2010-10-22-Hawks-Crocs-2179.JPG", full: "", width: 4898, height: 3265, alt: "Matt Flinn (Oct 22, 2010)", eyebrow: "", title: "2010"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251e33f92a53c904dd28_2019-Photos-2980-joelarmstrong47.jpg", full: "", width: 4898, height: 3265, alt: "Head Coach Matt Flinn directing Lamelo Ball in the 2019/20 season.", eyebrow: "", title: "2019"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251d205564b749c392f7_2019-12-16%20Hawks%20vs%20United-2104-joelarmstrong47.JPG", full: "", width: 4898, height: 3265, alt: "Head Coach Matt Flinn (Dec 16, 2019)", eyebrow: "", title: "2019"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251ea820419e709cd2ff_2025-IMG_3041.jpg", full: "", width: 4032, height: 3024, alt: "Assistant Coach Matt Flinn with Head Coach Justin Tatum at Press Conference in New Zealand following the Hawks securing First place on the NBL ladder for NBL25.", eyebrow: "", title: "2025"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251fc0d5d069ac7a191a_2025-03-23%20Hawks%20vs%20United%20GF4-3022-joelarmstrong47.jpg", full: "", width: 4032, height: 3024, alt: "Davo Hickey and Matt Flinn celebrating the NBL25 Championship", eyebrow: "", title: "2025"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251f17facc0bbd69517c_2025-03-27%20Hawks%20vs%20United%20GF4-4395-joelarmstrong47.jpeg", full: "", width: 4032, height: 3024, alt: "Assistant Coaches Sam Gruggan, Matt Flinn, Joel Khalu and Tom Cranney at the Hawks Championship parade.", eyebrow: "", title: "2025"}
+      ]
+    }
   }
 };
