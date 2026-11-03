@@ -481,16 +481,21 @@ window.HAWKS_DATA = {
      overline, heading, intro: the text above the grid. "" leaves a line out. With no heading the
                 gallery is labelled by "label" for screen readers.
      label:     what the viewer is called for screen readers, e.g. "NBL27 Indigenous Jersey gallery"
-     ratio:     the shape of the pictures in the grid: "4:5" (portrait, the default), "1:1" or "3:2",
-                all cropped to fit; or "auto" to show each picture in its own shape, uncropped
-                (give each picture its pixel width and height so the page doesn't jump while it loads).
-                The viewer always shows them whole.
+     layout:    "grid" (default: every picture on the page) or "slider" (one picture at a time with
+                previous and next buttons and a counter; nothing moves by itself)
+     ratio:     the shape of the pictures on the page: "4:5" (portrait, the grid default), "4:3" (the
+                slider default), "1:1" or "3:2", all cropped to fit; or "auto" (grid only) to show each
+                picture in its own shape, uncropped (give each picture its pixel width and height so the
+                page doesn't jump while it loads). Clicking a picture always opens the viewer, which
+                shows it whole in its own shape.
      columns:   2 (default) or 3 (three only when the page column is wide enough)
      accent:    "red" (default) or "teal": the ring on hover and around the picture in the viewer
      images:    in order. Each one has
         src:     the picture (full https:// address, uploaded to Webflow Assets)
         full:    optional bigger version for the viewer; "" or leave out to use src
         width, height: the picture's pixel size; only needed when ratio is "auto"
+        focus:   optional, which part of the picture stays in view when the page crops it, as two
+                 percentages across and down, e.g. "50% 20%" (middle, near the top); "" for the centre
         alt:     what is in the picture, for screen readers (required)
         eyebrow: small line over the caption, e.g. "Healthy Deadly Kids"; "" for none
         title:   the caption, e.g. "Navi & Tom"; "" for none */
@@ -518,10 +523,10 @@ window.HAWKS_DATA = {
        no year in their file names, so no caption. width and height are the pictures' real pixel sizes. */
     "matt-flinn-500": {
       overline: "", heading: "Matt Flinn: 500 Hawks games", intro: "",
-      label: "Matt Flinn: 500 Hawks games photo gallery", ratio: "auto", columns: 2, accent: "red",
+      label: "Matt Flinn: 500 Hawks games photo gallery", layout: "slider", ratio: "4:3", accent: "red",
       images: [
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9322999787a1e15fe4b8d_Flinny-02IMG_2837.JPG", full: "", width: 1916, height: 1536, alt: "Young Matt Flinn.", eyebrow: "", title: ""},
-        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae93213c5676a66e48d25bd_Flinny-01.JPG", full: "", width: 943, height: 1920, alt: "Young Matt Flinn representing the Hawks as a junior.", eyebrow: "", title: ""},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae93213c5676a66e48d25bd_Flinny-01.JPG", full: "", focus: "50% 19%", width: 943, height: 1920, alt: "Young Matt Flinn representing the Hawks as a junior.", eyebrow: "", title: ""},
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251f17facc0bbd69518e_1991.jpeg", full: "", width: 1600, height: 1077, alt: "NBL Rookie Matt Flinn in early 1990s", eyebrow: "", title: "1991"},
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251ea82f83970813a166_1992%20Hawks%20Team%20Photo.jpg", full: "", width: 2924, height: 2384, alt: "1992 Hawks team photo: Matt Flinn bottom left.", eyebrow: "", title: "1992"},
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251d85d4ccb0ba6a5a23_1994-09-09%20-%20Hawks%20vs%20Wildcats-0020.jpg", full: "", width: 1820, height: 1180, alt: "1994 Hawks team photo: Matt Flinn back row, third from left.", eyebrow: "", title: "1994"},

@@ -316,7 +316,7 @@
   }
 
   /* Photo galleries (data.js galleries). A bad picture is skipped with a warning; a gallery with no good pictures is skipped. */
-  var GAL_RATIO = { "auto": ["auto", 0, 0], "4:5": ["4 / 5", 1080, 1350], "1:1": ["1 / 1", 1080, 1080], "3:2": ["3 / 2", 1620, 1080] };
+  var GAL_RATIO = { "auto": ["auto", 0, 0], "4:3": ["4 / 3", 1600, 1200], "4:5": ["4 / 5", 1080, 1350], "1:1": ["1 / 1", 1080, 1080], "3:2": ["3 / 2", 1620, 1080] };
   function galleries(raw) {
     var out = Object.create(null);
     if (!raw || typeof raw !== "object") return out;
@@ -324,8 +324,11 @@
     Object.keys(raw).forEach(function (k) {
       var g = raw[k], who = "galleries." + k, imgs = [];
       if (!g || typeof g !== "object") { warn(who + " skipped: not a gallery"); return; }
-      var ratio = g.ratio == null ? "4:5" : txt(g.ratio), accent = g.accent == null ? "red" : txt(g.accent), cols = g.columns == null ? 2 : g.columns;
-      if (!own(GAL_RATIO, ratio)) { warn(who + ".ratio \"" + ratio + "\" should be 4:5, 1:1, 3:2 or auto; using 4:5"); ratio = "4:5"; }
+      var layout = g.layout == null ? "grid" : txt(g.layout);
+      if (layout !== "grid" && layout !== "slider") { warn(who + ".layout \"" + layout + "\" should be grid or slider; using grid"); layout = "grid"; }
+      var ratio = g.ratio == null ? (layout === "slider" ? "4:3" : "4:5") : txt(g.ratio), accent = g.accent == null ? "red" : txt(g.accent), cols = g.columns == null ? 2 : g.columns;
+      if (!own(GAL_RATIO, ratio)) { warn(who + ".ratio \"" + ratio + "\" should be 4:5, 4:3, 1:1, 3:2 or auto; using " + (layout === "slider" ? "4:3" : "4:5")); ratio = layout === "slider" ? "4:3" : "4:5"; }
+      if (layout === "slider" && ratio === "auto") { warn(who + ".ratio auto does not work with the slider (it needs one fixed shape); using 4:3"); ratio = "4:3"; }
       if (accent !== "red" && accent !== "teal") { warn(who + ".accent \"" + accent + "\" should be red or teal; using red"); accent = "red"; }
       if (cols !== 2 && cols !== 3) { warn(who + ".columns should be 2 or 3; using 2"); cols = 2; }
       (Array.isArray(g.images) ? g.images : []).forEach(function (im, i) {
@@ -336,10 +339,12 @@
         if (full && !okUrl(full)) { warn(n + " full ignored: not an https:// link"); full = ""; }
         var w = im.width, h = im.height, size = Number.isInteger(w) && Number.isInteger(h) && w > 0 && h > 0;
         if ((w != null || h != null) && !size) warn(n + " width and height ignored: both need to be whole numbers");
-        imgs.push({ w: size ? w : 0, h: size ? h : 0, src: txt(im.src), full: full, alt: txt(im.alt), eyebrow: txt(im.eyebrow), title: txt(im.title) });
+        var focus = txt(im.focus);
+        if (focus && !/^\d{1,3}% \d{1,3}%$/.test(focus)) { warn(n + " focus ignored: use two percentages like \"50% 20%\""); focus = ""; }
+        imgs.push({ focus: focus, w: size ? w : 0, h: size ? h : 0, src: txt(im.src), full: full, alt: txt(im.alt), eyebrow: txt(im.eyebrow), title: txt(im.title) });
       });
       if (!imgs.length) { warn(who + " skipped: it has no pictures with an https:// src and alt text"); return; }
-      out[k] = { overline: txt(g.overline), heading: txt(g.heading), intro: txt(g.intro), label: txt(g.label) || txt(g.heading) || "Photo gallery", ratio: ratio, accent: accent, columns: cols, images: imgs };
+      out[k] = { overline: txt(g.overline), heading: txt(g.heading), intro: txt(g.intro), label: txt(g.label) || txt(g.heading) || "Photo gallery", layout: layout, ratio: ratio, accent: accent, columns: cols, images: imgs };
     });
     return out;
   }
@@ -2812,7 +2817,7 @@
   var galBox = null;
   function galleryBox() {
     if (galBox) return galBox;
-    var d = D.createElement("dialog"), items = [], cur = 0, opener = null, prevOverflow = "", sx = null;
+    var d = D.createElement("dialog"), items = [], cur = 0, opener = null, after = null, prevOverflow = "", sx = null;
     d.className = "hkgal-lb";
     d.innerHTML = '<div class="hkgal-lb__top"><span class="hkgal-lb__count" aria-live="polite"></span>' +
       '<button type="button" class="hkgal-lb__btn hkgal-lb__x" aria-label="Close gallery"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>' +
@@ -2847,13 +2852,14 @@
     d.addEventListener("close", function () {
       D.documentElement.style.overflow = prevOverflow;
       img.removeAttribute("src");
+      if (after) after(cur);
       if (opener && opener.focus) opener.focus();
     });
     D.body.appendChild(d);
     galBox = {
-      open: function (list, i, label, accent, from) {
+      open: function (list, i, label, accent, from, onClose) {
         if (typeof d.showModal !== "function") { W.open(big(list[i]), "_blank", "noopener"); return; }
-        items = list; opener = from;
+        items = list; opener = from; after = onClose || null;
         d.setAttribute("aria-label", label); d.setAttribute("data-accent", accent);
         for (var k = 0; k < navs.length; k++) navs[k].hidden = list.length < 2;
         show(i);
@@ -2884,13 +2890,24 @@
       ".hkgal .hkgal__img{display:block;width:100%;height:auto;max-width:100%;margin:0;padding:0;border:0;border-radius:0;object-fit:cover;aspect-ratio:var(--ar,4 / 5);transition:transform 120ms var(--e);}",
       ".hkgal[data-ratio=\"auto\"] .hkgal__grid{align-items:start;}",
       ".hkgal .hkgal__thumb:hover .hkgal__img{transform:scale(1.03);}",
+      ".hkgal .hkgal__slider{margin:0;padding:4px;}",
+      ".hkgal .hkgal__frame{position:relative;margin:0;padding:0;}",
+      ".hkgal .hkgal__capwrap{display:block;margin:0;padding:0;}",
+      ".hkgal .hkgal__nav{position:absolute;z-index:2;top:50%;margin:-22px 0 0;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:0;background:rgba(0,0,0,0.75);color:var(--w);cursor:pointer;transition:background-color 120ms var(--e),transform 100ms var(--e);}",
+      ".hkgal .hkgal__nav:hover{background:var(--r);}",
+      ".hkgal .hkgal__nav:active{transform:scale(0.98);}",
+      ".hkgal .hkgal__nav:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
+      ".hkgal .hkgal__nav svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:square;}",
+      ".hkgal .hkgal__prev{left:12px;}",
+      ".hkgal .hkgal__next{right:12px;}",
+      ".hkgal .hkgal__count{margin:12px 0 0;padding:0;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:12px;line-height:1;letter-spacing:0.16em;font-variant-numeric:tabular-nums;color:var(--g);}",
       ".hkgal .hkgal__cap{position:absolute;left:0;right:0;bottom:0;display:block;margin:0;padding:12px 16px 14px;background:var(--k);color:var(--w);line-height:1.1;}",
       ".hkgal .hkgal__e{display:block;margin:0;padding:0;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:11px;line-height:1.2;letter-spacing:0.16em;text-transform:uppercase;color:var(--w);}",
       ".hkgal .hkgal__t{display:block;margin:6px 0 0;padding:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(20px,4cqw,26px);line-height:1;letter-spacing:0.01em;text-transform:uppercase;color:var(--w);}",
       ".hkgal .hkgal__e[hidden] + .hkgal__t{margin-top:0;}",
       "@container (min-width:520px){.hkgal .hkgal__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;}}",
       "@container (min-width:760px){.hkgal[data-cols=\"3\"] .hkgal__grid{grid-template-columns:repeat(3,minmax(0,1fr));}}",
-      "@media (prefers-reduced-motion:reduce){.hkgal .hkgal__thumb,.hkgal .hkgal__img{transition:none;}.hkgal .hkgal__thumb:hover .hkgal__img{transform:none;}.hkgal .hkgal__thumb:active{transform:none;}}",
+      "@media (prefers-reduced-motion:reduce){.hkgal .hkgal__thumb,.hkgal .hkgal__img,.hkgal .hkgal__nav{transition:none;}.hkgal .hkgal__nav:active{transform:none;}.hkgal .hkgal__thumb:hover .hkgal__img{transform:none;}.hkgal .hkgal__thumb:active{transform:none;}}",
       /* The viewer sits on the page body, outside the placeholder, so its rules start at .hkgal-lb. */
       ".hkgal-lb{--a:#FF0013;box-sizing:border-box;position:fixed;left:0;top:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#000;color:#FFF;font-family:'Poppins',Arial,Helvetica,sans-serif;overscroll-behavior:contain;}",
       ".hkgal-lb[data-accent=\"teal\"]{--a:#4FC3BE;}",
@@ -2922,23 +2939,58 @@
     render: function (el, ctx) {
       var key = el.getAttribute("data-gallery") || "", g = own(ctx.data.galleries, key);
       if (!g) throw new Error(key ? "data.js has no gallery called \"" + key + "\"" : "the placeholder needs data-gallery=\"name\"");
-      var r = GAL_RATIO[g.ratio], hid = uid("gal"), hasHead = !!(g.heading || g.overline || g.intro);
-      var thumbs = g.images.map(function (im, i) {
-        var cap = im.eyebrow || im.title;
-        var label = (cap ? (im.eyebrow + " " + im.title).trim() + ". " : "") + "View larger: " + im.alt;
-        return '<li class="hkgal__li"><button type="button" class="hkgal__thumb" data-i="' + i + '" aria-haspopup="dialog" aria-label="' + esc(label) + '">' +
-          '<img class="hkgal__img" src="' + esc(im.src) + '" alt=""' + (im.w ? ' width="' + im.w + '" height="' + im.h + '"' : r[1] ? ' width="' + r[1] + '" height="' + r[2] + '"' : "") + ' loading="lazy" decoding="async">' +
-          (cap ? '<span class="hkgal__cap">' + (im.eyebrow ? '<span class="hkgal__e">' + esc(im.eyebrow) + "</span>" : "") + (im.title ? '<span class="hkgal__t">' + esc(im.title) + "</span>" : "") + "</span>" : "") +
-          "</button></li>";
-      }).join("");
-      el.innerHTML = '<section class="hkgal" data-accent="' + g.accent + '" data-ratio="' + g.ratio + '" data-cols="' + g.columns + '" style="--ar:' + r[0] + '"' + (g.heading ? ' aria-labelledby="' + hid + '"' : ' aria-label="' + esc(g.label) + '"') + ">" +
-        (hasHead ? '<div class="hkgal__hd">' + (g.overline ? '<p class="hkgal__over">' + esc(g.overline) + "</p>" : "") +
-          (g.heading ? '<h2 class="hkgal__h" id="' + hid + '">' + esc(g.heading) + "</h2>" : "") + (g.intro ? '<p class="hkgal__intro">' + esc(g.intro) + "</p>" : "") + "</div>" : "") +
-        '<ul class="hkgal__grid">' + thumbs + "</ul></section>";
-      /* The picture inside each button is decorative (the button's label describes it), so alt is empty above. */
-      [].forEach.call(el.querySelectorAll(".hkgal__thumb"), function (b) {
-        b.addEventListener("click", function () { galleryBox().open(g.images, +b.getAttribute("data-i"), g.label, g.accent, b); });
-      });
+      var r = GAL_RATIO[g.ratio], hid = uid("gal"), hasHead = !!(g.heading || g.overline || g.intro), slider = g.layout === "slider";
+      function capHtml(im) {
+        return (im.eyebrow || im.title) ? '<span class="hkgal__cap">' + (im.eyebrow ? '<span class="hkgal__e">' + esc(im.eyebrow) + "</span>" : "") + (im.title ? '<span class="hkgal__t">' + esc(im.title) + "</span>" : "") + "</span>" : "";
+      }
+      function labelOf(im) { return ((im.eyebrow || im.title) ? (im.eyebrow + " " + im.title).trim() + ". " : "") + "View larger: " + im.alt; }
+      function sizeAttrs(im) { return im.w ? ' width="' + im.w + '" height="' + im.h + '"' : r[1] ? ' width="' + r[1] + '" height="' + r[2] + '"' : ""; }
+      var head = hasHead ? '<div class="hkgal__hd">' + (g.overline ? '<p class="hkgal__over">' + esc(g.overline) + "</p>" : "") +
+        (g.heading ? '<h2 class="hkgal__h" id="' + hid + '">' + esc(g.heading) + "</h2>" : "") + (g.intro ? '<p class="hkgal__intro">' + esc(g.intro) + "</p>" : "") + "</div>" : "";
+      var open = '<section class="hkgal" data-accent="' + g.accent + '" data-ratio="' + g.ratio + '" data-cols="' + g.columns + '" data-layout="' + g.layout + '" style="--ar:' + r[0] + '"' + (g.heading ? ' aria-labelledby="' + hid + '"' : ' aria-label="' + esc(g.label) + '"') + ">" + head;
+      var ICON_L = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 4l-8 8 8 8"/></svg>', ICON_R = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4l8 8-8 8"/></svg>';
+      if (!slider) {
+        el.innerHTML = open + '<ul class="hkgal__grid">' + g.images.map(function (im, i) {
+          /* The picture inside each button is decorative (the button's label describes it), so alt is empty. */
+          return '<li class="hkgal__li"><button type="button" class="hkgal__thumb" data-i="' + i + '" aria-haspopup="dialog" aria-label="' + esc(labelOf(im)) + '">' +
+            '<img class="hkgal__img" src="' + esc(im.src) + '" alt=""' + (im.focus ? ' style="object-position:' + im.focus + '"' : "") + sizeAttrs(im) + ' loading="lazy" decoding="async">' + capHtml(im) + "</button></li>";
+        }).join("") + "</ul></section>";
+        [].forEach.call(el.querySelectorAll(".hkgal__thumb"), function (b) {
+          b.addEventListener("click", function () { galleryBox().open(g.images, +b.getAttribute("data-i"), g.label, g.accent, b); });
+        });
+        return {};
+      }
+      /* Slider: one picture at a time in a fixed shape, previous and next beside it. Clicking it opens the viewer at that picture,
+         shown whole in its own shape. Nothing moves by itself. */
+      var n = g.images.length, cur = 0;
+      el.innerHTML = open + '<div class="hkgal__slider" role="group" aria-roledescription="carousel" aria-label="' + esc(g.label) + '">' +
+        '<div class="hkgal__frame"><button type="button" class="hkgal__thumb" aria-haspopup="dialog"><img class="hkgal__img" alt="" decoding="async"><span class="hkgal__capwrap"></span></button>' +
+        (n > 1 ? '<button type="button" class="hkgal__nav hkgal__prev" aria-label="Previous photo">' + ICON_L + '</button><button type="button" class="hkgal__nav hkgal__next" aria-label="Next photo">' + ICON_R + "</button>" : "") + "</div>" +
+        (n > 1 ? '<p class="hkgal__count" aria-live="polite"></p>' : "") + "</div></section>";
+      var thumb = el.querySelector(".hkgal__thumb"), pic = thumb.querySelector("img"), capw = thumb.querySelector(".hkgal__capwrap"), count = el.querySelector(".hkgal__count"), sx = null;
+      function show(i) {
+        cur = (i + n) % n;
+        var im = g.images[cur];
+        pic.src = im.src; pic.style.objectPosition = im.focus; pic.setAttribute("width", r[1]); pic.setAttribute("height", r[2]);
+        thumb.setAttribute("aria-label", labelOf(im));
+        capw.innerHTML = capHtml(im);
+        if (count) count.textContent = (cur + 1) + " / " + n;
+        if (n > 1) { var nx = new Image(); nx.src = g.images[(cur + 1) % n].src; }
+      }
+      show(0);
+      thumb.addEventListener("click", function () { galleryBox().open(g.images, cur, g.label, g.accent, thumb, show); });
+      if (n > 1) {
+        el.querySelector(".hkgal__prev").addEventListener("click", function () { show(cur - 1); });
+        el.querySelector(".hkgal__next").addEventListener("click", function () { show(cur + 1); });
+        var box = el.querySelector(".hkgal__slider");
+        box.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") show(cur - 1); else if (e.key === "ArrowRight") show(cur + 1); });
+        thumb.addEventListener("touchstart", function (e) { sx = e.touches[0].clientX; }, { passive: true });
+        thumb.addEventListener("touchend", function (e) {
+          if (sx === null) return;
+          var dx = e.changedTouches[0].clientX - sx; sx = null;
+          if (Math.abs(dx) > 40) { show(cur + (dx < 0 ? 1 : -1)); e.preventDefault(); }
+        });
+      }
       return {};
     }
   };

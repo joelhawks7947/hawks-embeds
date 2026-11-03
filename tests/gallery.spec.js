@@ -148,6 +148,80 @@ test("the Matt Flinn gallery shows its 16 pictures with the year as caption", as
     d.innerHTML = '<a href="https://www.hawks.com.au/">Gallery</a>'; document.body.appendChild(d); window.__hawksEmbeds.scan();
   });
   await expect(page.locator('[data-gallery="matt-flinn-500"] h2')).toHaveText("Matt Flinn: 500 Hawks games");
-  await expect(page.locator('[data-gallery="matt-flinn-500"] .hkgal__thumb')).toHaveCount(16);
+  await expect(page.locator('[data-gallery="matt-flinn-500"] .hkgal__thumb')).toHaveCount(1);
+  await expect(page.locator('[data-gallery="matt-flinn-500"] .hkgal__count')).toHaveText("1 / 16");
   expect(log.errors).toEqual([]);
+});
+
+/* The Matt Flinn gallery is a slider: one picture at a time at 4:3, the viewer shows the real shape. */
+const flinn = '[data-gallery="matt-flinn-500"]';
+async function flinnPage(page, mutate) {
+  const log = await open(page, mutate);
+  await page.evaluate(() => {
+    const d = document.createElement("div"); d.setAttribute("data-hawks", "gallery"); d.setAttribute("data-gallery", "matt-flinn-500");
+    d.innerHTML = '<a href="https://www.hawks.com.au/">Gallery</a>'; document.body.appendChild(d); window.__hawksEmbeds.scan();
+  });
+  await expect(page.locator(flinn + " .hkgal__thumb")).toHaveCount(1);
+  return log;
+}
+
+test("slider shows one picture at 4:3; previous and next wrap round; counter and caption follow", async ({ page }) => {
+  const log = await flinnPage(page);
+  const G = loadData().galleries["matt-flinn-500"].images;
+  const img = page.locator(flinn + " .hkgal__img");
+  const box = await img.boundingBox();
+  expect(Math.abs(box.width / box.height - 4 / 3)).toBeLessThan(0.02);
+  await expect(img).toHaveAttribute("src", G[0].src);
+  await expect(page.locator(flinn + " .hkgal__cap")).toHaveCount(0);
+  await page.locator(flinn + " .hkgal__next").click();
+  await page.locator(flinn + " .hkgal__next").click();
+  await expect(page.locator(flinn + " .hkgal__count")).toHaveText("3 / 16");
+  await expect(img).toHaveAttribute("src", G[2].src);
+  await expect(page.locator(flinn + " .hkgal__t")).toHaveText("1991");
+  await expect(page.locator(flinn + " .hkgal__thumb")).toHaveAttribute("aria-label", /^1991\. View larger: NBL Rookie Matt Flinn/);
+  await page.locator(flinn + " .hkgal__prev").click();
+  await page.locator(flinn + " .hkgal__prev").click();
+  await page.locator(flinn + " .hkgal__prev").click();
+  await expect(page.locator(flinn + " .hkgal__count")).toHaveText("16 / 16");
+  await page.locator(flinn + " .hkgal__slider").press("ArrowRight");
+  await expect(page.locator(flinn + " .hkgal__count")).toHaveText("1 / 16");
+  expect(log.errors).toEqual([]);
+});
+
+test("clicking the slider opens the viewer at that picture in its own shape; closing syncs the slider", async ({ page }) => {
+  await flinnPage(page);
+  const G = loadData().galleries["matt-flinn-500"].images;
+  await page.locator(flinn + " .hkgal__next").click();
+  await page.locator(flinn + " .hkgal__thumb").click();
+  const lb = page.locator("dialog.hkgal-lb");
+  await expect(lb).toBeVisible();
+  await expect(lb.locator(".hkgal-lb__count")).toHaveText("2 / 16");
+  await expect(lb.locator(".hkgal-lb__img")).toHaveAttribute("alt", G[1].alt);
+  /* Picture 2 is tall (943 x 1920): the viewer keeps that shape instead of the slider's 4:3 crop. */
+  await expect.poll(async () => { const b = await lb.locator(".hkgal-lb__img").boundingBox(); return Math.round((b.width / b.height) * 100) / 100; }).toBeCloseTo(943 / 1920, 1);
+  await lb.locator(".hkgal-lb__next").click();
+  await lb.locator(".hkgal-lb__next").click();
+  await page.keyboard.press("Escape");
+  await expect(page.locator(flinn + " .hkgal__count")).toHaveText("4 / 16");
+  await expect(page.locator(flinn + " .hkgal__thumb")).toBeFocused();
+});
+
+test("a one-picture slider has no buttons or counter; slider ignores ratio auto", async ({ page }) => {
+  const log = await flinnPage(page, (d) => { d.galleries["matt-flinn-500"].images = d.galleries["matt-flinn-500"].images.slice(0, 1); });
+  await expect(page.locator(flinn + " .hkgal__nav")).toHaveCount(0);
+  await expect(page.locator(flinn + " .hkgal__count")).toHaveCount(0);
+  const log2 = await open(page, (d) => { d.galleries["matt-flinn-500"].ratio = "auto"; });
+  expect(log2.warnings.join("\n")).toMatch(/ratio auto does not work with the slider/);
+  expect(log.errors).toEqual([]);
+});
+
+test("slider fits at 320, 390, 768 and 1280 with no sideways scroll", async ({ page }) => {
+  for (const w of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width: w, height: 800 });
+    await flinnPage(page);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    const nav = await page.locator(flinn + " .hkgal__next").boundingBox();
+    expect(nav.x + nav.width).toBeLessThanOrEqual(w);
+    expect(nav.width).toBeGreaterThanOrEqual(44);
+  }
 });
