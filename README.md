@@ -236,6 +236,8 @@ Two looks, set per gallery in `data.js` with `layout`:
 - **`"grid"`**: every picture on the page.
 - **`"slider"`**: one picture at a time at 4:3, with previous and next buttons and a counter. Nothing moves by itself. Swiping and the arrow keys work too.
 
+Each picture carries a "View larger" badge so readers know it opens bigger. Every picture can have a short `title` (shown over it, for example a year) and a longer `caption` (shown under the picture in a slider, and under the title in the viewer). The slider keeps the frame black until a new picture has loaded, so the old photo never sits under the new caption. Large files still load slowly: upload a smaller copy (about 1600px wide) for `src` and keep the big one in `full` if you want.
+
 Either way, clicking a picture opens a full screen viewer with previous and next buttons, a counter and the caption (arrow keys, Esc and swiping work). The viewer shows each picture whole, in its own shape. Closing it leaves the slider on the picture you finished on. Every gallery looks and behaves the same; only the pictures and captions change. The pictures live in `data.js` under `galleries`, one entry per gallery.
 
 To make a new gallery:

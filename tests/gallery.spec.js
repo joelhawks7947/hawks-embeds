@@ -210,9 +210,9 @@ test("a one-picture slider has no buttons or counter; slider ignores ratio auto"
   const log = await flinnPage(page, (d) => { d.galleries["matt-flinn-500"].images = d.galleries["matt-flinn-500"].images.slice(0, 1); });
   await expect(page.locator(flinn + " .hkgal__nav")).toHaveCount(0);
   await expect(page.locator(flinn + " .hkgal__count")).toHaveCount(0);
+  expect(log.errors).toEqual([]);
   const log2 = await open(page, (d) => { d.galleries["matt-flinn-500"].ratio = "auto"; });
   expect(log2.warnings.join("\n")).toMatch(/ratio auto does not work with the slider/);
-  expect(log.errors).toEqual([]);
 });
 
 test("slider fits at 320, 390, 768 and 1280 with no sideways scroll", async ({ page }) => {
@@ -224,4 +224,58 @@ test("slider fits at 320, 390, 768 and 1280 with no sideways scroll", async ({ p
     expect(nav.x + nav.width).toBeLessThanOrEqual(w);
     expect(nav.width).toBeGreaterThanOrEqual(44);
   }
+});
+
+test("slider shows the caption text under the picture and the viewer shows it under the title", async ({ page }) => {
+  await flinnPage(page);
+  const G = loadData().galleries["matt-flinn-500"].images;
+  expect(G.every((im) => im.caption)).toBe(true);
+  const text = page.locator(flinn + " .hkgal__text");
+  await expect(text).toHaveText(G[0].caption);
+  await page.locator(flinn + " .hkgal__next").click();
+  await expect(text).toHaveText(G[1].caption);
+  await page.locator(flinn + " .hkgal__next").click();
+  await expect(text).toHaveText(G[2].caption);
+  await page.locator(flinn + " .hkgal__thumb").click();
+  const lb = page.locator("dialog.hkgal-lb");
+  await expect(lb.locator(".hkgal-lb__t")).toHaveText("1991");
+  await expect(lb.locator(".hkgal-lb__text")).toHaveText(G[2].caption);
+  await lb.locator(".hkgal-lb__next").click();
+  await expect(lb.locator(".hkgal-lb__text")).toHaveText(G[3].caption);
+});
+
+test("a picture with no caption leaves no text; the live region holds the caption and counter", async ({ page }) => {
+  await flinnPage(page, (d) => { d.galleries["matt-flinn-500"].images[1].caption = ""; });
+  await page.locator(flinn + " .hkgal__next").click();
+  await expect(page.locator(flinn + " .hkgal__text")).toBeEmpty();
+  await expect(page.locator(flinn + " .hkgal__meta")).toHaveAttribute("aria-live", "polite");
+  await page.locator(flinn + " .hkgal__thumb").click();
+  await expect(page.locator("dialog.hkgal-lb .hkgal-lb__text")).toBeHidden();
+});
+
+test("a View larger badge sits on the picture in a slider and in a grid, and does not block the click", async ({ page }) => {
+  await flinnPage(page);
+  const z = page.locator(flinn + " .hkgal__zoom");
+  await expect(z).toBeVisible();
+  await expect(z).toHaveText("View larger");
+  await expect(z).toHaveAttribute("aria-hidden", "true");
+  expect(await z.evaluate((e) => getComputedStyle(e).pointerEvents)).toBe("none");
+  await expect(page.locator(root + " .hkgal__zoom").first()).toBeVisible();
+  await z.click({ force: true });
+  await expect(page.locator("dialog.hkgal-lb")).toBeVisible();
+});
+
+test("slider hides the old picture until the new one has loaded", async ({ page }) => {
+  await flinnPage(page);
+  const G = loadData().galleries["matt-flinn-500"].images;
+  /* Hold back the next picture so we can see the frame while it loads. */
+  let release;
+  const gate = new Promise((r) => { release = r; });
+  await page.route(G[1].src, async (route) => { await gate; await route.continue(); });
+  const img = page.locator(flinn + " .hkgal__img");
+  await page.locator(flinn + " .hkgal__next").click();
+  await expect(img).toHaveClass(/hkgal__img--wait/);
+  await expect(page.locator(flinn + " .hkgal__text")).toHaveText(G[1].caption);
+  release();
+  await expect(img).not.toHaveClass(/hkgal__img--wait/);
 });
