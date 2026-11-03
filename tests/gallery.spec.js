@@ -147,7 +147,7 @@ test("the Matt Flinn gallery shows its 16 pictures with the year as caption", as
     const d = document.createElement("div"); d.setAttribute("data-hawks", "gallery"); d.setAttribute("data-gallery", "matt-flinn-500");
     d.innerHTML = '<a href="https://www.hawks.com.au/">Gallery</a>'; document.body.appendChild(d); window.__hawksEmbeds.scan();
   });
-  await expect(page.locator('[data-gallery="matt-flinn-500"] h2')).toHaveText("Matt Flinn: 500 Hawks games");
+  await expect(page.locator('[data-gallery="matt-flinn-500"] h2')).toHaveText("Album: Matt Flinn: 500 Hawks games");
   await expect(page.locator('[data-gallery="matt-flinn-500"] .hkgal__thumb')).toHaveCount(1);
   await expect(page.locator('[data-gallery="matt-flinn-500"] .hkgal__count')).toHaveText("1 / 16");
   expect(log.errors).toEqual([]);
@@ -172,7 +172,8 @@ test("slider shows one picture at 4:3; previous and next wrap round; counter and
   const box = await img.boundingBox();
   expect(Math.abs(box.width / box.height - 4 / 3)).toBeLessThan(0.02);
   await expect(img).toHaveAttribute("src", G[0].src);
-  await expect(page.locator(flinn + " .hkgal__cap")).toHaveCount(0);
+  await expect(page.locator(flinn + " .hkgal__t")).toHaveCount(0);
+  await expect(page.locator(flinn + " .hkgal__cap .hkgal__count")).toHaveText("1 / 16");
   await page.locator(flinn + " .hkgal__next").click();
   await page.locator(flinn + " .hkgal__next").click();
   await expect(page.locator(flinn + " .hkgal__count")).toHaveText("3 / 16");

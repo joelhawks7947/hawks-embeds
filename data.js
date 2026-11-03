@@ -524,7 +524,7 @@ window.HAWKS_DATA = {
        file name. Alt text is the editor's wording (picture 5 says 1994, corrected from 1992 by the editor). The first two pictures have
        no year in their file names, so no caption. width and height are the pictures' real pixel sizes. */
     "matt-flinn-500": {
-      overline: "", heading: "Matt Flinn: 500 Hawks games", intro: "",
+      overline: "", heading: "Album: Matt Flinn: 500 Hawks games", intro: "",
       label: "Matt Flinn: 500 Hawks games photo gallery", layout: "slider", ratio: "4:3", accent: "red",
       images: [
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9322999787a1e15fe4b8d_Flinny-02IMG_2837.JPG", full: "", width: 1916, height: 1536, alt: "Young Matt Flinn.", eyebrow: "", title: "", caption: "Young Matt Flinn."},

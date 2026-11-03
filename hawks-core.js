@@ -2880,7 +2880,7 @@
       ".hkgal[hidden],.hkgal [hidden]{display:none !important;}",
       ".hkgal .hkgal__hd{margin:0 0 24px;padding:0;}",
       ".hkgal .hkgal__over{font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(22px,4cqw,30px);line-height:1;letter-spacing:0.01em;text-transform:uppercase;color:var(--r);margin:0 0 10px;padding:0;}",
-      ".hkgal .hkgal__h{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(30px,6cqw,48px);color:var(--k);margin:0;padding:0;}",
+      ".hkgal .hkgal__h{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;font-size:clamp(15px,3cqw,24px);color:var(--k);margin:0;padding:0;}",
       ".hkgal .hkgal__intro{font-size:17px;line-height:1.55;color:var(--g);margin:14px 0 0;padding:0;max-width:60ch;}",
       ".hkgal .hkgal__grid{list-style:none;display:grid;grid-template-columns:1fr;gap:24px;margin:0;padding:4px;}",
       ".hkgal .hkgal__li{margin:0;padding:0;list-style:none;}",
@@ -2906,9 +2906,12 @@
       ".hkgal .hkgal__zoom svg{display:block;flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.25;stroke-linecap:square;}",
       ".hkgal .hkgal__thumb:hover .hkgal__zoom,.hkgal .hkgal__thumb:focus-visible .hkgal__zoom{background:var(--r);}",
       ".hkgal .hkgal__meta{margin:0;padding:0;}",
-      ".hkgal .hkgal__text{margin:14px 0 0;padding:0;min-height:4.65em;font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:16px;line-height:1.55;color:var(--g);max-width:70ch;}",
+      ".hkgal .hkgal__text{margin:14px 0 0;padding:0;min-height:3.1em;font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:16px;line-height:1.55;color:var(--g);max-width:70ch;}",
       ".hkgal .hkgal__text[hidden]{display:block !important;visibility:hidden;}",
-      ".hkgal .hkgal__count{margin:12px 0 0;padding:0;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:12px;line-height:1;letter-spacing:0.16em;font-variant-numeric:tabular-nums;color:var(--g);}",
+      ".hkgal .hkgal__cap--row{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:54px;}",
+      ".hkgal .hkgal__capl{display:block;margin:0;padding:0;min-width:0;}",
+      ".hkgal .hkgal__count{display:block;flex:none;margin:0 0 0 auto;padding:0;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:12px;line-height:1;letter-spacing:0.16em;font-variant-numeric:tabular-nums;color:var(--w);}",
+      ".hkgal .hkgal__sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}",
       ".hkgal .hkgal__cap{position:absolute;left:0;right:0;bottom:0;display:block;margin:0;padding:12px 16px 14px;background:var(--k);color:var(--w);line-height:1.1;}",
       ".hkgal .hkgal__e{display:block;margin:0;padding:0;font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:11px;line-height:1.2;letter-spacing:0.16em;text-transform:uppercase;color:var(--w);}",
       ".hkgal .hkgal__t{display:block;margin:6px 0 0;padding:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(20px,4cqw,26px);line-height:1;letter-spacing:0.01em;text-transform:uppercase;color:var(--w);}",
@@ -2949,7 +2952,8 @@
       var key = el.getAttribute("data-gallery") || "", g = own(ctx.data.galleries, key);
       if (!g) throw new Error(key ? "data.js has no gallery called \"" + key + "\"" : "the placeholder needs data-gallery=\"name\"");
       var r = GAL_RATIO[g.ratio], hid = uid("gal"), hasHead = !!(g.heading || g.overline || g.intro), slider = g.layout === "slider";
-      function capHtml(im) {
+      function capHtml(im, pos) {
+        if (pos) return '<span class="hkgal__cap hkgal__cap--row"><span class="hkgal__capl">' + (im.eyebrow ? '<span class="hkgal__e">' + esc(im.eyebrow) + "</span>" : "") + (im.title ? '<span class="hkgal__t">' + esc(im.title) + "</span>" : "") + '</span><span class="hkgal__count" aria-hidden="true">' + pos + "</span></span>";
         return (im.eyebrow || im.title) ? '<span class="hkgal__cap">' + (im.eyebrow ? '<span class="hkgal__e">' + esc(im.eyebrow) + "</span>" : "") + (im.title ? '<span class="hkgal__t">' + esc(im.title) + "</span>" : "") + "</span>" : "";
       }
       var ZOOM = '<span class="hkgal__zoom" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>View larger</span></span>';
@@ -2976,8 +2980,8 @@
       el.innerHTML = open + '<div class="hkgal__slider" role="group" aria-roledescription="carousel" aria-label="' + esc(g.label) + '">' +
         '<div class="hkgal__frame"><button type="button" class="hkgal__thumb" aria-haspopup="dialog"><img class="hkgal__img" alt="" decoding="async">' + ZOOM + '<span class="hkgal__capwrap"></span></button>' +
         (n > 1 ? '<button type="button" class="hkgal__nav hkgal__prev" aria-label="Previous photo">' + ICON_L + '</button><button type="button" class="hkgal__nav hkgal__next" aria-label="Next photo">' + ICON_R + "</button>" : "") + "</div>" +
-        '<div class="hkgal__meta" aria-live="polite"><p class="hkgal__text"></p>' + (n > 1 ? '<p class="hkgal__count"></p>' : "") + "</div></div></section>";
-      var thumb = el.querySelector(".hkgal__thumb"), pic = thumb.querySelector("img"), capw = thumb.querySelector(".hkgal__capwrap"), count = el.querySelector(".hkgal__count"), text = el.querySelector(".hkgal__text"), sx = null;
+        '<div class="hkgal__meta" aria-live="polite"><p class="hkgal__text"></p>' + (n > 1 ? '<p class="hkgal__sr"></p>' : "") + "</div></div></section>";
+      var thumb = el.querySelector(".hkgal__thumb"), pic = thumb.querySelector("img"), capw = thumb.querySelector(".hkgal__capwrap"), srn = el.querySelector(".hkgal__sr"), text = el.querySelector(".hkgal__text"), sx = null;
       function show(i) {
         cur = (i + n) % n;
         var im = g.images[cur];
@@ -2985,9 +2989,9 @@
         if (pic.getAttribute("src") !== im.src) { pic.classList.add("hkgal__img--wait"); pic.src = im.src; }
         pic.style.objectPosition = im.focus; pic.setAttribute("width", r[1]); pic.setAttribute("height", r[2]);
         thumb.setAttribute("aria-label", labelOf(im));
-        capw.innerHTML = capHtml(im);
+        capw.innerHTML = capHtml(im, n > 1 ? (cur + 1) + " / " + n : "");
         text.textContent = im.caption; text.hidden = !im.caption;
-        if (count) count.textContent = (cur + 1) + " / " + n;
+        if (srn) srn.textContent = "Photo " + (cur + 1) + " of " + n;
         if (n > 1) { var nx = new Image(); nx.src = g.images[(cur + 1) % n].src; }
       }
       function ready() { pic.classList.remove("hkgal__img--wait"); }
