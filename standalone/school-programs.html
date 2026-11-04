@@ -1,0 +1,266 @@
+<!--
+  Hawks School Programs: Webflow HTML embed
+  Page: https://www.hawks.com.au/pages/programs
+  Paste everything below into a single Webflow Embed element.
+  All CSS is scoped to .hsp so nothing leaks into the Webflow site styles.
+  Remove the <link> font lines if Anton + Poppins are already loaded site-wide.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* Layout responds to the width of the embed's container (CMS column max 870px),
+   not the browser window, using container queries. */
+.hsp{
+  --red:#ff0013;--dark-red:#bf0000;--black:#000;--grey:#373737;--subtle:#f4f4f4;
+  --line:#e2e2e2;--white:#fff;
+  --display:'Anton','Oswald',Impact,'Arial Narrow',sans-serif;
+  --body:'Poppins',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  container-type:inline-size;container-name:hsp;
+  font-family:var(--body);color:var(--black);background:var(--subtle);
+  padding:32px 16px;box-sizing:border-box;width:100%;max-width:870px;margin:0 auto;
+}
+.hsp *,.hsp *::before,.hsp *::after{box-sizing:border-box}
+
+/* Year finder */
+.hsp-finder{display:flex;flex-direction:column;gap:16px;margin:0 0 24px}
+.hsp-finder h2{font-family:var(--display);font-weight:400;font-size:28px;line-height:1.1;letter-spacing:.01em;text-transform:uppercase;margin:0}
+.hsp-years{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--black);background:var(--white)}
+.hsp-year{
+  appearance:none;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:transparent;
+  font-family:var(--display);font-size:20px;line-height:1;min-width:44px;min-height:44px;padding:0 8px;
+  color:var(--black);cursor:pointer;transition:background-color 120ms var(--ease),color 120ms var(--ease);
+}
+.hsp-year:hover{background:var(--subtle)}
+.hsp-year[aria-pressed="true"]{background:var(--red);color:var(--white)}
+.hsp-year[data-year="all"]{font-family:var(--body);font-weight:700;font-size:14px}
+.hsp-year:focus-visible,.hsp a:focus-visible{outline:2px solid var(--red);outline-offset:2px;position:relative;z-index:1}
+.hsp-status{margin:0;font-size:14px;line-height:1.55;color:var(--grey);min-height:1.55em}
+
+/* Cards: stacked when narrow */
+.hsp-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.hsp-card{
+  position:relative;display:flex;flex-direction:column;background:var(--white);border:1px solid var(--black);
+  transition:opacity 200ms var(--ease),transform 200ms var(--ease),border-color 120ms var(--ease),box-shadow 200ms var(--ease);
+}
+.hsp-card:hover{transform:translateY(-2px);border-color:var(--red);box-shadow:0 4px 12px rgba(0,0,0,.10)}
+.hsp-card[hidden]{display:none}
+.hsp-photo{aspect-ratio:3/2;background:var(--red);overflow:hidden}
+.hsp-photo img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* The year band: the loud number on each card */
+.hsp-band{display:grid;grid-template-columns:1fr auto;align-items:end;gap:6px 16px;background:var(--black);color:var(--white);padding:14px 20px}
+.hsp-band-label{grid-column:1/-1;margin:0;font-weight:700;font-size:13px;letter-spacing:.06em;line-height:1.2;text-transform:uppercase}
+.hsp-band-years{font-family:var(--display);font-size:44px;line-height:.95;letter-spacing:.01em;margin:0}
+.hsp-ruler{display:grid;align-self:end;grid-template-columns:repeat(9,12px);gap:3px;padding-bottom:5px}
+.hsp-ruler span{height:20px;background:var(--grey)}
+.hsp-ruler span.on{background:var(--red)}
+
+.hsp-body{display:flex;flex-direction:column;gap:14px;padding:20px;flex:1}
+.hsp-partner{margin:0;font-size:14px;line-height:1.2;color:var(--grey)}
+.hsp-card h3{font-family:var(--display);font-weight:400;font-size:32px;line-height:.95;letter-spacing:.01em;text-transform:uppercase;margin:0}
+.hsp-card h3 a{color:inherit;text-decoration:none}
+.hsp-card h3 a::after{content:"";position:absolute;inset:0;z-index:0} /* whole card clickable */
+.hsp-desc{margin:0;font-size:15px;line-height:1.55}
+.hsp-facts{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.hsp-facts li{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.4}
+.hsp-facts .k{color:var(--grey);white-space:nowrap}
+.hsp-facts .v{font-weight:700;text-align:right}
+/* Red "View program" button. Anton at 24px counts as large text, so white on Hawks red passes WCAG AA (3.99:1). */
+.hsp-more{
+  margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;min-height:48px;padding:0 24px;
+  background:var(--red);color:var(--white);font-family:var(--display);font-size:24px;line-height:1;letter-spacing:.02em;text-transform:uppercase;
+  transition:background-color 120ms var(--ease);
+}
+.hsp-card:hover .hsp-more{background:var(--dark-red)}
+.hsp-card:focus-within .hsp-more{outline:2px solid var(--black);outline-offset:2px}
+
+/* Register strip */
+.hsp-cta{margin-top:32px;background:var(--black);color:var(--white);padding:28px 20px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.hsp-cta h2{font-family:var(--display);font-weight:400;font-size:36px;line-height:.95;letter-spacing:.01em;text-transform:uppercase;margin:0 0 14px}
+.hsp-cta p{margin:0;font-size:15px;line-height:1.55;max-width:52ch}
+.hsp-cta .hsp-contact{margin-top:14px;font-size:14px}
+.hsp-contact a{color:var(--white)}
+.hsp-actions{display:flex;flex-direction:column;gap:12px}
+.hsp-btn{
+  display:flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;
+  background:var(--red);color:var(--white);text-decoration:none;font-family:var(--display);font-size:24px;line-height:1;letter-spacing:.02em;text-transform:uppercase;
+  transition:background-color 120ms var(--ease),transform 100ms var(--ease);
+}
+.hsp-btn:hover{background:var(--dark-red)}
+.hsp-btn:active{transform:scale(.98)}
+.hsp-btn--ghost{background:transparent;color:var(--white);box-shadow:inset 0 0 0 2px var(--white)}
+.hsp-btn--ghost:hover{background:var(--white);color:var(--black)}
+
+.hsp-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Wider containers (tablet up to the 870px CMS column) */
+@container hsp (min-width:600px){
+  .hsp-finder h2{font-size:36px}
+  .hsp-years{display:flex;align-self:flex-start}
+  .hsp-year{min-width:48px;min-height:48px;font-size:22px;border-bottom:0}
+  .hsp-year:last-child{border-right:0}
+
+  /* Horizontal cards: photo left, year band and details right */
+  .hsp-card{display:grid;grid-template-columns:38% minmax(0,1fr);grid-template-rows:auto 1fr}
+  .hsp-photo{grid-row:1 / span 2;aspect-ratio:auto;min-height:100%}
+  .hsp-band,.hsp-body{grid-column:2}
+  .hsp-band{padding:14px 24px}
+  .hsp-band-years{font-size:48px}
+  .hsp-body{padding:20px 24px 24px}
+  .hsp-card h3{font-size:36px}
+
+  .hsp-cta{grid-template-columns:minmax(0,1fr) 240px;align-items:end;gap:32px;padding:36px}
+  .hsp-cta h2{font-size:44px}
+}
+@container hsp (min-width:760px){
+  .hsp-finder{flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:24px}
+  .hsp-status{flex-basis:100%}
+}
+@media (min-width:600px){
+  .hsp{padding:40px 24px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hsp *{transition:none !important}
+  .hsp-card:hover{transform:none}
+}
+</style>
+
+<section class="hsp" aria-labelledby="hsp-title">
+  <div>
+
+    <div class="hsp-finder">
+      <h2 id="hsp-title">Find a program for your class</h2>
+      <div class="hsp-years" role="group" aria-label="Filter programs by year level">
+        <button type="button" class="hsp-year" data-year="all" aria-pressed="true">All</button>
+        <button type="button" class="hsp-year" data-year="0" aria-pressed="false" aria-label="Kindergarten">K</button>
+        <button type="button" class="hsp-year" data-year="1" aria-pressed="false" aria-label="Year 1">1</button>
+        <button type="button" class="hsp-year" data-year="2" aria-pressed="false" aria-label="Year 2">2</button>
+        <button type="button" class="hsp-year" data-year="3" aria-pressed="false" aria-label="Year 3">3</button>
+        <button type="button" class="hsp-year" data-year="4" aria-pressed="false" aria-label="Year 4">4</button>
+        <button type="button" class="hsp-year" data-year="5" aria-pressed="false" aria-label="Year 5">5</button>
+        <button type="button" class="hsp-year" data-year="6" aria-pressed="false" aria-label="Year 6">6</button>
+        <button type="button" class="hsp-year" data-year="7" aria-pressed="false" aria-label="Year 7">7</button>
+        <button type="button" class="hsp-year" data-year="8" aria-pressed="false" aria-label="Year 8">8</button>
+      </div>
+      <p class="hsp-status" aria-live="polite">Three programs, from Kindergarten to Year 8. No cost to your school.</p>
+    </div>
+
+    <ul class="hsp-grid">
+
+      <!-- Kmart Game Time: K to Year 4 -->
+      <li class="hsp-card" data-from="0" data-to="4">
+        <div class="hsp-photo">
+          <img src="https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a610/6a38a3c3907d3c6af189d4f4_att.fzvZCmYlEvUGOIcV9BU2-52_B2umSJX7H_A4vzg7VoY.jpeg" alt="" loading="lazy" width="900" height="600">
+        </div>
+        <div class="hsp-band">
+          <p class="hsp-band-label">Kindergarten to Year 4</p>
+          <p class="hsp-band-years" aria-hidden="true">K-4</p>
+          <div class="hsp-ruler" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="hsp-body">
+          <p class="hsp-partner">Supported by Kmart and the NBL</p>
+          <h3><a href="https://www.hawks.com.au/pages/kmart-game-time-supported-by-nbl">Kmart Game Time</a></h3>
+          <p class="hsp-desc">An on-court clinic at your school. Students meet and play against Hawks NBL players or our community coaches.</p>
+          <ul class="hsp-facts">
+            <li><span class="k">Session</span><span class="v">30 min per group</span></li>
+            <li><span class="k">Group size</span><span class="v">Up to 40 students</span></li>
+            <li><span class="k">Every student gets</span><span class="v">A Game Time singlet</span></li>
+          </ul>
+          <span class="hsp-more" aria-hidden="true">View program</span>
+        </div>
+      </li>
+
+      <!-- Peoplecare Little Ballers: Years 3 & 4 -->
+      <li class="hsp-card" data-from="3" data-to="4">
+        <div class="hsp-photo">
+          <img src="https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a610/698bf3968cd7e1d39b037f3b_Peoplecare-6004-joelarmstrong47%20%281%29.jpg" alt="" loading="lazy" width="900" height="600">
+        </div>
+        <div class="hsp-band">
+          <p class="hsp-band-label">Years 3 and 4</p>
+          <p class="hsp-band-years" aria-hidden="true">3-4</p>
+          <div class="hsp-ruler" aria-hidden="true"><span></span><span></span><span></span><span class="on"></span><span class="on"></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="hsp-body">
+          <p class="hsp-partner">In partnership with Peoplecare</p>
+          <h3><a href="https://www.hawks.com.au/pages/people-care-mini-ballers">Peoplecare Little Ballers</a></h3>
+          <p class="hsp-desc">Your students play at halftime of a Hawks home game, on court at WIN Entertainment Centre in front of the crowd.</p>
+          <ul class="hsp-facts">
+            <li><span class="k">Where</span><span class="v">WIN Entertainment Centre</span></li>
+            <li><span class="k">When</span><span class="v">Halftime, Hawks home game</span></li>
+            <li><span class="k">Who</span><span class="v">Years 3 and 4</span></li>
+          </ul>
+          <span class="hsp-more" aria-hidden="true">View program</span>
+        </div>
+      </li>
+
+      <!-- Mental Fitness: Years 5 to 8 -->
+      <li class="hsp-card" data-from="5" data-to="8">
+        <div class="hsp-photo">
+          <img src="https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a610/698d1bacc619b710fbef6743_Screenshot%202026-02-12%20at%2011.15.29%E2%80%AFam.png" alt="" loading="lazy" width="900" height="600">
+        </div>
+        <div class="hsp-band">
+          <p class="hsp-band-label">Years 5 to 8</p>
+          <p class="hsp-band-years" aria-hidden="true">5-8</p>
+          <div class="hsp-ruler" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+        </div>
+        <div class="hsp-body">
+          <p class="hsp-partner">Supported by Greater Bank</p>
+          <h3><a href="https://www.hawks.com.au/pages/mental-fitness-program-supported-by-greater-bank">Mental Fitness Program</a></h3>
+          <p class="hsp-desc">A four-week resilience program that uses our players' own journeys to help students face and overcome challenges.</p>
+          <ul class="hsp-facts">
+            <li><span class="k">Week 1</span><span class="v">With the Hawks, 60 min</span></li>
+            <li><span class="k">Weeks 2 to 4</span><span class="v">Teacher-led, resources supplied</span></li>
+            <li><span class="k">Curriculum</span><span class="v">NSW PDHPE, Stage 3 and 4</span></li>
+          </ul>
+          <span class="hsp-more" aria-hidden="true">View program</span>
+        </div>
+      </li>
+
+    </ul>
+
+    <div class="hsp-cta">
+      <div>
+        <h2>Get your school on court</h2>
+        <p>Put your school forward and we will take it from there. One short form, and our community team will call you.</p>
+        <p class="hsp-contact"><a href="tel:1300142957">1300 142 957</a> or <a href="mailto:info@hawks.com.au">info@hawks.com.au</a></p>
+      </div>
+      <div class="hsp-actions">
+        <a class="hsp-btn" href="https://illawarrahawks.typeform.com/to/WpbSe657" target="_blank" rel="noopener noreferrer">Register your school<span class="hsp-sr"> (opens in a new tab)</span></a>
+        <a class="hsp-btn hsp-btn--ghost" href="https://canva.link/hawks-school-programs" target="_blank" rel="noopener noreferrer">View brochure<span class="hsp-sr"> (opens in a new tab)</span></a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root=document.querySelector('.hsp');
+  if(!root) return;
+  var buttons=root.querySelectorAll('.hsp-year');
+  var cards=root.querySelectorAll('.hsp-card');
+  var status=root.querySelector('.hsp-status');
+  var defaultMsg=status.textContent;
+  var names=['Kindergarten','Year 1','Year 2','Year 3','Year 4','Year 5','Year 6','Year 7','Year 8'];
+
+  function select(btn){
+    var y=btn.getAttribute('data-year');
+    buttons.forEach(function(b){b.setAttribute('aria-pressed',b===btn?'true':'false')});
+    if(y==='all'){
+      cards.forEach(function(c){c.hidden=false});
+      status.textContent=defaultMsg;return;
+    }
+    var n=+y,count=0;
+    cards.forEach(function(c){
+      var hit=n>=+c.getAttribute('data-from')&&n<=+c.getAttribute('data-to');
+      c.hidden=!hit;
+      if(hit) count++;
+    });
+    status.textContent=count===1?'1 program for '+names[n]+'.':count+' programs for '+names[n]+'.';
+  }
+  buttons.forEach(function(b){b.addEventListener('click',function(){select(b)})});
+})();
+</script>

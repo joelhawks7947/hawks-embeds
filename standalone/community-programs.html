@@ -1,0 +1,165 @@
+<!--
+  Hawks Community Programs (non-school): Webflow HTML embed
+  Page: https://www.hawks.com.au/pages/programs
+  Paste everything below into a single Webflow Embed element.
+  All CSS is scoped to .hcp, so it can sit on the same page as the school programs embed (.hsp) without clashing.
+  Remove the <link> font lines if Anton + Poppins are already loaded site-wide.
+
+  Landing pages: Holiday Camps and Healthy Deadly Kids 3x3 have no page yet, so those cards have no link or button
+  (class hcp-card--static). When a page goes live: wrap the title in a link (marked LINK), uncomment the button,
+  and remove hcp-card--static from the <li>.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* Layout responds to the width of the embed's container (CMS column max 870px) via container queries. */
+.hcp{
+  --red:#ff0013;--dark-red:#bf0000;--black:#000;--grey:#373737;--subtle:#f4f4f4;
+  --line:#e2e2e2;--white:#fff;
+  --display:'Anton','Oswald',Impact,'Arial Narrow',sans-serif;
+  --body:'Poppins',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  container-type:inline-size;container-name:hcp;
+  font-family:var(--body);color:var(--black);background:var(--subtle);
+  padding:32px 16px;box-sizing:border-box;width:100%;max-width:870px;margin:0 auto;
+}
+.hcp *,.hcp *::before,.hcp *::after{box-sizing:border-box}
+
+.hcp-head{margin:0 0 24px}
+.hcp-head h2{font-family:var(--display);font-weight:400;font-size:28px;line-height:1.1;letter-spacing:.01em;text-transform:uppercase;margin:0 0 8px}
+.hcp-head p{margin:0;font-size:14px;line-height:1.55;color:var(--grey)}
+
+/* Cards: stacked when narrow */
+.hcp-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.hcp-card{
+  position:relative;display:flex;flex-direction:column;background:var(--white);border:1px solid var(--black);
+  transition:transform 200ms var(--ease),border-color 120ms var(--ease),box-shadow 200ms var(--ease);
+}
+.hcp-card:hover{transform:translateY(-2px);border-color:var(--red);box-shadow:0 4px 12px rgba(0,0,0,.10)}
+/* Cards with no landing page yet: no link, no hover lift */
+.hcp-card--static:hover{transform:none;border-color:var(--black);box-shadow:none}
+.hcp-photo{aspect-ratio:3/2;background:var(--red);overflow:hidden}
+.hcp-photo img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* Black band: the one defining fact of each program, set loud */
+.hcp-band{background:var(--black);color:var(--white);padding:14px 20px}
+.hcp-band-label{margin:0 0 6px;font-weight:700;font-size:13px;letter-spacing:.06em;line-height:1.2;text-transform:uppercase}
+.hcp-band-big{font-family:var(--display);font-size:44px;line-height:.95;letter-spacing:.01em;text-transform:uppercase;margin:0}
+
+.hcp-body{display:flex;flex-direction:column;gap:14px;padding:20px;flex:1}
+.hcp-partner{margin:0;font-size:14px;line-height:1.2;color:var(--grey)}
+.hcp-card h3{font-family:var(--display);font-weight:400;font-size:32px;line-height:.95;letter-spacing:.01em;text-transform:uppercase;margin:0}
+.hcp-card h3 a{color:inherit;text-decoration:none}
+.hcp-card h3 a::after{content:"";position:absolute;inset:0;z-index:0} /* whole card clickable */
+.hcp-desc{margin:0;font-size:15px;line-height:1.55}
+.hcp-facts{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.hcp-facts li{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.4}
+.hcp-facts .k{color:var(--grey);white-space:nowrap}
+.hcp-facts .v{font-weight:700;text-align:right}
+
+/* Red button. Anton at 24px counts as large text, so white on Hawks red passes WCAG AA (3.99:1). */
+.hcp-more{
+  margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;min-height:48px;padding:0 24px;
+  background:var(--red);color:var(--white);font-family:var(--display);font-size:24px;line-height:1;letter-spacing:.02em;text-transform:uppercase;
+  transition:background-color 120ms var(--ease);
+}
+.hcp-card:hover .hcp-more{background:var(--dark-red)}
+.hcp-card:focus-within .hcp-more{outline:2px solid var(--black);outline-offset:2px}
+.hcp a:focus-visible{outline:none}
+
+@container hcp (min-width:600px){
+  .hcp-head h2{font-size:36px}
+  .hcp-card{display:grid;grid-template-columns:38% minmax(0,1fr);grid-template-rows:auto 1fr}
+  .hcp-photo{grid-row:1 / span 2;aspect-ratio:auto;min-height:100%}
+  .hcp-band,.hcp-body{grid-column:2}
+  .hcp-band{padding:14px 24px}
+  .hcp-band-big{font-size:48px}
+  .hcp-body{padding:20px 24px 24px}
+  .hcp-card h3{font-size:36px}
+}
+@media (min-width:600px){
+  .hcp{padding:40px 24px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hcp *{transition:none !important}
+  .hcp-card:hover{transform:none}
+}
+</style>
+
+<section class="hcp" aria-labelledby="hcp-title">
+  <div class="hcp-head">
+    <h2 id="hcp-title">Play with the Hawks outside school</h2>
+    <p>Clinics, holiday camps and tournaments for Illawarra kids, run by the club's community team.</p>
+  </div>
+
+  <ul class="hcp-grid">
+
+    <!-- Girls in the Game -->
+    <li class="hcp-card">
+      <div class="hcp-photo">
+        <img src="https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a610/6a71acda2baee3b4ca5a34c4_Girls%20Who%20Game-3.jpg" alt="" loading="lazy" width="900" height="600">
+      </div>
+      <div class="hcp-band">
+        <p class="hcp-band-label">Girls aged 5 to 12</p>
+        <p class="hcp-band-big" aria-hidden="true">Ages 5 to 12</p>
+      </div>
+      <div class="hcp-body">
+        <p class="hcp-partner">In partnership with Greater Bank</p>
+        <h3><a href="https://www.hawks.com.au/pages/girls-in-the-game">Girls in the Game</a></h3>
+        <p class="hcp-desc">A two-hour clinic where every girl starts on the same line. Every girl gets a ball, learns the basics in small groups, then plays a real game the same afternoon. No experience needed.</p>
+        <ul class="hcp-facts">
+          <li><span class="k">Session</span><span class="v">Two hours</span></li>
+          <li><span class="k">Skill level</span><span class="v">Beginners to weekend players</span></li>
+          <li><span class="k">Coached by</span><span class="v">Female coaches, incl. NBL1 women's players</span></li>
+        </ul>
+        <span class="hcp-more" aria-hidden="true">View program</span>
+      </div>
+    </li>
+
+    <!-- Holiday Camps -->
+    <li class="hcp-card hcp-card--static">
+      <div class="hcp-photo">
+        <img src="https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6aeabe5b181bb038bd079e79_Holiday-Camp-BG_05666.jpg" alt="" loading="lazy" width="900" height="600">
+      </div>
+      <div class="hcp-band">
+        <p class="hcp-band-label">Runs every</p>
+        <p class="hcp-band-big">School holidays</p>
+      </div>
+      <div class="hcp-body">
+        <h3><!-- LINK: when the landing page is live, wrap this title in <a href="URL">...</a> and restore the button below -->Hawks Holiday Camps</h3>
+        <p class="hcp-desc">Camps coached by Hawks players and local representative coaches. Campers also get behind-the-scenes access to a closed-door Hawks training session.</p>
+        <ul class="hcp-facts">
+          <li><span class="k">When</span><span class="v">Each school holidays</span></li>
+          <li><span class="k">Coached by</span><span class="v">Hawks players and rep coaches</span></li>
+          <li><span class="k">Bonus</span><span class="v">Watch a closed-door Hawks training</span></li>
+        </ul>
+        <!-- <span class="hcp-more" aria-hidden="true">View program</span> -->
+      </div>
+    </li>
+
+    <!-- Healthy Deadly Kids 3x3 -->
+    <li class="hcp-card hcp-card--static">
+      <div class="hcp-photo">
+        <img src="https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6aeac0d12d620dc989b8db4b_Healthy%20Deadly%20kids%20banner.jpg" alt="" loading="lazy" width="900" height="600">
+      </div>
+      <div class="hcp-band">
+        <p class="hcp-band-label">Tournament format</p>
+        <p class="hcp-band-big" style="text-transform:none">3x3</p>
+      </div>
+      <div class="hcp-body">
+        <p class="hcp-partner">In partnership with Healthy Deadly Kids</p>
+        <h3><!-- LINK: when the landing page is live, wrap this title in <a href="URL">...</a> and restore the button below -->Healthy Deadly Kids 3x3</h3>
+        <p class="hcp-desc">A fast-paced 3x3 basketball tournament at the Snakepit that brings young people together for a day of basketball, connection and community.</p>
+        <ul class="hcp-facts">
+          <li><span class="k">Format</span><span class="v">3x3 tournament</span></li>
+          <li><span class="k">Where</span><span class="v">The Snakepit, Gwynneville</span></li>
+          <li><span class="k">When</span><span class="v">Check back in early 2027 for details on the next tournament</span></li>
+        </ul>
+        <!-- <span class="hcp-more" aria-hidden="true">View program</span> -->
+      </div>
+    </li>
+
+  </ul>
+</section>
