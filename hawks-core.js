@@ -259,7 +259,7 @@
       seen[id] = true;
       if (status === "hidden") return;
       out.cards.push({ id: id, kind: kind, layout: layout, status: status, order: typeof c.order === "number" ? c.order : i + 1, _i: i, theme: txt(c.theme) === "dark" ? "dark" : "",
-        kicker: txt(c.kicker), badge: txt(c.badge), badgeClosed: txt(c.badgeClosed), sponsor: txt(c.sponsor), title: txt(c.title), body: txt(c.body), bodyFallback: txt(c.bodyFallback),
+        kicker: txt(c.kicker), badge: txt(c.badge), badgeClosed: txt(c.badgeClosed), sponsor: txt(c.sponsor), prize: txt(c.prize), title: txt(c.title), body: txt(c.body), bodyFallback: txt(c.bodyFallback),
         meta: txt(c.meta), metaClosed: txt(c.metaClosed), metaLive: txt(c.metaLive), ctaLabel: txt(c.ctaLabel), ctaLabelClosed: txt(c.ctaLabelClosed), url: status === "live" ? c.url : "",
         image: txt(c.image), alt: txt(c.alt), imagePos: /^[a-z0-9% ]{1,30}$/i.test(txt(c.imagePos)) ? txt(c.imagePos) : "center" });
     });
@@ -412,7 +412,9 @@
     return (soon ? fmt(w.date, { weekday: "long" }) : U.longDate(w.date) + ",") + " " + t;
   }
   /* Prize line shown with the vote in mvp-vote and trivia-mvp. */
-  var MVP_PRIZE = "One lucky winner will win a Hawks cap after each game, and every voter goes into the main prize draw.";
+  var MVP_PRIZE = "One lucky winner will win a Hawks cap after each game, and every voter goes into the draw to win $5000 at the end of the season.";
+  /* The prize line as HTML, with the amount picked out (red on the black panels it appears on). cls is the module's amount class. */
+  function prizeHtml(cls) { return esc(MVP_PRIZE).replace("$5000", function () { return '<span class="' + cls + '">$5000</span>'; }); }
   H.mvpOpen = mvpOpen;
 
   /* Hawks in Business events. An event is past (shown grey) from its end time, or from midnight
@@ -1096,6 +1098,7 @@
       /* Long button text wraps into even lines on phones. */
       ".hkpv .hkpv__btn{text-wrap:balance;}",
       ".hkpv .hkpv__prize{max-width:320px;font-size:14px;font-weight:700;line-height:1.5;color:#D8D8D8;margin:0;}",
+      ".hkpv .hkpv__prize .hkpv__amt{color:#FF0013;}",
       ".hkpv .hkpv__soon{background:transparent;border-color:var(--k);color:var(--k);cursor:default;}",
       "@container (max-width:700px){",
       ".hkpv{grid-template-columns:1fr;}",
@@ -1119,7 +1122,7 @@
         "</div>" +
         '<div class="hkpv__panel hkpv__panel--k hkpv__mvp">' +
         (L.mvpImage ? '<img class="hkpv__img" src="' + esc(L.mvpImage) + '" width="1080" height="1080" loading="lazy" alt="Vote for your Greater Bank Game MVP">' : "") +
-        '<p class="hkpv__prize">' + esc(MVP_PRIZE) + "</p>" +
+        '<p class="hkpv__prize">' + prizeHtml("hkpv__amt") + "</p>" +
         (L.mvpVote ? '<a class="hkpv__btn"' + ext(L.mvpVote) + '><span class="hkpv__vote"></span></a>' : "") +
         "</div></section>";
       /* Same voting window as mvp-vote: "Pick your MVP" while a vote is open, otherwise "See past winners". */
@@ -1284,6 +1287,7 @@
       ".hkmvp .hkmvp__title span{color:var(--r);}",
       ".hkmvp .hkmvp__body{max-width:34em;font-size:clamp(16px,1.8cqw,18px);line-height:1.55;color:#E2E2E2;margin:0;}",
       ".hkmvp .hkmvp__body strong{color:var(--w);font-weight:700;}",
+      ".hkmvp .hkmvp__body strong .hkmvp__amt{color:var(--r);}",
       ".hkmvp .hkmvp__terms{max-width:40em;font-size:12px;line-height:1.5;color:#B8B8B8;margin:0;}",
       ".hkmvp .hkmvp__btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;gap:16px;min-height:72px;margin:8px 0 0;padding:14px 32px 14px 26px;background:var(--r);color:var(--w);border:0;border-radius:0;text-decoration:none;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(26px,3.5cqw,36px);line-height:1;letter-spacing:.03em;text-transform:uppercase;transition:transform 200ms cubic-bezier(.5,1.4,.5,1),color 120ms var(--e);animation:hkmvp-pulse 2.2s var(--e) infinite;}",
       ".hkmvp .hkmvp__btn:link,.hkmvp .hkmvp__btn:visited{color:var(--w);text-decoration:none;}",
@@ -1344,7 +1348,7 @@
           badge.hidden = !(g || next);
           dot.hidden = !g;
           badgeText.textContent = g ? "Voting open now" : next ? "Next vote opens " + mvpWhen(next, s.now) : "";
-          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game.") + " <strong>" + esc(MVP_PRIZE) + "</strong>";
+          body.innerHTML = "Voting for the " + PARTNER + (g ? "is open now." : "opens at tip-off of every game.") + " <strong>" + prizeHtml("hkmvp__amt") + "</strong>";
           if (!btn) return;
           label.textContent = g ? "Pick your MVP" : "See past winners";
           btn.setAttribute("aria-label", g ? "Pick your MVP: Greater Bank Game MVP, Hawks v " + g.opp : "See past winners: Greater Bank Game MVP");
@@ -2439,6 +2443,7 @@
       ".hkgames .hkgames__dot{flex:none;display:inline-block;width:8px;height:8px;border-radius:50%;background:#FF0013;}",
       ".hkgames .hkgames__h2{margin:0;padding:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:40px;line-height:.95;letter-spacing:.01em;text-transform:uppercase;color:inherit;}",
       ".hkgames .hkgames__by{margin:0;font-size:14px;font-weight:700;line-height:1.3;color:#BF0000;}",
+      ".hkgames .hkgames__prize{margin:0;font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:clamp(32px,6cqw,44px);line-height:1;letter-spacing:.01em;text-transform:uppercase;color:#FF0013;}",
       ".hkgames .hkgames__p{margin:0;font-size:16px;line-height:1.55;color:inherit;}",
       ".hkgames .hkgames__row--dark .hkgames__p{color:#E6E6E6;}",
       ".hkgames .hkgames__m{margin:0;font-size:14px;line-height:1.55;color:#6E6E6E;}",
@@ -2503,6 +2508,7 @@
           (c.badge || c.badgeClosed ? '<p class="hkgames__badge" data-r="badge"><span class="hkgames__dot" aria-hidden="true"></span><span data-r="badge-text">' + esc(c.badge) + "</span></p>" : "") +
           '<h2 class="hkgames__h2">' + esc(c.title) + "</h2>" +
           (c.sponsor ? '<p class="hkgames__by">' + esc(c.sponsor) + "</p>" : "") +
+          (c.prize ? '<p class="hkgames__prize">' + esc(c.prize) + "</p>" : "") +
           (c.body ? '<p class="hkgames__p">' + esc(c.body) + "</p>" : "") +
           (c.meta ? '<p class="hkgames__m" data-r="meta">' + esc(c.meta) + "</p>" : "") +
           cta(c, "hkgames__btn", "hkgames__soon") + "</div></article>";

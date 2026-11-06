@@ -329,6 +329,7 @@ window.HAWKS_DATA = {
        kicker    small line above the title: the red line on a wide row, or Daily / Weekly / Ongoing on a small card
        badge     small black label with a red dot (optional)
        sponsor   "Presented by ..." line (optional)
+       prize     the big headline line under the sponsor, wide cards only (optional). Keep it short.
        body      main text
        meta      small grey line (optional)
        ctaLabel  the red button
@@ -363,13 +364,15 @@ window.HAWKS_DATA = {
         image:"https://video.illawarra-hawks.com.au/image/membership.jpg", alt:"Membership Finder question screen", imagePos:"center 45%"},
       {id:"greater-bank-mvp", kind:"mvp", layout:"full", order:1, status:"live",
         badge:"Voting open", badgeClosed:"Voting opens at tip-off", title:"Greater Bank MVP", sponsor:"Presented by Greater Bank",
-        body:"Pick your standout Hawk after every game.",
+        prize:"Win $5000",
+        body:"Pick your standout Hawk after every game. Every voter goes into the draw at the end of the season, and one winner takes $5000. One voter also wins a Hawks cap after each game.",
         meta:"Now voting: {round}, {game}.", metaClosed:"Next vote: {game}.",
         ctaLabel:"Vote now", ctaLabelClosed:"See past winners", url:"https://mvp.illawarra-hawks.com.au/",
         image:"https://video.illawarra-hawks.com.au/image/mvp.jpg", alt:"Greater Bank MVP voting screen", imagePos:"center 20%"},
       {id:"cmg-midcourt-mayhem", layout:"full", order:2, status:"live",
         badge:"Entries open", title:"CMG Midcourt Mayhem", sponsor:"Presented by CMG",
-        body:"Four shots, 30 seconds, one run. Choose your shooter type and register for your shot at a home game.",
+        prize:"Win up to $500, and a chance at a car",
+        body:"Four shots, 30 seconds, one run. Choose your shooter type and register for your shot at a home game. One contestant shoots on court at each home game: make all four shots, the last from halfway, to win $500. Whoever completes the three shots fastest shoots for a car at our season finale, thanks to City Motors Group.",
         meta:"One fan is drawn about 48 hours before each home game.",
         ctaLabel:"Enter the draw", url:"https://cmg-midcourt-mayhem.lovable.app/",
         image:"https://video.illawarra-hawks.com.au/image/mayhem.jpg", alt:"CMG Midcourt Mayhem entry screen", imagePos:"center 35%"},

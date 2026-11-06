@@ -168,6 +168,15 @@ test("no bracketApi set: no network call and the plain meta line", async ({ page
   expect(hit).toBe(false);
 });
 
+test("the headline prize shows large on the MVP and Mayhem cards, and only where one is set", async ({ page }) => {
+  await open(page, "2026-10-02T19:45");
+  await expect(page.locator(G + ' [data-card="greater-bank-mvp"] .hkgames__prize')).toHaveText("Win $5000");
+  await expect(page.locator(G + ' [data-card="cmg-midcourt-mayhem"] .hkgames__prize')).toHaveText("Win up to $500, and a chance at a car");
+  await expect(page.locator(G + ' [data-card="membership-finder"] .hkgames__prize')).toHaveCount(0);
+  const px = await page.locator(G + ' [data-card="greater-bank-mvp"] .hkgames__prize').evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+  expect(px).toBeGreaterThanOrEqual(32); // large text, so red on white passes contrast
+});
+
 test("after the season: no MVP tile, quiz card still renders", async ({ page }) => {
   await open(page, "2027-03-01T12:00");
   await expect(page.locator(G + ' [data-tile="mvp"]')).toBeHidden();
@@ -278,6 +287,7 @@ test("static copy in the embed matches data.js: names, links, sponsors and descr
     expect(html, c.id + " title").toContain(c.title);
     expect(hrefs, c.id + " link").toContain(c.url);
     if (c.sponsor) expect(html, c.id + " sponsor").toContain(c.sponsor);
+    if (c.prize) expect(html, c.id + " prize").toContain(c.prize);
     if (c.kind !== "quiz") expect(html, c.id + " body").toContain(c.body);
     if (c.kicker && !c.kicker.startsWith("Memberships")) expect(html, c.id + " kicker").toContain(c.kicker);
   }
