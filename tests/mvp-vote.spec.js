@@ -35,6 +35,16 @@ async function expectClosed(page, badge) {
   }
 }
 
+test("the $5000 is picked out in a large headline line, open or closed", async ({ page }) => {
+  for (const when of ["2026-10-02T20:00", "2026-10-07T12:00"]) {
+    await open(page, when);
+    const p = page.locator(MV).first().locator(".hkmvp__prize");
+    await expect(p).toHaveText("Win $5000");
+    await expect(p.locator("span")).toHaveText("$5000");
+    expect(await p.evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(36);
+  }
+});
+
 test("schedule: 33 games, and every home game matches the games list exactly", () => {
   const d = loadData(), mvp = d.mvpVote.games;
   expect(mvp.length).toBe(33);

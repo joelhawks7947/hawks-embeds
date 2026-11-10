@@ -1285,6 +1285,8 @@
       ".hkmvp .hkmvp__dot{flex:none;display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--r);animation:hkmvp-dot 1.4s ease-in-out infinite;}",
       ".hkmvp .hkmvp__title{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(40px,9cqw,92px);line-height:.95;letter-spacing:.01em;color:var(--w);margin:0;padding:0;}",
       ".hkmvp .hkmvp__title span{color:var(--r);}",
+      ".hkmvp .hkmvp__prize{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(36px,7cqw,64px);line-height:.95;letter-spacing:.01em;color:var(--w);margin:0;padding:0;}",
+      ".hkmvp .hkmvp__prize span{color:var(--r);}",
       ".hkmvp .hkmvp__body{max-width:34em;font-size:clamp(16px,1.8cqw,18px);line-height:1.55;color:#E2E2E2;margin:0;}",
       ".hkmvp .hkmvp__body strong{color:var(--w);font-weight:700;}",
       ".hkmvp .hkmvp__body strong .hkmvp__amt{color:var(--r);}",
@@ -1325,6 +1327,7 @@
         '<div class="hkmvp__copy">' +
         '<p class="hkmvp__badge" hidden><span class="hkmvp__dot" aria-hidden="true"></span><span class="hkmvp__badge-text"></span></p>' +
         '<h2 class="hkmvp__title" id="' + id + '">Your vote,<br><span>Hawkheads.</span></h2>' +
+        '<p class="hkmvp__prize">Win <span>$5000</span></p>' +
         '<p class="hkmvp__body"></p>' +
         (url ? '<a class="hkmvp__btn"' + ext(url) + '>' +
           '<svg class="hkmvp__ball" aria-hidden="true" focusable="false" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2v20"/><path d="M4.9 4.9c2.9 2.9 2.9 11.3 0 14.2"/><path d="M19.1 4.9c-2.9 2.9-2.9 11.3 0 14.2"/></svg>' +
