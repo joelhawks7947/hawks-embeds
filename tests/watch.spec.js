@@ -11,7 +11,7 @@ async function open(page, url) {
 }
 
 test("tickets on sale: one information line under the ticket panels, tickets stay the only buttons", async ({ page }) => {
-  const { log, ng } = await open(page, "/test/?hk_now=2026-11-15T12:00");
+  const { log, ng } = await open(page, "/test/?hk_now=2026-11-19T08:00");
   await expect(ng.locator("h2")).toHaveText("Hawks v Adelaide 36ers");
   const tv = ng.locator(".hkng__tv");
   await expect(tv).toBeVisible();
@@ -28,9 +28,19 @@ test("tickets on sale: one information line under the ticket panels, tickets sta
 });
 
 test("Saturday game: ESPN, 9Go! and 9Now", async ({ page }) => {
-  const { ng } = await open(page, "/test/?hk_now=2027-01-01T12:00");
+  const { ng } = await open(page, "/test/?hk_now=2027-01-02T06:00");
   await expect(ng.locator("h2")).toHaveText("Hawks v Cairns Taipans");
   await expect(ng.locator(".hkng__tv")).toHaveText("Can't make it to WIN Entertainment Centre? Watch live on ESPN, 9Go! and 9Now from 5:30pm AEDT.");
+});
+
+test("tickets on sale: no line until 12 hours before tip-off", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-09-27T00:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-09-27T00:00:01Z"));
+  const { ng } = await open(page, "/test/?hk_now=2026-11-19T07:29");
+  await expect(ng.locator("h2")).toHaveText("Hawks v Adelaide 36ers");
+  await expect(ng.locator(".hkng__tv")).toBeHidden();
+  await page.clock.fastForward(61000);
+  await expect(ng.locator(".hkng__tv")).toHaveText("Can't make it to WIN Entertainment Centre? Watch live on ESPN from 7:30pm AEDT.");
 });
 
 test("during the game: Watch live on ESPN.", async ({ page }) => {
@@ -48,7 +58,7 @@ test("flips from the pre-game line to the game-on line at tip-off", async ({ pag
   await expect(ng.locator(".hkng__tv")).toHaveText("Watch live on ESPN.");
 });
 
-test("sold out: the line replaces the ticket panels", async ({ page }) => {
+test("sold out: the line replaces the ticket panels, days out too", async ({ page }) => {
   await useData(page, (d) => { d.games.find((g) => g.n === 6).soldOut = true; });
   const { log, ng } = await open(page, "/test/?hk_now=2026-11-15T12:00");
   await expect(ng.locator('[data-k="tix"]')).toBeHidden();
@@ -73,13 +83,13 @@ test("no watch set: no line", async ({ page }) => {
 
 test("after daylight saving ends the line says AEST", async ({ page }) => {
   await useData(page, (d) => { d.games[d.games.length - 1].date = "2027-04-10"; });
-  const { ng } = await open(page, "/test/?hk_now=2027-04-09T12:00");
+  const { ng } = await open(page, "/test/?hk_now=2027-04-10T12:00");
   await expect(ng.locator(".hkng__tv")).toHaveText("Can't make it to WIN Entertainment Centre? Watch live on ESPN from 7:30pm AEST.");
 });
 
 test("bad watch or soldOut values warn and are ignored", async ({ page }) => {
   await useData(page, (d) => { const g = d.games.find((x) => x.n === 6); g.watch = 5; g.soldOut = "yes"; });
-  const { log, ng } = await open(page, "/test/?hk_now=2026-11-15T12:00");
+  const { log, ng } = await open(page, "/test/?hk_now=2026-11-19T08:00");
   await expect(ng.locator('[data-k="tix"]')).toBeVisible();
   await expect(ng.locator(".hkng__tv")).toBeHidden();
   expect(log.warnings.join("\n")).toContain("game 6 watch ignored");

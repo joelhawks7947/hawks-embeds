@@ -113,6 +113,9 @@
   var CW_HOURS_BEFORE = 4;
   /* Hours after tip-off when a game counts as finished. Change this one number to adjust. */
   var GAME_HOURS = 2;
+  /* Where-to-watch line on a home game with tickets on sale: only in the last WATCH_HOURS before
+     tip-off (game day, as in the NBL broadcast brief), so tickets have the panel to themselves until then. */
+  var WATCH_HOURS = 12;
   var DATE = /^\d{4}-\d{2}-\d{2}$/, TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
   function realDate(s) {
     if (!DATE.test(s)) return false;
@@ -797,9 +800,11 @@
           var cw = courtWalkFor(s.game, s.now);
           if (cw && k.cwa.getAttribute("href") !== cw) { setLink(k.cwa, cw); k.cwa.setAttribute("aria-label", courtWalkLabel(s.game)); }
           k.cw.hidden = !cw;
-          /* Where to watch: "Can't make it..." with tickets on sale, "Sold out." when sold out, plain during the game. */
+          /* Where to watch: "Sold out." line whenever a game is sold out; with tickets on sale,
+             "Can't make it..." only in the last WATCH_HOURS before tip-off; plain during the game. */
           var live = s.phase === "live", w = watchLine(s.game, live), tv = !w ? "" : live ? esc(w)
-            : s.game.soldOut ? "<strong>Sold out.</strong> " + esc(w) : "Can't make it to " + esc(ctx.data.venue) + "? " + esc(w);
+            : s.game.soldOut ? "<strong>Sold out.</strong> " + esc(w)
+            : s.game._tip - s.now <= WATCH_HOURS * 3600000 ? "Can't make it to " + esc(ctx.data.venue) + "? " + esc(w) : "";
           if (tv !== lastTv) { k.tv.innerHTML = tv; lastTv = tv; }
           k.tv.hidden = !tv;
           if (s.phase === "live") { k.timer.hidden = true; k.status.textContent = "Game on"; k.status.hidden = false; return; }

@@ -296,10 +296,11 @@ window.HAWKS_DATA = {
        example "ESPN" or "ESPN, 9Go! and 9Now" (Saturday games). Copy it from the NBL
        broadcast schedule and check the Nine channel for Saturday games. The next home
        game panel shows "Can't make it to WIN Entertainment Centre? Watch live on ESPN
-       from 7:30pm AEDT." under the tickets, then "Watch live on ESPN." during the game.
+       from 7:30pm AEDT." under the tickets from 12 hours before tip-off, then "Watch
+       live on ESPN." during the game.
        "" or left out = no line.
      soldOut: true once the game is sold out. The ticket panels make way for the
-       where-to-watch line. Set it back to false if tickets are released. */
+       where-to-watch line, straight away. Set it back to false if tickets are released. */
   games: [
     {n:1,  date:"2026-10-02", opp:"Adelaide 36ers",               func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-02-10-2026/event/130064FDD1FC7914", preview:"https://www.hawks.com.au/news/game-preview-hawks-vs-adelaide-36ers-rd3-nbl27", courtWalk:""},
     {n:2,  date:"2026-10-09", opp:"Tasmania JackJumpers",         func:"18:00", doors:"18:30", show:"19:00", tip:"19:30", tickets:"https://www.ticketmaster.com.au/202627-hungry-jacks-nbl-season-illawarra-wollongong-09-10-2026/event/130064FE8BBF264B", preview:"", courtWalk:""},
