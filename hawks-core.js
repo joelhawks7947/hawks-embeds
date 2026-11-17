@@ -337,7 +337,7 @@
       var ratio = g.ratio == null ? (layout === "slider" ? "4:3" : "4:5") : txt(g.ratio), accent = g.accent == null ? "red" : txt(g.accent), cols = g.columns == null ? 2 : g.columns;
       if (!own(GAL_RATIO, ratio)) { warn(who + ".ratio \"" + ratio + "\" should be 4:5, 4:3, 1:1, 3:2 or auto; using " + (layout === "slider" ? "4:3" : "4:5")); ratio = layout === "slider" ? "4:3" : "4:5"; }
       if (layout === "slider" && ratio === "auto") { warn(who + ".ratio auto does not work with the slider (it needs one fixed shape); using 4:3"); ratio = "4:3"; }
-      if (accent !== "red" && accent !== "teal") { warn(who + ".accent \"" + accent + "\" should be red or teal; using red"); accent = "red"; }
+      if (accent !== "red" && accent !== "teal" && accent !== "yellow") { warn(who + ".accent \"" + accent + "\" should be red, teal or yellow; using red"); accent = "red"; }
       if (cols !== 2 && cols !== 3) { warn(who + ".columns should be 2 or 3; using 2"); cols = 2; }
       (Array.isArray(g.images) ? g.images : []).forEach(function (im, i) {
         var n = who + ".images " + (i + 1);
@@ -2917,6 +2917,7 @@
     css: [
       ".hkgal{--r:#FF0013;--k:#000;--w:#FFF;--g:#373737;--e:cubic-bezier(0.22,1,0.36,1);--a:var(--r);box-sizing:border-box;display:block;background:transparent;color:var(--k);margin:0;padding:40px 0 48px;border-top:6px solid var(--k);text-align:left;font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;}",
       ".hkgal[data-accent=\"teal\"]{--a:#4FC3BE;}",
+      ".hkgal[data-accent=\"yellow\"]{--a:#FFCD00;}",
       ".hkgal *,.hkgal *::before,.hkgal *::after{box-sizing:border-box;}",
       ".hkgal[hidden],.hkgal [hidden]{display:none !important;}",
       ".hkgal .hkgal__hd{margin:0 0 24px;padding:0;}",
@@ -2963,6 +2964,7 @@
       /* The viewer sits on the page body, outside the placeholder, so its rules start at .hkgal-lb. */
       ".hkgal-lb{--a:#FF0013;box-sizing:border-box;position:fixed;left:0;top:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#000;color:#FFF;font-family:'Poppins',Arial,Helvetica,sans-serif;overscroll-behavior:contain;}",
       ".hkgal-lb[data-accent=\"teal\"]{--a:#4FC3BE;}",
+      ".hkgal-lb[data-accent=\"yellow\"]{--a:#FFCD00;}",
       ".hkgal-lb *,.hkgal-lb *::before,.hkgal-lb *::after{box-sizing:border-box;}",
       ".hkgal-lb[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto;}",
       ".hkgal-lb[hidden],.hkgal-lb [hidden]{display:none !important;}",

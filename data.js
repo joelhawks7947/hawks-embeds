@@ -501,7 +501,7 @@ window.HAWKS_DATA = {
                 page doesn't jump while it loads). Clicking a picture always opens the viewer, which
                 shows it whole in its own shape.
      columns:   2 (default) or 3 (three only when the page column is wide enough)
-     accent:    "red" (default) or "teal": the ring on hover and around the picture in the viewer
+     accent:    "red" (default), "teal" or "yellow" (Aboriginal flag yellow, approved for Healthy Deadly Kids): the ring on hover and around the picture in the viewer
      images:    in order. Each one has
         src:     the picture (full https:// address, uploaded to Webflow Assets)
         full:    optional bigger version for the viewer; "" or leave out to use src
@@ -561,7 +561,7 @@ window.HAWKS_DATA = {
        The two tall pictures (3 and 4) keep the upper part in the 3:2 crop. */
     "hdk-3x3-26": {
       overline: "", heading: "Healthy Deadly Kids gallery", intro: "",
-      label: "Healthy Deadly Kids 3x3 Tournament photo gallery", layout: "grid", ratio: "3:2", columns: 3, accent: "red",
+      label: "Healthy Deadly Kids 3x3 Tournament photo gallery", layout: "grid", ratio: "3:2", columns: 3, accent: "yellow",
       images: [
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004cd8ea1a0fc17ad85f_3x3%20150726-105.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004cf8b27272897497d3_3x3%20150726-103.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
