@@ -280,3 +280,20 @@ test("slider hides the old picture until the new one has loaded", async ({ page 
   release();
   await expect(img).not.toHaveClass(/hkgal__img--wait/);
 });
+
+test("Healthy Deadly Kids 3x3 gallery renders nine pictures with the supplied wording", async ({ page }) => {
+  const log = watchConsole(page);
+  await useData(page);
+  await page.goto("/test/?hk_now=2026-11-17T12:00");
+  await ready(page);
+  await page.evaluate(() => {
+    const d = document.createElement("div"); d.setAttribute("data-hawks", "gallery"); d.setAttribute("data-gallery", "hdk-3x3-26");
+    d.innerHTML = '<a href="https://www.hawks.com.au/">Fallback</a>'; document.body.appendChild(d);
+    window.__hawksEmbeds.scan();
+  });
+  const root = '[data-gallery="hdk-3x3-26"]';
+  await page.waitForSelector(root + " .hkgal__thumb");
+  await expect(page.locator(root + " h2")).toHaveText("Healthy Deadly Kids gallery");
+  await expect(page.locator(root + " .hkgal__thumb")).toHaveCount(9);
+  expect(log.errors || log).toEqual(log.errors ? [] : log);
+});

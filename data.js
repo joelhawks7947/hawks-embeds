@@ -556,6 +556,23 @@ window.HAWKS_DATA = {
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251fc0d5d069ac7a191a_2025-03-23%20Hawks%20vs%20United%20GF4-3022-joelarmstrong47.jpg", full: "", width: 4032, height: 3024, alt: "Davo Hickey and Matt Flinn celebrating the NBL25 Championship", eyebrow: "", title: "2025", caption: "Davo Hickey and Matt Flinn celebrating the NBL25 Championship"},
         {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6ae9251f17facc0bbd69517c_2025-03-27%20Hawks%20vs%20United%20GF4-4395-joelarmstrong47.jpeg", full: "", width: 4032, height: 3024, alt: "Assistant Coaches Sam Gruggan, Matt Flinn, Joel Khalu and Tom Cranney at the Hawks Championship parade.", eyebrow: "", title: "2025", caption: "Assistant Coaches Sam Gruggan, Matt Flinn, Joel Khalu and Tom Cranney at the Hawks Championship parade."}
       ]
+    },
+    /* Healthy Deadly Kids 3x3 Tournament photos (17 November 2026). Alt text and caption are the editor's wording, the same for every picture.
+       The two tall pictures (3 and 4) keep the upper part in the 3:2 crop. */
+    "hdk-3x3-26": {
+      overline: "", heading: "Healthy Deadly Kids gallery", intro: "",
+      label: "Healthy Deadly Kids 3x3 Tournament photo gallery", layout: "grid", ratio: "3:2", columns: 3, accent: "red",
+      images: [
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004cd8ea1a0fc17ad85f_3x3%20150726-105.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004cf8b27272897497d3_3x3%20150726-103.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004ca6531713a54b819f_3x3%20150726-102.jpg", full: "", focus: "50% 25%", width: 1200, height: 1800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004c2ed2258db4208838_3x3%20150726-108.jpg", full: "", focus: "50% 25%", width: 1200, height: 1800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004bd0256c9c4117c5ae_3x3%20150726-109.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004bbbb5d999c9566dbc_3x3%20150726-138.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004b6cc1a3212bbba394_3x3%20150726-134.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004b8ee814ec28d3c717_3x3%20150726-104.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"},
+        {src: "https://cdn.prod.website-files.com/689d0b8adfdc2e5ca8e5a604/6afc004b0cc03841fde66945_3x3%20150726-10.jpg", full: "", width: 1200, height: 800, alt: "Action from the last Healthy Deadly Kids 3x3 Tournament", eyebrow: "", title: "", caption: "Action from the last Healthy Deadly Kids 3x3 Tournament"}
+      ]
     }
   }
 };
