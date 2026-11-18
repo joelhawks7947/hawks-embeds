@@ -656,6 +656,9 @@
       ".hkng .hkng__meta{font-size:16px;line-height:1.55;color:#D8D8D8;margin:0 0 28px;}",
       ".hkng .hkng__meta--tight{margin-bottom:8px;}",
       ".hkng .hkng__pv{font-size:16px;line-height:1.5;margin:0 0 28px;}",
+      ".hkng .hkng__pv--tight{margin-bottom:8px;}",
+      /* Where to watch, under the date: during the game, and any time a game is sold out. */
+      ".hkng .hkng__tvt{font-weight:700;font-size:clamp(17px,2.2cqw,20px);line-height:1.4;color:var(--w);margin:0 0 28px;}",
       ".hkng .hkng__pvl,.hkng .hkng__pvl:link,.hkng .hkng__pvl:visited{font-weight:700;color:var(--w);text-decoration:underline;text-underline-offset:3px;}",
       ".hkng .hkng__pvl:hover{color:var(--r);text-decoration:underline;}",
       ".hkng .hkng__pvl:focus-visible{outline:2px solid var(--w);outline-offset:2px;}",
@@ -703,11 +706,8 @@
       ".hkng .hkng__opt--r .hkng__btn:focus-visible{outline-color:var(--w);}",
       ".hkng .hkng__opt--w .hkng__btn:focus-visible{outline-color:var(--k);}",
       ".hkng .hkng__opt--k .hkng__btn--inv:hover{background:var(--r);border-color:var(--r);color:var(--w);}",
-      /* Where to watch: an information line under the tickets, not a button. When a game is sold
-         out it replaces the ticket panels, so it gets more weight. */
+      /* Where to watch on game day with tickets on sale: an information line under the tickets, not a button. */
       ".hkng .hkng__tv{font-size:16px;line-height:1.5;color:#D8D8D8;margin:28px 0 0;}",
-      ".hkng .hkng__tv strong{font-weight:700;color:var(--w);}",
-      ".hkng .hkng__tv--main{font-size:clamp(18px,2.4cqw,22px);line-height:1.4;font-weight:700;color:var(--w);margin-top:32px;padding-top:24px;border-top:2px solid rgba(255,255,255,0.2);}",
       ".hkng .hkng__pk{font-size:15px;line-height:1.5;color:#D8D8D8;margin:24px 0 0;}",
       ".hkng .hkng__pick,.hkng .hkng__pick:link,.hkng .hkng__pick:visited{font-weight:700;color:var(--w);text-decoration:underline;text-underline-offset:3px;}",
       ".hkng .hkng__pick:hover{color:var(--r);text-decoration:underline;}",
@@ -733,6 +733,7 @@
         '<h2 class="hkng__head" data-k="head"></h2>' +
         '<p class="hkng__meta" data-k="meta"></p>' +
         '<p class="hkng__pv" data-k="pv" hidden><a class="hkng__pvl" data-k="prev" href="#"></a></p>' +
+        '<p class="hkng__tvt" data-k="tvt" hidden></p>' +
         '<ul class="hkng__timer" data-k="timer" role="timer" aria-live="off" aria-label="Time until tip-off" hidden>' +
         '<li class="hkng__unit"><span class="hkng__num" data-k="d">00</span><span class="hkng__lbl">Days</span></li>' +
         '<li class="hkng__unit"><span class="hkng__num" data-k="h">00</span><span class="hkng__lbl">Hours</span></li>' +
@@ -774,7 +775,6 @@
         k.times.innerHTML = keyTimes(g, "hkng", timeExtras(g, "hkng"));
         k.times.hidden = false;
         k.tix.hidden = !!g.soldOut;
-        k.tv.className = "hkng__tv" + (g.soldOut ? " hkng__tv--main" : "");
         var t = U.tickets(g);
         if (t) { setLink(k.single, t); k.single.hidden = false; } else k.single.hidden = true;
         k.single.setAttribute("aria-label", "Buy tickets: single game, Hawks v " + g.opp);
@@ -782,12 +782,17 @@
         var pv = previewFor(g);
         if (pv) { setLink(k.prev, pv); k.prev.textContent = "Read the Hawks v " + g.opp + " preview"; k.pv.hidden = false; }
         else k.pv.hidden = true;
-        k.meta.classList.toggle("hkng__meta--tight", !!pv);
+        tight();
+      }
+      /* The date line sits close to whatever follows it (preview link, where-to-watch line). */
+      function tight() {
+        k.meta.classList.toggle("hkng__meta--tight", !k.pv.hidden || !k.tvt.hidden);
+        k.pv.classList.toggle("hkng__pv--tight", !k.pv.hidden && !k.tvt.hidden);
       }
       function wrap() {
         k.head.textContent = "That's a wrap on the home season";
         k.meta.textContent = "Thanks for every minute of noise, Hawkheads.";
-        k.timer.hidden = k.status.hidden = k.times.hidden = k.tix.hidden = k.pv.hidden = k.cw.hidden = k.tv.hidden = true;
+        k.timer.hidden = k.status.hidden = k.times.hidden = k.tix.hidden = k.pv.hidden = k.cw.hidden = k.tv.hidden = k.tvt.hidden = true;
         if (k.gd) k.gd.hidden = true;
         k.meta.classList.remove("hkng__meta--tight");
       }
@@ -800,13 +805,19 @@
           var cw = courtWalkFor(s.game, s.now);
           if (cw && k.cwa.getAttribute("href") !== cw) { setLink(k.cwa, cw); k.cwa.setAttribute("aria-label", courtWalkLabel(s.game)); }
           k.cw.hidden = !cw;
-          /* Where to watch: "Sold out." line whenever a game is sold out; with tickets on sale,
-             "Can't make it..." only in the last WATCH_HOURS before tip-off; plain during the game. */
-          var live = s.phase === "live", w = watchLine(s.game, live), tv = !w ? "" : live ? esc(w)
-            : s.game.soldOut ? "<strong>Sold out.</strong> " + esc(w)
-            : s.game._tip - s.now <= WATCH_HOURS * 3600000 ? "Can't make it to " + esc(ctx.data.venue) + "? " + esc(w) : "";
-          if (tv !== lastTv) { k.tv.innerHTML = tv; lastTv = tv; }
-          k.tv.hidden = !tv;
+          /* Where to watch. During the game, or any time a game is sold out: under the date
+             ("Watch live on ESPN." / "Sold out. Watch live on ESPN from 7:30pm AEDT.").
+             Tickets on sale: "Can't make it..." under the tickets, only in the last WATCH_HOURS. */
+          var live = s.phase === "live", w = watchLine(s.game, live), top = live || s.game.soldOut,
+            tv = !w ? "" : live ? w : s.game.soldOut ? "Sold out. " + w
+            : s.game._tip - s.now <= WATCH_HOURS * 3600000 ? "Can't make it to " + ctx.data.venue + "? " + w : "",
+            key = (top ? "t" : "b") + tv;
+          if (key !== lastTv) {
+            lastTv = key;
+            k.tvt.textContent = top ? tv : ""; k.tvt.hidden = !(top && tv);
+            k.tv.textContent = top ? "" : tv; k.tv.hidden = top || !tv;
+            tight();
+          }
           if (s.phase === "live") { k.timer.hidden = true; k.status.textContent = "Game on"; k.status.hidden = false; return; }
           var n = Math.floor((s.game._tip - s.now) / 1000);
           k.d.textContent = pad(Math.floor(n / 86400)); k.h.textContent = pad(Math.floor(n % 86400 / 3600));
