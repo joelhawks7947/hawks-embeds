@@ -4,7 +4,7 @@ const { useData, watchConsole, ready } = require("./helpers");
 
 const BIZ = '[data-hawks="hawks-in-business"]';
 const BOOK = "https://hawks-corporate-hospitality.lovable.app/";
-const CW8 = "https://www.eventbrite.com.au/e/hawks-court-walk-thursday-10-december-tickets-2001420777422";
+const CW9 = "https://www.eventbrite.com.au/e/hawk-court-walk-sunday-20-december-tickets-2001420831584";
 
 async function open(page, t) { const log = watchConsole(page); await page.goto("/test/?hk_now=" + t); await ready(page); return log; }
 function rows(biz) {
@@ -33,8 +33,6 @@ test("heading, months and every event's copy, carried over from the flyer", asyn
         ["Sage Hotel \u00B7 7:30am \u00B7 Tickets $65pp"], "Presented by Greater Bank"],
       ["4Dec 2026", "Friday 4th December: Hawks in Business Long Table Christmas Lunch",
         ["Wollongong Golf Club, New Wine Dining Room \u00B7 1:00pm to 4:30pm \u00B7 Tickets $200pp", "Four courses with paired wines"], ""],
-      ["10Dec 2026", "Thursday 10th December: Hawks Court Walk",
-        ["WIN Entertainment Centre \u00B7 6:00pm \u00B7 Tickets $50pp", "Hawks v Tasmania JackJumpers", "Match ticket not included"], ""],
       ["29Jan 2027", "Friday 29th January: Hawks in Business & Hawks Alumni Golf Day",
         ["Wollongong Golf Club \u00B7 7:30am"], ""],
       ["7Feb 2027", "Sunday 7th February: Hawks in Business Summer Sundowner", ["Venue, time and tickets TBC"], ""],
@@ -42,7 +40,7 @@ test("heading, months and every event's copy, carried over from the flyer", asyn
     ]);
     await expect(biz.locator(".hkbiz__past")).toBeHidden();
     // Date blocks are decorative; the date is read out with the title.
-    expect(await biz.locator('.hkbiz__date[aria-hidden="true"]').count()).toBe(8);
+    expect(await biz.locator('.hkbiz__date[aria-hidden="true"]').count()).toBe(7);
   }
   expect(log.errors).toEqual([]);
 });
@@ -54,7 +52,7 @@ test("past events move under a collapsed Past events bar, grey, most recent firs
   await open(page, "2026-12-04T16:29");
   expect((await up())[0]).toBe("Hawks in Business Long Table Christmas Lunch");
   await open(page, "2026-12-04T16:30");
-  expect((await up())[0]).toBe("Hawks Court Walk");
+  expect((await up())[0]).toBe("Hawks in Business & Hawks Alumni Golf Day");
   // No end time: moves at midnight after the date.
   await open(page, "2026-10-14T23:59");
   expect((await up())[0]).toBe("Hawks in Business Lessons in Leadership Luncheon");
@@ -103,30 +101,33 @@ test("an event moves to Past events live, without a reload", async ({ page }) =>
   await expect(biz.locator("h3.hkbiz__mh").first()).toHaveText("November 2026");
 });
 
-test("Court Walk row: teal button from game 8, gone 4 hours before; Book now under the list", async ({ page }) => {
-  await open(page, "2026-12-10T13:59");
+test("an event with game:N gets that game's teal Court Walk button, gone 4 hours before; Book now under the list", async ({ page }) => {
+  await useData(page, (d) => {
+    d.hawksInBusiness.events.push({ date: "2026-12-20", title: "Test Court Walk", details: [], venue: "WIN Entertainment Centre", start: "13:30", end: "", price: "$50pp", presenter: "", game: 9 });
+  });
+  await open(page, "2026-12-20T09:29");
   const biz = page.locator(BIZ).first();
   const cw = biz.locator(".hkbiz__btn--cw");
   await expect(cw).toBeVisible();
-  await expect(cw).toHaveAttribute("href", CW8);
+  await expect(cw).toHaveAttribute("href", CW9);
   await expect(cw).toHaveAttribute("target", "_blank");
-  await expect(cw).toHaveAttribute("aria-label", "Court Walk tickets: Hawks v Tasmania JackJumpers, Thursday 10th December");
+  await expect(cw).toHaveAttribute("aria-label", "Court Walk tickets: Hawks v Melbourne United, Sunday 20th December");
   expect(await cw.evaluate((a) => getComputedStyle(a).backgroundColor)).toBe("rgb(79, 195, 190)");
   const book = biz.locator(".hkbiz__cta a");
   await expect(book).toHaveText("Book now");
   await expect(book).toHaveAttribute("href", BOOK);
   await expect(book).toHaveAttribute("rel", "noopener noreferrer");
   await expect(book).toHaveAttribute("aria-label", "Book now: Hawks in Business events");
-  await open(page, "2026-12-10T14:00");
+  await open(page, "2026-12-20T09:30");
   await expect(page.locator(BIZ).first().locator(".hkbiz__btn--cw")).toBeHidden();
 });
 
-test("after the last event: only Past events (8), no months and no Book now button", async ({ page }) => {
+test("after the last event: only Past events (7), no months and no Book now button", async ({ page }) => {
   await open(page, "2027-04-01T00:00");
   const biz = page.locator(BIZ).first();
   expect((await rows(biz)).every((x) => x.past)).toBe(true);
   expect(await biz.locator(".hkbiz__month").count()).toBe(0);
-  await expect(biz.locator(".hkbiz__bar")).toHaveText("Past events(8)");
+  await expect(biz.locator(".hkbiz__bar")).toHaveText("Past events(7)");
   await expect(biz.locator(".hkbiz__cta")).toBeHidden();
 });
 
@@ -138,9 +139,9 @@ test("bad events are skipped with a warning; the rest still show", async ({ page
   });
   await page.goto("/test/?hk_now=2026-10-12T12:00");
   await ready(page);
-  expect(await page.locator(BIZ).first().locator(".hkbiz__ev").count()).toBe(8);
+  expect(await page.locator(BIZ).first().locator(".hkbiz__ev").count()).toBe(7);
   const w = log.warnings.join("\n");
-  expect(w).toContain('Hawks in Business event 9 skipped: date "2027-02-30" is not a real YYYY-MM-DD date; title is empty; start "6pm" is not HH:MM or TBC; end "21:00" needs to be HH:MM, with a start time');
-  expect(w).toContain("Hawks in Business event 10 skipped: needs a date (YYYY-MM-DD) or a month (YYYY-MM)");
+  expect(w).toContain('Hawks in Business event 8 skipped: date "2027-02-30" is not a real YYYY-MM-DD date; title is empty; start "6pm" is not HH:MM or TBC; end "21:00" needs to be HH:MM, with a start time');
+  expect(w).toContain("Hawks in Business event 9 skipped: needs a date (YYYY-MM-DD) or a month (YYYY-MM)");
   expect(log.errors).toEqual([]);
 });

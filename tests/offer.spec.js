@@ -10,7 +10,7 @@ const PAGES = {
   "courtside": { heading: "Get closer to the action.", button: "Secure your courtside seats now 🏀", href: "https://hawks-corporate-hospitality.lovable.app/#contact" },
   "vip-function": { heading: "Your game night starts before tip-off.", button: "Secure your place in the VIP experience 🥂", href: "https://www.eventbrite.com.au/o/illawarra-hawks-56775142353" }
 };
-const CW = [4, 5, 8, 9, 12, 13, 14, 15];
+const CW = [4, 5, 9, 12, 13, 14, 15];
 const sel = (k) => '[data-offer="' + k + '"] .hkoff';
 async function open(page, url) { const log = watchConsole(page); await page.goto(url || "/test/?hk_now=2026-10-01T12:00"); await ready(page); return log; }
 
@@ -52,7 +52,7 @@ test("it is light: the background is transparent and the text is black", async (
 test("court walk: lists every Court Walk on sale, with its own link, and drops each one 4 hours before", async ({ page }) => {
   await open(page);
   const rows = page.locator(sel("court-walk") + " .hkoff__row");
-  await expect(rows).toHaveCount(8);
+  await expect(rows).toHaveCount(7);
   const data = loadData().games.filter((g) => g.courtWalk);
   expect(data.map((g) => g.n)).toEqual(CW);
   const hrefs = await rows.locator("a.hkoff__cw").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
@@ -63,7 +63,7 @@ test("court walk: lists every Court Walk on sale, with its own link, and drops e
   expect(await first.evaluate((a) => [getComputedStyle(a).backgroundColor, getComputedStyle(a).color])).toEqual(["rgb(79, 195, 190)", "rgb(0, 0, 0)"]);
   // After game 4's Court Walk goes off sale (2pm on the 22nd), it leaves the list.
   await page.goto("/test/?hk_now=2026-10-22T14:00"); await ready(page);
-  await expect(page.locator(sel("court-walk") + " .hkoff__row")).toHaveCount(7);
+  await expect(page.locator(sel("court-walk") + " .hkoff__row")).toHaveCount(6);
   // After the last Court Walk, a plain message and no rows.
   await page.goto("/test/?hk_now=2027-01-30T12:00"); await ready(page);
   await expect(page.locator(sel("court-walk") + " .hkoff__row")).toHaveCount(0);
@@ -119,7 +119,7 @@ test("vip function: a game without its own link uses the organiser page", async 
 test("court walk: future only, nothing played or already off sale", async ({ page }) => {
   await open(page, "/test/?hk_now=2026-10-19T12:00");
   const rows = page.locator(sel("court-walk") + " .hkoff__row");
-  await expect(rows).toHaveCount(8);
+  await expect(rows).toHaveCount(7);
   await open(page, "/test/?hk_now=2026-12-11T12:00");
   expect(await page.locator(sel("court-walk") + " .hkoff__rt").allInnerTexts()).toEqual([
     "Sunday 20th December, Hawks v Melbourne United", "Saturday 2nd January, Hawks v Cairns Taipans", "Wednesday 6th January, Hawks v Perth Wildcats",

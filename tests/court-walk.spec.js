@@ -5,7 +5,6 @@ const { loadData, useData, watchConsole, ready } = require("./helpers");
 const CW = {
   4: "https://www.eventbrite.com.au/e/hawks-court-walk-thursday-22-october-tickets-2001420620954",
   5: "https://www.eventbrite.com.au/e/hawks-court-walk-saturday-24-october-tickets-2001420752347",
-  8: "https://www.eventbrite.com.au/e/hawks-court-walk-thursday-10-december-tickets-2001420777422",
   9: "https://www.eventbrite.com.au/e/hawk-court-walk-sunday-20-december-tickets-2001420831584",
   12: "https://www.eventbrite.com.au/e/hawks-court-walk-saturday-2-january-tickets-2001969164663",
   13: "https://www.eventbrite.com.au/e/hawks-court-walk-wednesday-6-january-tickets-2001421994061",
@@ -21,7 +20,7 @@ async function freeze(page) {
 }
 async function open(page, url) { const log = watchConsole(page); await page.goto(url); await ready(page); return log; }
 
-test("data.js: the eight Court Walk games have their Eventbrite links, the rest have none", () => {
+test("data.js: the seven Court Walk games have their Eventbrite links, the rest have none", () => {
   const got = {};
   loadData().games.forEach((g) => { if (g.courtWalk) got[g.n] = g.courtWalk; });
   expect(got).toEqual(CW);

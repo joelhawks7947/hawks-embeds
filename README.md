@@ -430,7 +430,7 @@ Each event is one line in the `hawksInBusiness` section:
 - `presenter` shows as "Presented by ...". Use `""` for none.
 - An event moves to **Past events** after its `end` time, or at midnight after its date when there's no end time. Events with only a `month` move when that month ends.
 - `tickets` at the top is the **Book now** button under the list. It disappears once every event is past.
-- The Hawks Court Walk line has `game:8`: its teal **Court Walk tickets** button uses that game's `courtWalk` link from the `games` list.
+- To list a Hawks Court Walk, add `game:` with the home game number (for example `game:9`): its teal **Court Walk tickets** button uses that game's `courtWalk` link from the `games` list.
 
 ### Top 10 table
 
